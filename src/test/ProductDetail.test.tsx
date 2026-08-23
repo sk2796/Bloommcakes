@@ -30,6 +30,35 @@ vi.mock('@/features/products/hooks/useCakeDetail', () => ({
   })
 }))
 
+// Mock useCakes hook to provide recommendations data list
+vi.mock('@/features/products/hooks/useCakes', () => ({
+  useCakes: () => ({
+    data: [
+      {
+        id: 'c1',
+        name: 'Mock Belgian Chocolate',
+        slug: 'mock-belgian-chocolate',
+        price: 799,
+        priceByWeight: { '0.5kg': 799 }
+      },
+      {
+        id: 'c2',
+        name: 'Suggested Strawberry Sweet',
+        slug: 'suggested-strawberry-sweet',
+        price: 699,
+        priceByWeight: { '0.5kg': 699 },
+        rating: 4.6,
+        category: 'fruit',
+        imageUrl: '',
+        isEggless: true,
+        weightOptions: ['0.5kg']
+      }
+    ],
+    isLoading: false,
+    isError: false
+  })
+}))
+
 const queryClient = new QueryClient()
 
 describe('Product Detail Page', () => {
@@ -53,5 +82,9 @@ describe('Product Detail Page', () => {
     const plusButton = screen.getByText('+')
     fireEvent.click(plusButton)
     expect(screen.getByText('₹2998')).toBeInTheDocument()
+
+    // Assert that the suggestions shelf rendered recommendations details correctly
+    expect(screen.getByText('Recommended For You')).toBeInTheDocument()
+    expect(screen.getByText('Suggested Strawberry Sweet')).toBeInTheDocument()
   })
 })
