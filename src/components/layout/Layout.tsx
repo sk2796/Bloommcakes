@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
+import { useCartStore } from '@/features/cart/store/useCartStore'
 
 export function Layout() {
   const [scrolled, setScrolled] = useState(false)
   const location = useLocation()
+  const { items } = useCartStore()
+
+  // Sum total quantities of items in the cart
+  const cartItemCount = items.reduce((total, item) => total + item.quantity, 0)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -96,7 +101,11 @@ export function Layout() {
           <div className="flex items-center gap-4">
             <Link to="/cart" className="relative p-2 text-primary hover:bg-surface-container rounded-full transition-colors">
               <span className="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
-              <span className="absolute top-0 right-0 bg-primary-container text-on-primary-container text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold">2</span>
+              {cartItemCount > 0 && (
+                <span className="absolute top-0 right-0 bg-primary-container text-on-primary-container text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold">
+                  {cartItemCount}
+                </span>
+              )}
             </Link>
             <Link to="/shop" className="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-md hidden sm:block">ORDER NOW</Link>
             <button className="md:hidden p-2 text-primary">

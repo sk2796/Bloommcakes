@@ -2,15 +2,18 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useCakeDetail } from '@/features/products/hooks/useCakeDetail'
 import { useCakes } from '@/features/products/hooks/useCakes'
+import { useCartStore } from '@/features/cart/store/useCartStore'
 
 export default function ProductPlaceholder() {
   const { slug } = useParams<{ slug: string }>()
   const { data: cake, isLoading, isError } = useCakeDetail(slug || '')
   const { data: allCakes } = useCakes()
+  const { addItem } = useCartStore()
   
   const [selectedWeight, setSelectedWeight] = useState<string>('')
   const [isEggless, setIsEggless] = useState<boolean>(true)
   const [quantity, setQuantity] = useState<number>(1)
+  const [addedAlert, setAddedAlert] = useState(false)
 
   // Reset page parameters when routing to a new product details slug using set timeout to escape cascading renders rule
   useEffect(() => {
@@ -55,8 +58,32 @@ export default function ProductPlaceholder() {
     ? allCakes.filter(item => item.id !== cake.id).slice(0, 3)
     : []
 
+  const handleAddToCart = () => {
+    addItem({
+      cakeId: cake.id,
+      name: cake.name,
+      slug: cake.slug,
+      imageUrl: cake.imageUrl,
+      price: currentPrice,
+      weight: selectedWeight,
+      isEggless: isEggless,
+      id: `item-${cake.id}-${selectedWeight}-${isEggless ? 'veg' : 'egg'}`,
+      quantity: quantity
+    })
+    setAddedAlert(true)
+    setTimeout(() => setAddedAlert(false), 3000)
+  }
+
   return (
     <div className="max-w-container-max mx-auto px-margin-desktop py-12 animate-fade-in">
+      {/* Added to cart notification badge */}
+      {addedAlert && (
+        <div className="fixed top-24 right-8 bg-green-50 text-green-800 border border-green-200 px-6 py-3.5 rounded-2xl shadow-lg z-50 flex items-center gap-3 animate-fade-in font-bold text-xs uppercase tracking-wide">
+          <span className="material-symbols-outlined text-sm leading-none font-bold text-green-600">check_circle</span>
+          Added to your celebration cart!
+        </div>
+      )}
+
       {/* Breadcrumb path navigation */}
       <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-8 text-left">
         <Link to="/" className="hover:text-primary transition-colors">Home</Link>
@@ -183,7 +210,10 @@ export default function ProductPlaceholder() {
                   <span className="text-xs text-on-surface-variant uppercase tracking-wider">Total Price</span>
                   <span className="text-primary font-bold text-2xl">₹{totalPrice}</span>
                 </div>
-                <button className="bg-primary text-on-primary px-8 py-3.5 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-md flex-1 text-center font-bold">
+                <button 
+                  onClick={handleAddToCart}
+                  className="bg-primary text-on-primary px-8 py-3.5 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-md flex-1 text-center font-bold"
+                >
                   ADD TO CART
                 </button>
               </div>
