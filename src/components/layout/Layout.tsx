@@ -1,161 +1,282 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export function Layout() {
-  const [isDemoActive, setIsDemoActive] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setScrolled(true)
+      } else {
+        setScrolled(false)
+      }
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground antialiased font-sans">
-      <header className="border-b border-border/10 py-5 px-6 bg-cream-dark/30 backdrop-blur-md sticky top-0 z-50 transition-all duration-300">
-        <div className="max-w-[1200px] mx-auto flex items-center justify-between">
-          <div className="flex flex-col">
-            <h1 className="text-2xl font-bold tracking-tight text-amber font-heading leading-none">
-              BLOOMCAKES
-            </h1>
-            <span className="text-[10px] uppercase tracking-widest text-chocolate font-sans font-bold mt-1">
-              Artisanal Confectionery System
-            </span>
+    <div className="font-body-md text-body-md antialiased overflow-x-hidden min-h-screen flex flex-col bg-background text-on-background">
+      {/* Top Navigation Bar */}
+      <nav 
+        className={`bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md text-primary dark:text-primary-fixed w-full top-0 sticky z-50 border-b border-outline-variant/30 dark:border-outline/20 transition-all duration-300 ${
+          scrolled ? 'shadow-md' : 'shadow-sm'
+        }`} 
+        id="main-nav"
+      >
+        <div className="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-4xl" data-icon="cake">cake</span>
+            <span className="text-headline-md font-headline-lg text-primary dark:text-primary-fixed font-bold tracking-tight">BloomCakes</span>
           </div>
-          <nav className="flex items-center space-x-6">
-            <span className="font-accent text-lg text-amber leading-none select-none">
-              Beautifully Crafted, Happily Celebrated
-            </span>
-            <button
-              onClick={() => setIsDemoActive(!isDemoActive)}
-              className="px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white bg-primary rounded hover:bg-amber-light hover:text-chocolate-dark transition-all duration-300 shadow-sm"
-            >
-              Toggle Demo Sandbox
+          <div className="hidden md:flex gap-8 items-center">
+            <a className="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary pb-1" href="#">Home</a>
+            <a className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed-dim transition-colors duration-300 font-label-md text-label-md" href="#">About Us</a>
+            <a className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed-dim transition-colors duration-300 font-label-md text-label-md" href="#">Menu</a>
+            <a className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed-dim transition-colors duration-300 font-label-md text-label-md" href="#">Custom Cakes</a>
+            <a className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed-dim transition-colors duration-300 font-label-md text-label-md" href="#">Gallery</a>
+            <a className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary hover:text-primary-container dark:hover:text-primary-fixed-dim transition-colors duration-300 font-label-md text-label-md" href="#">Contact</a>
+          </div>
+          <div className="flex items-center gap-4">
+            <button className="relative p-2 text-primary hover:bg-surface-container rounded-full transition-colors">
+              <span className="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+              <span className="absolute top-0 right-0 bg-primary-container text-on-primary-container text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold">2</span>
             </button>
-          </nav>
+            <button className="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-md hidden sm:block">ORDER NOW</button>
+            <button className="md:hidden p-2 text-primary">
+              <span className="material-symbols-outlined" data-icon="menu">menu</span>
+            </button>
+          </div>
         </div>
+      </nav>
+
+      {/* Hero Section */}
+      <header className="relative pt-12 pb-24 lg:pt-24 lg:pb-32 overflow-hidden bg-gradient-to-br from-surface to-surface-container-low">
+        <div className="max-w-container-max mx-auto px-margin-desktop grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+          <div className="flex flex-col gap-6 text-center lg:text-left">
+            <h1 className="font-headline-xl text-headline-xl text-primary max-w-2xl mx-auto lg:mx-0">
+              <span className="block text-on-surface font-light italic mb-2">Beautifully Crafted.</span>
+              Happily Celebrated.
+            </h1>
+            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-lg mx-auto lg:mx-0">
+              From everyday moments to life's biggest celebrations, we craft artisanal cakes and desserts that make every moment bloom with flavor and joy.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mt-4">
+              <button className="bg-primary text-on-primary px-8 py-3 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-lg flex items-center justify-center gap-2">
+                ORDER NOW
+                <span className="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+              </button>
+              <button className="border-2 border-primary text-primary px-8 py-3 rounded-full font-label-md text-label-md hover:bg-primary/5 transition-colors flex items-center justify-center">
+                EXPLORE MENU
+              </button>
+            </div>
+            <div className="flex justify-center lg:justify-start gap-8 mt-8 opacity-80">
+              <div className="flex flex-col items-center gap-2">
+                <span className="material-symbols-outlined text-3xl text-primary" data-icon="eco">eco</span>
+                <span className="font-label-sm text-label-sm text-on-surface-variant text-center">Premium<br/>Ingredients</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <span className="material-symbols-outlined text-3xl text-primary" data-icon="favorite">favorite</span>
+                <span className="font-label-sm text-label-sm text-on-surface-variant text-center">Made<br/>with Love</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <span className="material-symbols-outlined text-3xl text-primary" data-icon="bakery_dining">bakery_dining</span>
+                <span className="font-label-sm text-label-sm text-on-surface-variant text-center">Freshly<br/>Baked</span>
+              </div>
+            </div>
+          </div>
+          <div className="relative w-full aspect-square max-w-lg mx-auto">
+            <div className="absolute inset-0 bg-primary-container/20 rounded-full blur-3xl scale-90"></div>
+            <img 
+              className="w-full h-full object-cover rounded-full soft-shadow relative z-10 border-8 border-surface transform hover:scale-105 transition-transform duration-700" 
+              alt="A spectacular celebration cake"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBo24FowZT4dx61_yrgUcj5_C8U2l7zG4e6WCTDMEFvSLEouWlqsu_xi4gaIZlKmxqbsL2jhCNQD-rCFJrN_8MPldEOEE1qUDNCfdAseQ6N4NkoWv0SSkAMSlqiH0Ce-WSjzrjRt8Lc6B1glKPOmwwka2RHWt4hfSMc1A8JXE9usy-k_oCUlTKNrS-mabM-kvFOMilVpvR0gyV69Wu6Sdbua9qjrKFnPDhGGS-6iiZo-Vtb6FrIKMsc"
+            />
+            {/* Floating Badge */}
+            <div className="absolute -bottom-6 -right-6 glass-panel rounded-full p-4 flex flex-col items-center justify-center w-28 h-28 shadow-xl z-20 animate-bounce" style={{ animationDuration: '3s' }}>
+              <span className="text-primary font-headline-md text-headline-md font-bold leading-none">5k+</span>
+              <span className="text-on-surface-variant font-label-sm text-label-sm text-center leading-tight mt-1">Happy<br/>Customers</span>
+            </div>
+          </div>
+        </div>
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-primary-container/10 to-transparent pointer-events-none"></div>
       </header>
 
-      <main className="flex-1 max-w-[1200px] w-full mx-auto px-6 py-12">
-        {/* Verification sandbox demonstrating the Design Tokens */}
-        {isDemoActive ? (
-          <div className="space-y-12 animate-fade-in">
-            {/* Typography scale demo */}
-            <section className="bg-white p-8 rounded-xl shadow-ambient border border-border/10">
-              <h2 className="text-xs uppercase tracking-wider text-chocolate font-bold mb-6 pb-2 border-b border-border/10">
-                1. Typography Scale Showcase
-              </h2>
-              <div className="space-y-6">
-                <div>
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-mono">display-lg (Poppins Bold 48px)</span>
-                  <h3 className="text-4xl sm:text-5xl font-bold font-heading text-foreground mt-1">
-                    Signature Wedding Cakes
-                  </h3>
-                </div>
-                <div>
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-mono">accent-text (Dancing Script 28px)</span>
-                  <p className="font-accent text-3xl text-amber mt-1">
-                    Made with organic berries and pure vanilla bean infusion...
-                  </p>
-                </div>
-                <div>
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-mono">headline-md (Poppins SemiBold 24px)</span>
-                  <h4 className="text-2xl font-semibold font-heading text-chocolate mt-1">
-                    Velvety Chocolate Ganache
-                  </h4>
-                </div>
-                <div>
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-mono">body-lg (Lato Regular 18px)</span>
-                  <p className="text-lg text-foreground/80 mt-1 max-w-2xl leading-relaxed">
-                    Our cakes are custom-layered with handmade creams and fine ingredients. We bake fresh every morning for your celebrations.
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* Components showcase */}
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-white p-8 rounded-xl shadow-ambient border border-border/10 flex flex-col justify-between">
-                <div>
-                  <h2 className="text-xs uppercase tracking-wider text-chocolate font-bold mb-6 pb-2 border-b border-border/10">
-                    2. Interaction States & Shapes
-                  </h2>
-                  <div className="space-y-6">
-                    {/* Buttons demo */}
-                    <div className="flex flex-wrap gap-4">
-                      <button className="px-6 py-2.5 bg-primary text-white font-bold rounded shadow-md hover:bg-amber-light hover:text-chocolate-dark transition-all duration-300 hover:shadow-ambient hover:-translate-y-0.5">
-                        Primary Button
-                      </button>
-                      <button className="px-6 py-2.5 border border-chocolate text-chocolate font-bold rounded hover:bg-cream-dark/20 transition-all duration-300">
-                        Secondary Button
-                      </button>
-                    </div>
-
-                    {/* Chips & Badges */}
-                    <div className="flex flex-wrap gap-3">
-                      <span className="px-3 py-1 bg-cream-dark text-chocolate text-xs font-bold rounded-full">
-                        EGGLESS
-                      </span>
-                      <span className="px-3 py-1 bg-cream-dark text-chocolate text-xs font-bold rounded-full">
-                        100% VEG
-                      </span>
-                      <span className="px-3 py-1 bg-amber-light/20 text-amber text-xs font-bold rounded-full">
-                        SEASONAL SPECIAL
-                      </span>
-                    </div>
-
-                    {/* Input Field demo */}
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">
-                        Custom Cake Message
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="E.g., Happy Birthday Chloe"
-                        className="w-full px-4 py-3 bg-cream/30 border border-chocolate/20 rounded focus:outline-none focus:border-amber focus:ring-1 focus:ring-amber transition-all duration-300"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card visual elements */}
-              <div className="bg-white rounded-xl shadow-ambient border border-border/10 overflow-hidden group hover:shadow-2xl transition-all duration-500">
-                <div className="h-48 bg-cream-dark/40 flex items-center justify-center p-6 relative">
-                  <div className="absolute inset-0 bg-cover bg-center opacity-80 group-hover:scale-105 transition-transform duration-700 bg-[url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80')]"></div>
-                  <span className="absolute top-4 right-4 px-3 py-1 bg-amber text-white text-[10px] font-bold rounded-full uppercase tracking-wider">
-                    Bestseller
-                  </span>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold font-heading text-chocolate-dark group-hover:text-amber transition-colors duration-300">
-                    Classic Belgian Raspberry
-                  </h3>
-                  <p className="text-sm text-foreground/70 mt-2 line-clamp-2">
-                    Rich dark Belgian chocolate layers layered with fresh tart raspberries and cream.
-                  </p>
-                  <div className="flex items-center justify-between mt-6">
-                    <span className="text-lg font-bold text-chocolate-dark">$45.00</span>
-                    <button className="text-xs font-bold uppercase tracking-wider text-amber hover:text-chocolate-dark transition-colors duration-300">
-                      View Details &rarr;
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </section>
+      {/* Trust Banner */}
+      <div className="bg-primary/5 py-6 border-y border-outline-variant/30">
+        <div className="max-w-container-max mx-auto px-margin-desktop grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div className="flex items-center justify-center gap-3">
+            <span className="material-symbols-outlined text-primary" data-icon="local_shipping">local_shipping</span>
+            <span className="font-label-md text-label-md text-on-surface">Same Day Delivery</span>
           </div>
-        ) : (
-          <div className="py-24 text-center max-w-xl mx-auto">
-            <h2 className="text-5xl font-bold font-heading text-chocolate mb-4 leading-tight">
-              Crafting Joyful Moments
-            </h2>
-            <p className="font-accent text-3xl text-amber mb-8">
-              Beautifully Crafted, Happily Celebrated
-            </p>
-            <p className="text-foreground/80 leading-relaxed mb-8 font-sans">
-              Welcome to the foundation layout shell configured with the <strong className="text-amber">Artisanal Confectionery System</strong>. Click the button in the header navigation to preview the sandbox.
-            </p>
+          <div className="flex items-center justify-center gap-3">
+            <span className="material-symbols-outlined text-primary" data-icon="health_and_safety">health_and_safety</span>
+            <span className="font-label-md text-label-md text-on-surface">Safe &amp; Hygienic</span>
           </div>
-        )}
-      </main>
+          <div className="flex items-center justify-center gap-3">
+            <span className="material-symbols-outlined text-primary" data-icon="cake">cake</span>
+            <span className="font-label-md text-label-md text-on-surface">Custom Occasions</span>
+          </div>
+          <div className="flex items-center justify-center gap-3">
+            <span className="material-symbols-outlined text-primary" data-icon="verified_user">verified_user</span>
+            <span className="font-label-md text-label-md text-on-surface">Secure Payments</span>
+          </div>
+        </div>
+      </div>
 
-      <footer className="border-t border-border/10 py-6 px-6 text-center text-xs text-chocolate/60 bg-cream-dark/10">
-        <div className="max-w-[1200px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span>&copy; {new Date().getFullYear()} Bloomcakes. Beautifully Crafted.</span>
-          <span className="font-accent text-sm text-amber">Handmade for your memories</span>
+      {/* Signature Collection (Horizontal Scroll) */}
+      <section className="py-section-gap bg-surface">
+        <div className="max-w-container-max mx-auto px-margin-desktop">
+          <div className="text-center mb-12">
+            <h2 className="font-headline-lg text-headline-lg text-on-surface mb-2">Our Signature Collection</h2>
+            <div className="flex items-center justify-center gap-2 text-primary">
+              <div className="h-px w-12 bg-primary/30"></div>
+              <span className="material-symbols-outlined text-sm" data-icon="favorite">favorite</span>
+              <div className="h-px w-12 bg-primary/30"></div>
+            </div>
+          </div>
+          <div className="relative">
+            <div className="flex overflow-x-auto gap-6 pb-8 snap-x hide-scrollbar" style={{ scrollbarWidth: 'none' }}>
+              {/* Card 1 */}
+              <div className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-shadow group">
+                <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4">
+                  <img 
+                    className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" 
+                    alt="Belgian Chocolate cake"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuApZkJY6QschRPOB3x6-l8poxgy8aQmmu6tGSdCweuEr9GNxx80MjOyL-V6aPDgzTXkEnt9bEzdyvHM3ga5_WHNlz99MLqqUyBTHztAdF_idQhxFek4LpY-SmLqxAfqyqVxVny-1zqHSV2-gzfj4fTrvflbGADllc3ezN69kDBRlwKBGK0zMgF6JYbTMKgXCd5-z5NpSN_aixjKyGNho7lOOpf1I9w80b4lx0UvbJtdmE8ScIVfKKtY"
+                  />
+                </div>
+                <h3 className="font-label-md text-label-md text-on-surface text-center mb-1">Belgian Chocolate</h3>
+                <p className="text-primary text-center font-bold">₹799</p>
+              </div>
+              {/* Card 2 */}
+              <div className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-shadow group">
+                <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4">
+                  <img 
+                    className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" 
+                    alt="Red Velvet cake"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRETRfPtfP-bA2VzWu7WPbBxbhNYY76Q1TcRPWK3-1uePZp3K7FTHbOseYXPGLtmZMnkanxiOD87rQA0RemZpgdYi97UuWcAQMXFt69fXeVf0vwG8PPIGcen0XTGcLPdyxQsTr0FEBRrLj8ol-Pb2sUfyZqju1v2Mp6HABFVwkXaygqIU4QCIwkGa1fet73QovnbVHj1zVI7GYgAx88F8cSF66dqKjwCzVW-meuvpmB1AhE_l5joSO"
+                  />
+                </div>
+                <h3 className="font-label-md text-label-md text-on-surface text-center mb-1">Red Velvet</h3>
+                <p className="text-primary text-center font-bold">₹899</p>
+              </div>
+              {/* Card 3 */}
+              <div className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-shadow group">
+                <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4">
+                  <img 
+                    className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" 
+                    alt="Butterscotch Crunch cake"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5SWy7Qb6lqjOSFNcx6Uwk_csTMEYN27Hz5UU6BNCYyyP9eRfO32aVA4mxwePVyXvwEL-KL-BieXmP_yx0xe2RKPhqF1PmkdNxqao4CSfuXuzomKbfs4i2FeC4wLa-eD7NcOD3iocw8XrmDUWJPumldtnptojchgKRsQOcKdNco4gjtJl2U3cg0kzrQBZi46c-wgkJWwY_spYT3BBCzCrSaXlni_8cKqA0UkGyD1np9xUDfGYhIwbE"
+                  />
+                </div>
+                <h3 className="font-label-md text-label-md text-on-surface text-center mb-1">Butterscotch Crunch</h3>
+                <p className="text-primary text-center font-bold">₹749</p>
+              </div>
+              {/* Card 4 */}
+              <div className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-shadow group">
+                <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4">
+                  <img 
+                    className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" 
+                    alt="Blueberry Cheesecake"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdx960xx5hnckATCpxOit7JMiNmp3wfnsQCXlJK3sCQDEdDETTHq7li5kRsBZwgyE7xa0TNAGJFZTehhmbUVjEySFFC6lmT6nxjwpNxoGrRaTAnx4j9PJLIhvyiIPVpOGUdTtLUF7yFFCDH_4-V8AETSibCU4NLfEUbPRI7ls0Z8T_9FTeeXtHuUhivZDLAWikMSltarpEgZApbhwkjhuUA1499xI1Wz4PjgaVyDEsPB6Wd81lC_Mh"
+                  />
+                </div>
+                <h3 className="font-label-md text-label-md text-on-surface text-center mb-1">Blueberry Cheesecake</h3>
+                <p className="text-primary text-center font-bold">₹999</p>
+              </div>
+            </div>
+            <div className="text-center mt-8">
+              <button className="border-2 border-outline text-on-surface px-8 py-2 rounded-full font-label-md text-label-md hover:bg-surface-container transition-colors">
+                VIEW ALL
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Custom Cake Banner */}
+      <section className="py-12 bg-surface">
+        <div className="max-w-container-max mx-auto px-margin-desktop">
+          <div className="bg-gradient-to-r from-primary to-surface-tint rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between relative overflow-hidden soft-shadow">
+            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white to-transparent pointer-events-none"></div>
+            <div className="relative z-10 text-center md:text-left text-on-primary mb-8 md:mb-0 md:w-1/2">
+              <h2 className="font-headline-lg text-headline-lg mb-4">Custom Cake for<br/>Every Celebration!</h2>
+              <p className="font-body-md text-body-md opacity-90 mb-6">Birthday | Anniversary | Wedding | Corporate</p>
+              <button className="bg-surface-container-lowest text-primary px-6 py-2 rounded-full font-label-md text-label-md hover:bg-surface transition-colors shadow-md">
+                ORDER CUSTOM CAKE
+              </button>
+            </div>
+            <div className="relative z-10 md:w-1/2 flex justify-center md:justify-end">
+              <div className="w-64 h-64 md:w-80 md:h-80 relative">
+                <div className="absolute inset-0 bg-white/20 rounded-full blur-2xl"></div>
+                <img 
+                  className="w-full h-full object-contain relative z-10 drop-shadow-2xl" 
+                  alt="Custom celebration cake design showcase"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWAGPl05WO82u_W2MYmijYeb_UUXtt0Ir7w_93OIStop9JXN21OJGU2Z1ktUNCIz1wT43yDbx-5FsgYYNjENemUB9Nc-Ecfrj4OgbUx_VZWLUVWv0dRf7IASDg5OVaByHjedyyu7K5LOD0IKXUn6e1Hy4MrH1eAgBpgEANxyAuVpmjA7QcFH62RGKJSRQ0HJXJBg4ggK7Buo0VG7BtpEagcqAIXkEJNslvoc-LUMwHNRrKL7UeY87h"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-surface-container-highest dark:bg-inverse-surface border-t border-outline-variant dark:border-outline mt-24">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-desktop py-section-gap max-w-container-max mx-auto">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="material-symbols-outlined text-3xl text-primary" data-icon="cake">cake</span>
+              <span className="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim font-bold">BloomCakes</span>
+            </div>
+            <p className="font-body-md text-body-md text-on-surface-variant dark:text-on-secondary-fixed-variant italic">
+              Beautifully Crafted. Happily Celebrated.
+            </p>
+            <div className="flex gap-4 mt-2">
+              <a className="text-on-surface-variant hover:text-primary transition-colors" href="#">
+                <span className="material-symbols-outlined" data-icon="camera_alt">camera_alt</span>
+              </a>
+              <a className="text-on-surface-variant hover:text-primary transition-colors" href="#">
+                <span className="material-symbols-outlined" data-icon="facebook">qr_code_2</span>
+              </a>
+              <a className="text-on-surface-variant hover:text-primary transition-colors" href="#">
+                <span className="material-symbols-outlined" data-icon="chat">chat</span>
+              </a>
+            </div>
+          </div>
+          <div className="flex flex-col gap-3">
+            <h4 className="font-label-md text-label-md text-on-surface dark:text-inverse-on-surface mb-2">Quick Links</h4>
+            <a className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">Home</a>
+            <a className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">About Us</a>
+            <a className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">Menu</a>
+            <a className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">Custom Cakes</a>
+          </div>
+          <div className="flex flex-col gap-3">
+            <h4 className="font-label-md text-label-md text-on-surface dark:text-inverse-on-surface mb-2">Information</h4>
+            <a className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">Shipping &amp; Delivery</a>
+            <a className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">Privacy Policy</a>
+            <a className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">Terms &amp; Conditions</a>
+            <a className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">Refund Policy</a>
+          </div>
+          <div className="flex flex-col gap-3">
+            <h4 className="font-label-md text-label-md text-on-surface dark:text-inverse-on-surface mb-2">Contact Info</h4>
+            <div className="flex items-center gap-2 text-on-surface-variant dark:text-on-secondary-fixed-variant">
+              <span className="material-symbols-outlined text-sm" data-icon="call">call</span>
+              <span className="font-body-md text-body-md">+91 98765 43210</span>
+            </div>
+            <div className="flex items-center gap-2 text-on-surface-variant dark:text-on-secondary-fixed-variant">
+              <span className="material-symbols-outlined text-sm" data-icon="mail">mail</span>
+              <span className="font-body-md text-body-md">hello@bloomcakes.co</span>
+            </div>
+            <div className="flex items-start gap-2 text-on-surface-variant dark:text-on-secondary-fixed-variant">
+              <span className="material-symbols-outlined text-sm mt-1" data-icon="location_on">location_on</span>
+              <span className="font-body-md text-body-md">Ahmedabad, Gujarat<br/>We Deliver In Ahmedabad</span>
+            </div>
+          </div>
+        </div>
+        <div className="border-t border-outline-variant/50 py-6 text-center">
+          <p className="font-label-sm text-label-sm text-on-surface-variant">© 2024 BloomCakes. Beautifully Crafted. Happily Celebrated.</p>
         </div>
       </footer>
     </div>

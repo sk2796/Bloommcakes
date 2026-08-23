@@ -5,7 +5,7 @@ import App from '../App'
 describe('Bloomcakes Foundation App', () => {
   it('renders standard layout structure and header text', () => {
     render(<App />)
-    expect(screen.getByText('BLOOMCAKES')).toBeInTheDocument()
-    expect(screen.getAllByText('Artisanal Confectionery System')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('BloomCakes')[0]).toBeInTheDocument()
+    expect(screen.getByText('Beautifully Crafted.')).toBeInTheDocument()
   })
 })

@@ -4,50 +4,68 @@
 
 @layer base {
   :root {
-    /* Artisanal Confectionery System Color Tokens mapped directly */
+    /* Color tokens exact map from layout specs */
+    --outline-variant: 12 28% 80%; /* #ddc0b8 */
+    --error: 0 75% 42%; /* #ba1a1a */
+    --on-error: 0 0% 100%; /* #ffffff */
+    --tertiary-fixed: 0 100% 92%; /* #ffdad6 */
+    --surface-tint: 14 65% 38%; /* #9f4122 */
+    --on-background: 15 60% 11%; /* #2d150d */
+    --primary-fixed: 15 100% 91%; /* #ffdbd0 */
+    --surface-container-lowest: 0 0% 100%; /* #ffffff */
+    --surface-container-highest: 15 100% 91%; /* #ffdbcf */
+    --tertiary-fixed-dim: 6 36% 82%; /* #e7bdb8 */
+    --on-primary-container: 16 92% 24%; /* #752305 */
+    --on-surface: 15 60% 11%; /* #2d150d */
+    --tertiary: 6 18% 39%; /* #775652 */
+    --error-container: 0 100% 92%; /* #ffdad6 */
+    --inverse-primary: 15 100% 81%; /* #ffb59e */
+    --on-secondary-fixed-variant: 30 10% 25%; /* #4c463f */
+    --outline: 14 18% 48%; /* #89726b */
+    --secondary-container: 30 20% 88%; /* #ebe1d7 */
+    --on-primary-fixed: 11 100% 11%; /* #3a0b00 */
+    --surface-container-high: 13 100% 93%; /* #ffe2d9 */
+    --secondary-fixed-dim: 27 12% 77%; /* #cfc5bc */
+    --secondary: 30 8% 37%; /* #645d56 */
+    --on-tertiary-fixed: 6 60% 11%; /* #2d1513 */
     --background: 3 100% 98%; /* #fff8f6 */
-    --foreground: 15 60% 11%; /* #2d150d */
-
-    --card: 3 100% 98%; /* #fff8f6 */
-    --card-foreground: 15 60% 11%;
-
-    --popover: 3 100% 98%;
-    --popover-foreground: 15 60% 11%;
-
-    --primary: 37 100% 26%; /* #865300 */
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 6 18% 39%; /* #775652 */
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 6 18% 91%; /* #ffd3cd - container-dim style */
-    --muted-foreground: 6 18% 41%;
-
-    --accent: 37 100% 26%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 75% 42%; /* #ba1a1a */
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 30 15% 46%; /* #837566 */
-    --input: 30 15% 46%;
-    --ring: 37 100% 26%;
-
-    --radius: 0.5rem;
-
-    /* Custom System specific color variables */
+    --on-surface-variant: 14 18% 29%; /* #56423c */
+    --primary-container: 14 100% 70%; /* #ff8a65 */
+    --inverse-on-surface: 3 100% 96%; /* #ffede8 */
+    --on-secondary-fixed: 30 19% 11%; /* #201b15 */
+    --on-tertiary-container: 6 26% 27%; /* #553834 */
+    --surface-bright: 3 100% 98%; /* #fff8f6 */
+    --surface-dim: 15 97% 88%; /* #fed0c1 */
     --surface-container: 12 100% 95%; /* #ffe9e3 */
-    --surface-tint: 37 100% 26%;
-    --outline-variant: 30 25% 77%; /* #d6c3b2 */
+    --secondary-fixed: 30 20% 88%; /* #ebe1d7 */
+    --surface-variant: 15 100% 91%; /* #ffdbcf */
+    --tertiary-container: 7 32% 70%; /* #caa19c */
+    --on-tertiary-fixed-variant: 6 21% 29%; /* #5d3f3c */
+    --on-primary: 0 0% 100%; /* #ffffff */
+    --on-tertiary: 0 0% 100%; /* #ffffff */
+    --on-secondary: 0 0% 100%; /* #ffffff */
+    --primary-fixed-dim: 15 100% 81%; /* #ffb59e */
+    --on-primary-fixed-variant: 15 81% 27%; /* #7f2a0d */
+    --primary: 14 65% 38%; /* #9f4122 */
+    --inverse-surface: 15 45% 20%; /* #452920 */
+    --surface: 3 100% 98%; /* #fff8f6 */
+    --surface-container-low: 11 100% 96%; /* #fff1ed */
+    --on-error-container: 356 100% 29%; /* #93000a */
+    --on-secondary-container: 30 6% 37%; /* #6a635c */
+    
+    /* Layout standard borders */
+    --border: 14 18% 48%;
+    --input: 14 18% 48%;
+    --ring: 14 65% 38%;
   }
 }
 
 @layer base {
   * {
-    @apply border-border/20;
+    @apply border-outline-variant/30;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-on-background;
     font-family: 'Lato', sans-serif;
   }
   h1, h2, h3, h4, h5, h6 {
@@ -56,7 +74,12 @@
 }
 
 @layer utilities {
-  .font-accent {
-    font-family: 'Dancing Script', cursive;
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+  .soft-shadow {
+    box-shadow: 0 10px 30px -10px rgba(159, 65, 34, 0.1);
   }
 }
