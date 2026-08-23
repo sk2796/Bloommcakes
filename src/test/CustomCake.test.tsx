@@ -57,7 +57,7 @@ describe('Custom Cake Builder Page', () => {
     expect(screen.getByText('John Doe (9999988888)')).toBeInTheDocument()
 
     // Submit custom order
-    fireEvent.click(screen.getByText('CONFIRM CUSTOM CAKE'))
+    fireEvent.click(screen.getByText('Confirm Cake and proceed Payment'))
     expect(screen.getByText('Order Received!')).toBeInTheDocument()
   })
 })

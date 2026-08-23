@@ -542,17 +542,35 @@ export default function CustomCakePlaceholder() {
                 <span className="material-symbols-outlined text-sm">arrow_forward</span>
               </button>
             ) : (
-              <button
-                onClick={handleSubmit}
-                disabled={!isStep4Valid}
-                className={`px-8 py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-colors shadow-md ${
-                  !isStep4Valid
-                    ? 'bg-on-surface-variant/20 text-on-surface-variant/40 cursor-not-allowed shadow-none'
-                    : 'bg-primary text-on-primary hover:bg-on-primary-fixed-variant'
-                }`}
-              >
-                CONFIRM CUSTOM CAKE
-              </button>
+              <div className="flex gap-4 items-center">
+                <a
+                  href={`https://wa.me/918793058057?text=${encodeURIComponent(
+                    `*Custom Cake Customization Inquiry (BloomCakes)*\n\n` +
+                    `I need further customizations on my order. Here are the preliminary choices:\n` +
+                    `- Occasion: ${formData.occasion.toUpperCase()}\n` +
+                    `- Flavor: ${formData.flavor}\n` +
+                    `- Size: ${formData.size}\n` +
+                    `- Writing: ${formData.customMessage || 'None'}\n` +
+                    `- Name: ${formData.customerName}`
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="border border-primary text-primary px-6 py-3 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-primary/5 transition-all text-center"
+                >
+                  Need further customization - connect over whatsapp
+                </a>
+                <button
+                  onClick={handleSubmit}
+                  disabled={!isStep4Valid}
+                  className={`px-8 py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-colors shadow-md ${
+                    !isStep4Valid
+                      ? 'bg-on-surface-variant/20 text-on-surface-variant/40 cursor-not-allowed shadow-none'
+                      : 'bg-primary text-on-primary hover:bg-on-primary-fixed-variant'
+                  }`}
+                >
+                  Confirm Cake and proceed Payment
+                </button>
+              </div>
             )}
           </div>
         </div>
