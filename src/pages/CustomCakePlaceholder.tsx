@@ -56,6 +56,31 @@ export default function CustomCakePlaceholder() {
 
   const handleSubmit = () => {
     setIsSubmitted(true)
+    
+    // Construct the WhatsApp message parameters automatically
+    const text = `*New Custom Cake Query (BloomCakes)*\n\n` +
+      `*Customer Info:*\n` +
+      `- Name: ${formData.customerName}\n` +
+      `- Phone: ${formData.customerPhone}\n\n` +
+      `*Cake Details:*\n` +
+      `- Occasion: ${formData.occasion.toUpperCase()}\n` +
+      `- Occasion Details: ${formData.occasionNotes || 'None'}\n` +
+      `- Flavor: ${formData.flavor}\n` +
+      `- Size: ${formData.size}\n` +
+      `- Shape: ${formData.shape}\n\n` +
+      `*Personalization:*\n` +
+      `- Message on Cake: ${formData.customMessage || 'None'}\n` +
+      `- Instructions: ${formData.specialInstructions || 'None'}\n\n` +
+      `*Delivery Details:*\n` +
+      `- Date: ${formData.deliveryDate || 'Not specified'}\n` +
+      `- Time Slot: ${formData.deliveryTimeSlot}\n` +
+      `- Address: ${formData.deliveryAddress || 'Store Pickup'}`
+
+    const encodedText = encodeURIComponent(text)
+    const whatsappUrl = `https://wa.me/918793058057?text=${encodedText}`
+    
+    // Open the compiled WhatsApp chat redirect automatically
+    window.open(whatsappUrl, '_blank')
   }
 
   if (isSubmitted) {
@@ -63,8 +88,11 @@ export default function CustomCakePlaceholder() {
       <div className="max-w-container-max mx-auto px-margin-desktop py-24 text-center animate-fade-in">
         <span className="material-symbols-outlined text-green-500 text-6xl mb-4" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
         <h2 className="text-3xl font-bold text-primary mb-3">Order Received!</h2>
-        <p className="text-on-surface-variant max-w-md mx-auto mb-8 font-body-lg">
-          Thank you, {formData.customerName}. Our artisanal baking team will review your custom configuration for the **{formData.occasion}** cake and reach out to you within 2 hours.
+        <p className="text-on-surface-variant max-w-md mx-auto mb-4 font-body-lg">
+          Thank you, {formData.customerName}. We have opened WhatsApp to automatically send your custom cake configurations.
+        </p>
+        <p className="text-xs text-on-surface-variant max-w-md mx-auto mb-8">
+          If the chat window didn't open automatically, you can also send details by reaching out directly to our bakery contact at **+91 87930 58057**.
         </p>
         <Link to="/shop" className="bg-primary text-on-primary px-8 py-3.5 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-md font-bold">
           BACK TO MENU
@@ -134,7 +162,7 @@ export default function CustomCakePlaceholder() {
               <p className="text-xs text-on-surface-variant">Chat with us on WhatsApp for quick help.</p>
             </div>
             <a 
-              href="https://wa.me/919876543210" 
+              href="https://wa.me/918793058057" 
               target="_blank" 
               rel="noreferrer"
               className="w-full border border-primary text-primary px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-primary/5 transition-all flex items-center justify-center gap-2"

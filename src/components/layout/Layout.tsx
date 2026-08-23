@@ -152,7 +152,7 @@ export function Layout() {
             <h4 className="font-label-md text-label-md text-on-surface dark:text-inverse-on-surface mb-2">Contact Info</h4>
             <div className="flex items-center gap-2 text-on-surface-variant dark:text-on-secondary-fixed-variant">
               <span className="material-symbols-outlined text-sm" data-icon="call">call</span>
-              <span className="font-body-md text-body-md">+91 98765 43210</span>
+              <span className="font-body-md text-body-md">+91 87930 58057</span>
             </div>
             <div className="flex items-center gap-2 text-on-surface-variant dark:text-on-secondary-fixed-variant">
               <span className="material-symbols-outlined text-sm" data-icon="mail">mail</span>
