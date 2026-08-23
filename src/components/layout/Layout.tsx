@@ -32,8 +32,8 @@ export function Layout() {
         id="main-nav"
       >
         <div className="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-4xl" data-icon="cake">cake</span>
+          <Link to="/" className="flex items-center gap-3">
+            <img src="/logo.jpg" alt="BloomCakes Logo" className="w-10 h-10 rounded-full object-cover border border-primary/20" />
             <span className="text-headline-md font-headline-lg text-primary dark:text-primary-fixed font-bold tracking-tight">BloomCakes</span>
           </Link>
           <div className="hidden md:flex gap-8 items-center">
@@ -124,8 +124,8 @@ export function Layout() {
       <footer className="bg-surface-container-highest dark:bg-inverse-surface border-t border-outline-variant dark:border-outline mt-24">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-desktop py-section-gap max-w-container-max mx-auto">
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined text-3xl text-primary" data-icon="cake">cake</span>
+            <div className="flex items-center gap-3 mb-2">
+              <img src="/logo.jpg" alt="BloomCakes Logo" className="w-8 h-8 rounded-full object-cover border border-primary/20" />
               <span className="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim font-bold">BloomCakes</span>
             </div>
             <p className="font-body-md text-body-md text-on-surface-variant dark:text-on-secondary-fixed-variant italic">
