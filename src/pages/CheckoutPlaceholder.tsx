@@ -51,7 +51,7 @@ export default function CheckoutPlaceholder() {
       `- Pincode: ${pincode}\n` +
       `- Address: ${formData.address}\n\n` +
       `*Order summary:*\n` +
-      items.map(item => `  - ${item.name} (${item.weight}, ${item.isEggless ? 'Veg' : 'Egg'}) x${item.quantity} = ₹${item.price * item.quantity}`).join('\n') +
+      items.map(item => `  - ${item.name} (${item.weight}) x${item.quantity} = ₹${item.price * item.quantity}`).join('\n') +
       `\n\n*Total amount:* ₹${total}\n\n` +
       `*Delivery Schedule:*\n` +
       `- Date: ${formData.date}\n` +
@@ -237,7 +237,7 @@ export default function CheckoutPlaceholder() {
               <div key={item.id} className="flex gap-3 justify-between items-center text-xs border-b border-outline-variant/10 pb-3">
                 <div className="flex flex-col text-left">
                   <span className="font-bold text-on-surface">{item.name}</span>
-                  <span className="text-[10px] text-on-surface-variant">{item.weight} | {item.isEggless ? 'Veg' : 'Egg'} | Qty: {item.quantity}</span>
+                  <span className="text-[10px] text-on-surface-variant">{item.weight} | Qty: {item.quantity}</span>
                 </div>
                 <span className="font-bold text-primary">₹{item.price * item.quantity}</span>
               </div>

@@ -11,7 +11,6 @@ export default function ProductPlaceholder() {
   const { addItem } = useCartStore()
   
   const [selectedWeight, setSelectedWeight] = useState<string>('')
-  const [isEggless, setIsEggless] = useState<boolean>(true)
   const [quantity, setQuantity] = useState<number>(1)
   const [addedAlert, setAddedAlert] = useState(false)
 
@@ -21,7 +20,6 @@ export default function ProductPlaceholder() {
       const timer = setTimeout(() => {
         setSelectedWeight(cake.weightOptions[0] || '')
         setQuantity(1)
-        setIsEggless(cake.isEggless)
       }, 0)
       return () => clearTimeout(timer)
     }
@@ -66,8 +64,8 @@ export default function ProductPlaceholder() {
       imageUrl: cake.imageUrl,
       price: currentPrice,
       weight: selectedWeight,
-      isEggless: isEggless,
-      id: `item-${cake.id}-${selectedWeight}-${isEggless ? 'veg' : 'egg'}`,
+      isEggless: true, // 100% veg cakes only
+      id: `item-${cake.id}-${selectedWeight}-veg`,
       quantity: quantity
     })
     setAddedAlert(true)
@@ -123,6 +121,10 @@ export default function ProductPlaceholder() {
               <span className="text-xs text-on-surface-variant font-bold uppercase tracking-wider bg-cream-dark px-3 py-1 rounded-full">
                 {cake.category}
               </span>
+              <span className="text-[10px] bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-bold border border-green-200 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+                100% Pure Veg
+              </span>
             </div>
           </div>
 
@@ -151,35 +153,6 @@ export default function ProductPlaceholder() {
                     {weight} — ₹{cake.priceByWeight[weight] || cake.price}
                   </button>
                 ))}
-              </div>
-            </div>
-
-            {/* Custom Dietary option (Eggless Selector) */}
-            <div className="space-y-3">
-              <span className="text-xs font-bold text-chocolate uppercase tracking-wider block">
-                Dietary Preference
-              </span>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-3 bg-surface-container-lowest border border-outline-variant/30 px-5 py-3 rounded-xl cursor-pointer select-none">
-                  <input
-                    type="radio"
-                    name="eggPreference"
-                    checked={isEggless}
-                    onChange={() => setIsEggless(true)}
-                    className="w-4 h-4 text-primary focus:ring-primary border-outline-variant/50 cursor-pointer"
-                  />
-                  <span className="text-sm font-semibold text-on-surface">100% Eggless</span>
-                </label>
-                <label className="flex items-center gap-3 bg-surface-container-lowest border border-outline-variant/30 px-5 py-3 rounded-xl cursor-pointer select-none">
-                  <input
-                    type="radio"
-                    name="eggPreference"
-                    checked={!isEggless}
-                    onChange={() => setIsEggless(false)}
-                    className="w-4 h-4 text-primary focus:ring-primary border-outline-variant/50 cursor-pointer"
-                  />
-                  <span className="text-sm font-semibold text-on-surface">Contains Egg</span>
-                </label>
               </div>
             </div>
 
@@ -240,11 +213,6 @@ export default function ProductPlaceholder() {
                     {item.isBestseller && (
                       <span className="absolute top-4 right-4 bg-primary text-on-primary text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider z-10">
                         Bestseller
-                      </span>
-                    )}
-                    {item.isEggless && (
-                      <span className="absolute top-4 left-4 bg-green-100 text-green-800 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider z-10 border border-green-200">
-                        Eggless
                       </span>
                     )}
                     <img

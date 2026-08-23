@@ -50,15 +50,9 @@ export default function CartPlaceholder() {
                     <span className="text-xs bg-surface-container-high px-2 py-0.5 rounded-full font-bold text-on-surface-variant">
                       {item.weight}
                     </span>
-                    {item.isEggless ? (
-                      <span className="text-[10px] bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-bold border border-green-200">
-                        100% Veg
-                      </span>
-                    ) : (
-                      <span className="text-[10px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full font-bold border border-amber-200">
-                        Egg
-                      </span>
-                    )}
+                    <span className="text-[10px] bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-bold border border-green-200">
+                      100% Veg
+                    </span>
                   </div>
                 </div>
               </div>

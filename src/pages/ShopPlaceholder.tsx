@@ -16,7 +16,6 @@ export default function ShopPlaceholder() {
   const [activeCategory, setActiveCategory] = useState<CakeCategory | 'all'>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'rating' | 'price-asc' | 'price-desc'>('rating')
-  const [egglessOnly, setEgglessOnly] = useState(false)
 
   if (isLoading) {
     return (
@@ -37,14 +36,13 @@ export default function ShopPlaceholder() {
     )
   }
 
-  // Filter and sort items
+  // Filter and sort items (Simplified to exclude eggless toggles since all products are eggless)
   const filteredCakes = cakes
     .filter((cake) => {
       const matchesCategory = activeCategory === 'all' || cake.category === activeCategory
       const matchesSearch = cake.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                             cake.description.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesEggless = !egglessOnly || cake.isEggless
-      return matchesCategory && matchesSearch && matchesEggless
+      return matchesCategory && matchesSearch
     })
     .sort((a, b) => {
       if (sortBy === 'price-asc') return a.price - b.price
@@ -82,18 +80,8 @@ export default function ShopPlaceholder() {
             />
           </div>
 
-          {/* Sort selection & eggless toggle */}
+          {/* Sort selection */}
           <div className="flex flex-wrap gap-4 items-center justify-end w-full md:w-auto">
-            <label className="flex items-center gap-2 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={egglessOnly}
-                onChange={(e) => setEgglessOnly(e.target.checked)}
-                className="w-4 h-4 rounded text-primary focus:ring-primary border-outline-variant/50 cursor-pointer"
-              />
-              <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Eggless Only</span>
-            </label>
-
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'rating' | 'price-asc' | 'price-desc')}
@@ -137,11 +125,6 @@ export default function ShopPlaceholder() {
                   {cake.isBestseller && (
                     <span className="absolute top-4 right-4 bg-primary text-on-primary text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider z-10">
                       Bestseller
-                    </span>
-                  )}
-                  {cake.isEggless && (
-                    <span className="absolute top-4 left-4 bg-green-100 text-green-800 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider z-10 border border-green-200">
-                      Eggless
                     </span>
                   )}
                   <img
