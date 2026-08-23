@@ -22,7 +22,6 @@ export const useCartStore = create<CartStore>((set, get) => ({
       imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApZkJY6QschRPOB3x6-l8poxgy8aQmmu6tGSdCweuEr9GNxx80MjOyL-V6aPDgzTXkEnt9bEzdyvHM3ga5_WHNlz99MLqqUyBTHztAdF_idQhxFek4LpY-SmLqxAfqyqVxVny-1zqHSV2-gzfj4fTrvflbGADllc3ezN69kDBRlwKBGK0zMgF6JYbTMKgXCd5-z5NpSN_aixjKyGNho7lOOpf1I9w80b4lx0UvbJtdmE8ScIVfKKtY',
       price: 1499,
       weight: '1kg',
-      isEggless: true,
       quantity: 1
     },
     {
@@ -33,7 +32,6 @@ export const useCartStore = create<CartStore>((set, get) => ({
       imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAdx960xx5hnckATCpxOit7JMiNmp3wfnsQCXlJK3sCQDEdDETTHq7li5kRsBZwgyE7xa0TNAGJFZTehhmbUVjEySFFC6lmT6nxjwpNxoGrRaTAnx4j9PJLIhvyiIPVpOGUdTtLUF7yFFCDH_4-V8AETSibCU4NLfEUbPRI7ls0Z8T_9FTeeXtHuUhivZDLAWikMSltarpEgZApbhwkjhuUA1499xI1Wz4PjgaVyDEsPB6Wd81lC_Mh',
       price: 999,
       weight: '0.5kg',
-      isEggless: true,
       quantity: 2
     }
   ],
@@ -41,8 +39,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
     const existing = get().items.find(
       (item) =>
         item.cakeId === newItem.cakeId &&
-        item.weight === newItem.weight &&
-        item.isEggless === newItem.isEggless
+        item.weight === newItem.weight
     )
 
     if (existing) {

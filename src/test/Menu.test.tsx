@@ -20,7 +20,6 @@ vi.mock('@/features/products/hooks/useCakes', () => ({
         rating: 4.9,
         category: 'chocolate',
         imageUrl: '',
-        isEggless: true,
         isBestseller: true,
         weightOptions: ['0.5kg']
       }

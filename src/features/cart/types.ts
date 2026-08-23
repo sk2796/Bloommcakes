@@ -6,6 +6,5 @@ export interface CartItem {
   imageUrl: string
   price: number
   weight: string
-  isEggless: boolean
   quantity: number
 }

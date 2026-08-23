@@ -41,6 +41,10 @@ export default function HomePlaceholder() {
                 <span className="material-symbols-outlined text-3xl text-primary">bakery_dining</span>
                 <span className="font-label-sm text-label-sm text-on-surface-variant text-center">Freshly<br/>Baked</span>
               </div>
+              <div className="flex flex-col items-center gap-2">
+                <span className="material-symbols-outlined text-3xl text-green-600 font-bold" style={{ fontVariationSettings: "'FILL' 1" }}>eco</span>
+                <span className="font-label-sm text-label-sm text-on-surface-variant text-center">100% Pure<br/>Veg Only</span>
+              </div>
             </div>
           </div>
           <div className="relative w-full aspect-square max-w-lg mx-auto">

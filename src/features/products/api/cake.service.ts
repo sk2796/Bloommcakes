@@ -16,7 +16,6 @@ export const MOCK_CAKES: CakeProduct[] = [
     rating: 4.9,
     category: 'chocolate',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApZkJY6QschRPOB3x6-l8poxgy8aQmmu6tGSdCweuEr9GNxx80MjOyL-V6aPDgzTXkEnt9bEzdyvHM3ga5_WHNlz99MLqqUyBTHztAdF_idQhxFek4LpY-SmLqxAfqyqVxVny-1zqHSV2-gzfj4fTrvflbGADllc3ezN69kDBRlwKBGK0zMgF6JYbTMKgXCd5-z5NpSN_aixjKyGNho7lOOpf1I9w80b4lx0UvbJtdmE8ScIVfKKtY',
-    isEggless: true,
     isBestseller: true,
     weightOptions: ['0.5kg', '1kg', '2kg']
   },
@@ -33,7 +32,6 @@ export const MOCK_CAKES: CakeProduct[] = [
     rating: 4.8,
     category: 'classics',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRETRfPtfP-bA2VzWu7WPbBxbhNYY76Q1TcRPWK3-1uePZp3K7FTHbOseYXPGLtmZMnkanxiOD87rQA0RemZpgdYi97UuWcAQMXFt69fXeVf0vwG8PPIGcen0XTGcLPdyxQsTr0FEBRrLj8ol-Pb2sUfyZqju1v2Mp6HABFVwkXaygqIU4QCIwkGa1fet73QovnbVHj1zVI7GYgAx88F8cSF66dqKjwCzVW-meuvpmB1AhE_l5joSO',
-    isEggless: true,
     isBestseller: true,
     weightOptions: ['0.5kg', '1kg']
   },
@@ -51,7 +49,6 @@ export const MOCK_CAKES: CakeProduct[] = [
     rating: 4.7,
     category: 'classics',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB5SWy7Qb6lqjOSFNcx6Uwk_csTMEYN27Hz5UU6BNCYyyP9eRfO32aVA4mxwePVyXvwEL-KL-BieXmP_yx0xe2RKPhqF1PmkdNxqao4CSfuXuzomKbfs4i2FeC4wLa-eD7NcOD3iocw8XrmDUWJPumldtnptojchgKRsQOcKdNco4gjtJl2U3cg0kzrQBZi46c-wgkJWwY_spYT3BBCzCrSaXlni_8cKqA0UkGyD1np9xUDfGYhIwbE',
-    isEggless: true,
     weightOptions: ['0.5kg', '1kg', '1.5kg']
   },
   {
@@ -67,7 +64,6 @@ export const MOCK_CAKES: CakeProduct[] = [
     rating: 4.9,
     category: 'cheesecakes',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAdx960xx5hnckATCpxOit7JMiNmp3wfnsQCXlJK3sCQDEdDETTHq7li5kRsBZwgyE7xa0TNAGJFZTehhmbUVjEySFFC6lmT6nxjwpNxoGrRaTAnx4j9PJLIhvyiIPVpOGUdTtLUF7yFFCDH_4-V8AETSibCU4NLfEUbPRI7ls0Z8T_9FTeeXtHuUhivZDLAWikMSltarpEgZApbhwkjhuUA1499xI1Wz4PjgaVyDEsPB6Wd81lC_Mh',
-    isEggless: true,
     isBestseller: true,
     weightOptions: ['0.5kg', '1kg']
   },
@@ -84,7 +80,6 @@ export const MOCK_CAKES: CakeProduct[] = [
     rating: 4.6,
     category: 'fruit',
     imageUrl: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80',
-    isEggless: true,
     weightOptions: ['0.5kg', '1kg']
   },
   {
@@ -101,7 +96,6 @@ export const MOCK_CAKES: CakeProduct[] = [
     rating: 4.9,
     category: 'chocolate',
     imageUrl: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80',
-    isEggless: true,
     weightOptions: ['0.5kg', '1kg', '2kg']
   }
 ]

@@ -10,7 +10,6 @@ export interface CakeProduct {
   rating: number
   category: CakeCategory
   imageUrl: string
-  isEggless: boolean
   isBestseller?: boolean
   weightOptions: string[]
 }

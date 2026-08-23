@@ -64,7 +64,6 @@ export default function ProductPlaceholder() {
       imageUrl: cake.imageUrl,
       price: currentPrice,
       weight: selectedWeight,
-      isEggless: true, // 100% veg cakes only
       id: `item-${cake.id}-${selectedWeight}-veg`,
       quantity: quantity
     })
