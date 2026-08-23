@@ -40,12 +40,35 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        /* Artisanal brand token aliases */
+        cream: {
+          DEFAULT: "#fff8f6",
+          dark: "#ffe9e3",
+        },
+        chocolate: {
+          DEFAULT: "#775652",
+          dark: "#452920",
+        },
+        amber: {
+          DEFAULT: "#865300",
+          light: "#ffba65",
+        }
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        sm: "0.25rem",
+        DEFAULT: "0.5rem",
+        md: "0.75rem",
+        lg: "1rem",
+        xl: "1.5rem",
       },
+      boxShadow: {
+        ambient: "0px 10px 30px rgba(119, 86, 82, 0.08)",
+      },
+      fontFamily: {
+        sans: ["Lato", "sans-serif"],
+        heading: ["Poppins", "sans-serif"],
+        accent: ["Dancing Script", "cursive"],
+      }
     },
   },
   plugins: [],
