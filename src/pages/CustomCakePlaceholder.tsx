@@ -19,8 +19,14 @@ const OCCASIONS: { type: OccasionType; label: string; icon: string }[] = [
   { type: 'other', label: 'Other', icon: 'more_horiz' }
 ]
 
+const PIN_CODES_DELIVERABLE = ['380001', '380009', '380015', '380054', '382481']
+
 export default function CustomCakePlaceholder() {
   const [currentStep, setCurrentStep] = useState<number>(1)
+  const [pincode, setPincode] = useState('')
+  const [pinChecked, setPinChecked] = useState(false)
+  const [isDeliverable, setIsDeliverable] = useState(false)
+
   const [formData, setFormData] = useState<CustomCakeOrder>({
     occasion: 'birthday',
     occasionNotes: '',
@@ -37,6 +43,25 @@ export default function CustomCakePlaceholder() {
     customerEmail: ''
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
+
+  // Calculate delivery date validation (Must be greater than 48 hours from now)
+  const getMinDeliveryDate = () => {
+    const minTime = new Date()
+    minTime.setHours(minTime.getHours() + 48)
+    const yyyy = minTime.getFullYear()
+    const mm = String(minTime.getMonth() + 1).padStart(2, '0')
+    const dd = String(minTime.getDate()).padStart(2, '0')
+    return `${yyyy}-${mm}-${dd}`
+  }
+
+  const checkPincode = () => {
+    setPinChecked(true)
+    if (PIN_CODES_DELIVERABLE.includes(pincode.trim())) {
+      setIsDeliverable(true)
+    } else {
+      setIsDeliverable(false)
+    }
+  }
 
   const handleNext = () => {
     if (currentStep < 5) {
@@ -74,7 +99,8 @@ export default function CustomCakePlaceholder() {
       `*Delivery Details:*\n` +
       `- Date: ${formData.deliveryDate || 'Not specified'}\n` +
       `- Time Slot: ${formData.deliveryTimeSlot}\n` +
-      `- Address: ${formData.deliveryAddress || 'Store Pickup'}`
+      `- Pincode: ${pincode}\n` +
+      `- Address: ${formData.deliveryAddress}`
 
     const encodedText = encodeURIComponent(text)
     const whatsappUrl = `https://wa.me/918793058057?text=${encodedText}`
@@ -82,6 +108,13 @@ export default function CustomCakePlaceholder() {
     // Open the compiled WhatsApp chat redirect automatically
     window.open(whatsappUrl, '_blank')
   }
+
+  // Validate step progress configurations
+  const isStep4Valid = isDeliverable && 
+    formData.deliveryDate && 
+    formData.deliveryAddress.trim() && 
+    formData.customerName.trim() && 
+    formData.customerPhone.trim()
 
   if (isSubmitted) {
     return (
@@ -294,7 +327,7 @@ export default function CustomCakePlaceholder() {
                     Special Baking Instructions & Design Requests
                   </label>
                   <textarea
-                    placeholder="E.g., Please make it eggless, low on sugar, and add pink florals frosting details..."
+                    placeholder="E.g., Please make it low on sugar, and add pink florals frosting details..."
                     value={formData.specialInstructions}
                     onChange={(e) => updateField('specialInstructions', e.target.value)}
                     rows={4}
@@ -310,11 +343,53 @@ export default function CustomCakePlaceholder() {
                   <span className="material-symbols-outlined text-xl">local_shipping</span>
                   <h3 className="text-lg font-bold">Delivery &amp; Contact Details</h3>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Delivery Date</label>
+                
+                {/* Pincode eligibility validation */}
+                <div className="space-y-2 bg-surface-container-low p-4 rounded-xl border border-outline-variant/20">
+                  <span className="text-xs font-bold text-chocolate uppercase tracking-wider block">1. Check Serviceable Pincode</span>
+                  <div className="flex gap-4">
                     <input
+                      type="text"
+                      maxLength={6}
+                      placeholder="Enter 6-digit Pincode"
+                      value={pincode}
+                      onChange={(e) => {
+                        setPincode(e.target.value.replace(/\D/g, ''))
+                        setPinChecked(false)
+                        setIsDeliverable(false)
+                      }}
+                      className="w-full sm:w-64 px-4 py-2.5 bg-surface-container-lowest border border-outline-variant/30 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold"
+                    />
+                    <button
+                      type="button"
+                      onClick={checkPincode}
+                      disabled={pincode.length !== 6}
+                      className="bg-primary text-on-primary px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-on-primary-fixed-variant transition-colors disabled:opacity-50"
+                    >
+                      Check
+                    </button>
+                  </div>
+                  {pinChecked && (
+                    <div className="text-xs font-bold uppercase tracking-wider mt-1">
+                      {isDeliverable ? (
+                        <span className="text-green-600">✓ Serviceable delivery location!</span>
+                      ) : (
+                        <span className="text-red-500">✗ Unserviceable location. Serviceable codes: 380001, 380009, 380015, 380054, 382481</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className={`grid grid-cols-1 sm:grid-cols-2 gap-6 transition-opacity duration-300 ${
+                  !isDeliverable ? 'opacity-50 pointer-events-none' : ''
+                }`}>
+                  <div className="space-y-2">
+                    <label htmlFor="custom-delivery-date" className="text-xs font-bold text-chocolate uppercase tracking-wider block">Delivery Date (min. 48h lead time)</label>
+                    <input
+                      id="custom-delivery-date"
+                      required={isDeliverable}
                       type="date"
+                      min={getMinDeliveryDate()}
                       value={formData.deliveryDate}
                       onChange={(e) => updateField('deliveryDate', e.target.value)}
                       className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/30 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold cursor-pointer"
@@ -338,6 +413,7 @@ export default function CustomCakePlaceholder() {
                   <div className="sm:col-span-2 space-y-2">
                     <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Delivery Address</label>
                     <input
+                      required={isDeliverable}
                       type="text"
                       placeholder="Street address, Appt, Area, Ahmedabad"
                       value={formData.deliveryAddress}
@@ -349,6 +425,7 @@ export default function CustomCakePlaceholder() {
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Contact Name</label>
                     <input
+                      required={isDeliverable}
                       type="text"
                       placeholder="Your full name"
                       value={formData.customerName}
@@ -360,6 +437,7 @@ export default function CustomCakePlaceholder() {
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Contact Phone</label>
                     <input
+                      required={isDeliverable}
                       type="tel"
                       placeholder="E.g., +91 98765 43210"
                       value={formData.customerPhone}
@@ -394,7 +472,8 @@ export default function CustomCakePlaceholder() {
                     <h4 className="font-bold text-chocolate uppercase tracking-wider text-xs">Delivery &amp; Contact</h4>
                     <p><span className="text-on-surface-variant font-medium">Date:</span> <span className="font-bold">{formData.deliveryDate || 'Not specified'}</span></p>
                     <p><span className="text-on-surface-variant font-medium">Slot:</span> <span className="font-bold">{formData.deliveryTimeSlot}</span></p>
-                    <p><span className="text-on-surface-variant font-medium">Address:</span> <span className="font-bold">{formData.deliveryAddress || 'Store Pickup'}</span></p>
+                    <p><span className="text-on-surface-variant font-medium">Pincode:</span> <span className="font-bold">{pincode}</span></p>
+                    <p><span className="text-on-surface-variant font-medium">Address:</span> <span className="font-bold">{formData.deliveryAddress}</span></p>
                     <p><span className="text-on-surface-variant font-medium">Contact:</span> <span className="font-bold">{formData.customerName} ({formData.customerPhone})</span></p>
                   </div>
                 </div>
@@ -423,10 +502,23 @@ export default function CustomCakePlaceholder() {
               Back
             </button>
 
-            {currentStep < 5 ? (
+            {currentStep < 4 ? (
               <button
                 onClick={handleNext}
                 className="bg-primary text-on-primary px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-on-primary-fixed-variant transition-colors shadow-md flex items-center gap-2"
+              >
+                NEXT STEP
+                <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              </button>
+            ) : currentStep === 4 ? (
+              <button
+                onClick={handleNext}
+                disabled={!isStep4Valid}
+                className={`px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-md flex items-center gap-2 ${
+                  !isStep4Valid 
+                    ? 'bg-on-surface-variant/20 text-on-surface-variant/40 cursor-not-allowed shadow-none' 
+                    : 'bg-primary text-on-primary hover:bg-on-primary-fixed-variant'
+                }`}
               >
                 NEXT STEP
                 <span className="material-symbols-outlined text-sm">arrow_forward</span>

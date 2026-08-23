@@ -33,6 +33,7 @@ describe('Checkout Details Page', () => {
     fireEvent.change(screen.getByPlaceholderText('Enter your name'), { target: { value: 'Jane Doe' } })
     fireEvent.change(screen.getByPlaceholderText('E.g., +91 98765 43210'), { target: { value: '+91 87930 58057' } })
     fireEvent.change(screen.getByPlaceholderText('Flat/House no., Floor, Building, Street details'), { target: { value: '123 Bakery Lane' } })
+    fireEvent.change(screen.getByPlaceholderText('City'), { target: { value: 'Ahmedabad' } })
     
     // Select date
     const dateInput = screen.getByLabelText(/Delivery Date/i)

@@ -15,7 +15,9 @@ export default function CheckoutPlaceholder() {
     name: '',
     phone: '',
     email: '',
-    address: '',
+    addressLine1: '',
+    landmark: '',
+    city: 'Ahmedabad', // default to Ahmedabad since we only deliver there
     date: '',
     timeSlot: '12 PM - 3 PM'
   })
@@ -25,6 +27,15 @@ export default function CheckoutPlaceholder() {
   const subtotal = getCartTotal()
   const shipping = subtotal > 1500 ? 0 : 99
   const total = subtotal + shipping
+
+  // Calculate today's date formatted as YYYY-MM-DD for min date constraints
+  const getMinDate = () => {
+    const today = new Date()
+    const yyyy = today.getFullYear()
+    const mm = String(today.getMonth() + 1).padStart(2, '0')
+    const dd = String(today.getDate()).padStart(2, '0')
+    return `${yyyy}-${mm}-${dd}`
+  }
 
   const checkPincode = () => {
     setPinChecked(true)
@@ -43,13 +54,14 @@ export default function CheckoutPlaceholder() {
     e.preventDefault()
     setOrderConfirmed(true)
     
+    const fullAddress = `${formData.addressLine1}${formData.landmark ? `, Landmark: ${formData.landmark}` : ''}, ${formData.city} - ${pincode}`
+    
     // Auto compile WhatsApp details on confirmation
     const text = `*New Order Details (BloomCakes)*\n\n` +
       `*Customer details:*\n` +
       `- Name: ${formData.name}\n` +
       `- Phone: ${formData.phone}\n` +
-      `- Pincode: ${pincode}\n` +
-      `- Address: ${formData.address}\n\n` +
+      `- Address: ${fullAddress}\n\n` +
       `*Order summary:*\n` +
       items.map(item => `  - ${item.name} (${item.weight}) x${item.quantity} = ₹${item.price * item.quantity}`).join('\n') +
       `\n\n*Total amount:* ₹${total}\n\n` +
@@ -63,6 +75,13 @@ export default function CheckoutPlaceholder() {
     window.open(whatsappUrl, '_blank')
     clearCart()
   }
+
+  const isFormValid = isDeliverable && 
+    formData.name.trim() && 
+    formData.phone.trim() && 
+    formData.addressLine1.trim() && 
+    formData.city.trim() && 
+    formData.date
 
   if (orderConfirmed) {
     return (
@@ -175,13 +194,36 @@ export default function CheckoutPlaceholder() {
               </div>
 
               <div className="sm:col-span-2 space-y-1">
-                <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Delivery Address</label>
+                <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Flat / House no. / Street address</label>
                 <input
                   required={isDeliverable}
                   type="text"
                   placeholder="Flat/House no., Floor, Building, Street details"
-                  value={formData.address}
-                  onChange={(e) => handleInputChange('address', e.target.value)}
+                  value={formData.addressLine1}
+                  onChange={(e) => handleInputChange('addressLine1', e.target.value)}
+                  className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Landmark (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="E.g. near post office"
+                  value={formData.landmark}
+                  onChange={(e) => handleInputChange('landmark', e.target.value)}
+                  className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">City</label>
+                <input
+                  required={isDeliverable}
+                  type="text"
+                  placeholder="City"
+                  value={formData.city}
+                  onChange={(e) => handleInputChange('city', e.target.value)}
                   className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold"
                 />
               </div>
@@ -204,6 +246,7 @@ export default function CheckoutPlaceholder() {
                   id="delivery-date"
                   required={isDeliverable}
                   type="date"
+                  min={getMinDate()}
                   value={formData.date}
                   onChange={(e) => handleInputChange('date', e.target.value)}
                   className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold cursor-pointer"
@@ -262,13 +305,13 @@ export default function CheckoutPlaceholder() {
           <button
             type="submit"
             onClick={(e) => {
-              if (isDeliverable && formData.name && formData.phone && formData.address && formData.date) {
+              if (isFormValid) {
                 handleConfirmOrder(e)
               }
             }}
-            disabled={!isDeliverable || !formData.name || !formData.phone || !formData.address || !formData.date}
+            disabled={!isFormValid}
             className={`w-full py-3.5 rounded-full font-label-md text-label-md transition-colors shadow-md font-bold text-center ${
-              !isDeliverable || !formData.name || !formData.phone || !formData.address || !formData.date
+              !isFormValid
                 ? 'bg-on-surface-variant/20 text-on-surface-variant/40 cursor-not-allowed shadow-none'
                 : 'bg-primary text-on-primary hover:bg-on-primary-fixed-variant'
             }`}

@@ -31,17 +31,28 @@ describe('Custom Cake Builder Page', () => {
     fireEvent.click(screen.getByText('NEXT STEP'))
     expect(screen.getAllByText('Delivery Details')[0]).toBeInTheDocument()
 
+    // Check pincode
+    const pinField = screen.getByPlaceholderText('Enter 6-digit Pincode')
+    fireEvent.change(pinField, { target: { value: '380015' } })
+    fireEvent.click(screen.getByText('Check'))
+
     // Fill in required contact info
+    const addressInput = screen.getByPlaceholderText('Street address, Appt, Area, Ahmedabad')
     const nameInput = screen.getByPlaceholderText('Your full name')
     const phoneInput = screen.getByPlaceholderText('E.g., +91 98765 43210')
+    
+    fireEvent.change(addressInput, { target: { value: '123 Bakers Street' } })
     fireEvent.change(nameInput, { target: { value: 'John Doe' } })
     fireEvent.change(phoneInput, { target: { value: '+91 99999 88888' } })
+
+    // Select date (Set delivery date)
+    const dateInput = screen.getByLabelText(/Delivery Date/i)
+    fireEvent.change(dateInput, { target: { value: '2026-12-31' } })
 
     // Go to review step
     fireEvent.click(screen.getByText('NEXT STEP'))
     expect(screen.getByText('Review Custom Order')).toBeInTheDocument()
     
-    // Form rendering uses uppercase text css, but screen content value remains lowercase "anniversary" matching type values
     expect(screen.getByText('anniversary')).toBeInTheDocument()
     expect(screen.getByText('John Doe (+91 99999 88888)')).toBeInTheDocument()
 
