@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 
 export function Layout() {
   const [scrolled, setScrolled] = useState(false)
+  const location = useLocation()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,12 +32,66 @@ export function Layout() {
             <span className="text-headline-md font-headline-lg text-primary dark:text-primary-fixed font-bold tracking-tight">BloomCakes</span>
           </Link>
           <div className="hidden md:flex gap-8 items-center">
-            <Link className="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" to="/">Home</Link>
-            <Link className="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" to="/about">About Us</Link>
-            <Link className="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md" to="/shop">Menu</Link>
-            <Link className="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" to="/custom-cake">Custom Cakes</Link>
-            <Link className="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" to="/gallery">Gallery</Link>
-            <Link className="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" to="/contact">Contact</Link>
+            <Link 
+              className={`font-label-md text-label-md transition-colors ${
+                location.pathname === '/' 
+                  ? 'text-primary font-bold border-b-2 border-primary pb-1' 
+                  : 'text-on-surface-variant hover:text-primary'
+              }`} 
+              to="/"
+            >
+              Home
+            </Link>
+            <Link 
+              className={`font-label-md text-label-md transition-colors ${
+                location.pathname === '/about' 
+                  ? 'text-primary font-bold border-b-2 border-primary pb-1' 
+                  : 'text-on-surface-variant hover:text-primary'
+              }`} 
+              to="/about"
+            >
+              About Us
+            </Link>
+            <Link 
+              className={`font-label-md text-label-md transition-colors ${
+                location.pathname.startsWith('/shop') 
+                  ? 'text-primary font-bold border-b-2 border-primary pb-1' 
+                  : 'text-on-surface-variant hover:text-primary'
+              }`} 
+              to="/shop"
+            >
+              Menu
+            </Link>
+            <Link 
+              className={`font-label-md text-label-md transition-colors ${
+                location.pathname === '/custom-cake' 
+                  ? 'text-primary font-bold border-b-2 border-primary pb-1' 
+                  : 'text-on-surface-variant hover:text-primary'
+              }`} 
+              to="/custom-cake"
+            >
+              Custom Cakes
+            </Link>
+            <Link 
+              className={`font-label-md text-label-md transition-colors ${
+                location.pathname === '/gallery' 
+                  ? 'text-primary font-bold border-b-2 border-primary pb-1' 
+                  : 'text-on-surface-variant hover:text-primary'
+              }`} 
+              to="/gallery"
+            >
+              Gallery
+            </Link>
+            <Link 
+              className={`font-label-md text-label-md transition-colors ${
+                location.pathname === '/contact' 
+                  ? 'text-primary font-bold border-b-2 border-primary pb-1' 
+                  : 'text-on-surface-variant hover:text-primary'
+              }`} 
+              to="/contact"
+            >
+              Contact
+            </Link>
           </div>
           <div className="flex items-center gap-4">
             <Link to="/cart" className="relative p-2 text-primary hover:bg-surface-container rounded-full transition-colors">
@@ -51,7 +106,7 @@ export function Layout() {
         </div>
       </nav>
 
-      {/* Hero Header Section - rendered ONLY on index route page */}
+      {/* Main page content wrapper */}
       <div className="flex-1">
         <Outlet />
       </div>
