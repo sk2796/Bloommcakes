@@ -30,7 +30,7 @@ describe('Checkout Details Page', () => {
     expect(screen.getByText(/We deliver to your location/i)).toBeInTheDocument()
 
     // Fill in rest of form configurations
-    fireEvent.change(screen.getByPlaceholderText('Enter your name'), { target: { value: 'Jane Doe' } })
+    fireEvent.change(screen.getByPlaceholderText('Enter first & last name'), { target: { value: 'Jane Doe' } })
     fireEvent.change(screen.getByPlaceholderText('E.g., +91 98765 43210'), { target: { value: '+91 87930 58057' } })
     fireEvent.change(screen.getByPlaceholderText('Flat/House no., Floor, Building, Street details'), { target: { value: '123 Bakery Lane' } })
     fireEvent.change(screen.getByPlaceholderText('City'), { target: { value: 'Ahmedabad' } })

@@ -76,9 +76,21 @@ export default function CheckoutPlaceholder() {
     clearCart()
   }
 
+  // Name validation: Must contain at least a first and last name (alphabetical, min 2 chars each)
+  const isNameValid = () => {
+    const trimmed = formData.name.trim()
+    return /^[a-zA-Z]{2,}\s+[a-zA-Z]{2,}/.test(trimmed)
+  }
+
+  // Phone validation: Must match standard Indian 10-digit formats (optionally prefixed with +91 or 0)
+  const isPhoneValid = () => {
+    const trimmed = formData.phone.trim().replace(/[\s-]/g, '')
+    return /^(?:\+91|0)?[6-9]\d{9}$/.test(trimmed)
+  }
+
   const isFormValid = isDeliverable && 
-    formData.name.trim() && 
-    formData.phone.trim() && 
+    isNameValid() && 
+    isPhoneValid() && 
     formData.addressLine1.trim() && 
     formData.city.trim() && 
     formData.date
@@ -170,15 +182,18 @@ export default function CheckoutPlaceholder() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Full Name</label>
+                <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Full Name (First and Last Name)</label>
                 <input
                   required={isDeliverable}
                   type="text"
-                  placeholder="Enter your name"
+                  placeholder="Enter first & last name"
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold"
                 />
+                {formData.name.trim() && !isNameValid() && (
+                  <span className="text-[10px] text-red-500 font-bold block uppercase tracking-wide">Please enter first &amp; last name (alphabets only, min 2 letters each).</span>
+                )}
               </div>
 
               <div className="space-y-1">
@@ -191,6 +206,9 @@ export default function CheckoutPlaceholder() {
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold"
                 />
+                {formData.phone.trim() && !isPhoneValid() && (
+                  <span className="text-[10px] text-red-500 font-bold block uppercase tracking-wide">Please enter a valid 10-digit Indian phone number.</span>
+                )}
               </div>
 
               <div className="sm:col-span-2 space-y-1">

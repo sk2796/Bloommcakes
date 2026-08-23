@@ -109,12 +109,24 @@ export default function CustomCakePlaceholder() {
     window.open(whatsappUrl, '_blank')
   }
 
+  // Name validation: Must contain at least a first and last name (alphabetical, min 2 chars each)
+  const isNameValid = () => {
+    const trimmed = formData.customerName.trim()
+    return /^[a-zA-Z]{2,}\s+[a-zA-Z]{2,}/.test(trimmed)
+  }
+
+  // Phone validation: Must match standard Indian 10-digit formats (optionally prefixed with +91 or 0)
+  const isPhoneValid = () => {
+    const trimmed = formData.customerPhone.trim().replace(/[\s-]/g, '')
+    return /^(?:\+91|0)?[6-9]\d{9}$/.test(trimmed)
+  }
+
   // Validate step progress configurations
   const isStep4Valid = isDeliverable && 
     formData.deliveryDate && 
     formData.deliveryAddress.trim() && 
-    formData.customerName.trim() && 
-    formData.customerPhone.trim()
+    isNameValid() && 
+    isPhoneValid()
 
   if (isSubmitted) {
     return (
@@ -135,7 +147,7 @@ export default function CustomCakePlaceholder() {
   }
 
   return (
-    <div className="max-w-[1200px] mx-auto px-margin-desktop py-12">
+    <div className="max-[1200px] mx-auto px-margin-desktop py-12">
       {/* Title Header */}
       <div className="text-center mb-12">
         <h2 className="font-headline-xl text-headline-xl text-on-surface mb-2 font-bold">Custom Cake Order</h2>
@@ -423,7 +435,7 @@ export default function CustomCakePlaceholder() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Contact Name</label>
+                    <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Contact Name (First &amp; Last Name)</label>
                     <input
                       required={isDeliverable}
                       type="text"
@@ -432,6 +444,9 @@ export default function CustomCakePlaceholder() {
                       onChange={(e) => updateField('customerName', e.target.value)}
                       className="w-full px-4 py-3 bg-cream/30 border border-chocolate/20 rounded-xl focus:outline-none focus:border-primary text-sm transition-all"
                     />
+                    {formData.customerName.trim() && !isNameValid() && (
+                      <span className="text-[10px] text-red-500 font-bold block uppercase tracking-wide">Enter first &amp; last name (alphabets only, min 2 letters each).</span>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -444,6 +459,9 @@ export default function CustomCakePlaceholder() {
                       onChange={(e) => updateField('customerPhone', e.target.value)}
                       className="w-full px-4 py-3 bg-cream/30 border border-chocolate/20 rounded-xl focus:outline-none focus:border-primary text-sm transition-all"
                     />
+                    {formData.customerPhone.trim() && !isPhoneValid() && (
+                      <span className="text-[10px] text-red-500 font-bold block uppercase tracking-wide">Enter a valid 10-digit Indian phone number.</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -526,9 +544,9 @@ export default function CustomCakePlaceholder() {
             ) : (
               <button
                 onClick={handleSubmit}
-                disabled={!formData.customerName || !formData.customerPhone}
+                disabled={!isStep4Valid}
                 className={`px-8 py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-colors shadow-md ${
-                  !formData.customerName || !formData.customerPhone
+                  !isStep4Valid
                     ? 'bg-on-surface-variant/20 text-on-surface-variant/40 cursor-not-allowed shadow-none'
                     : 'bg-primary text-on-primary hover:bg-on-primary-fixed-variant'
                 }`}

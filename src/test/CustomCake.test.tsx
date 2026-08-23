@@ -43,7 +43,7 @@ describe('Custom Cake Builder Page', () => {
     
     fireEvent.change(addressInput, { target: { value: '123 Bakers Street' } })
     fireEvent.change(nameInput, { target: { value: 'John Doe' } })
-    fireEvent.change(phoneInput, { target: { value: '+91 99999 88888' } })
+    fireEvent.change(phoneInput, { target: { value: '9999988888' } })
 
     // Select date (Set delivery date)
     const dateInput = screen.getByLabelText(/Delivery Date/i)
@@ -54,7 +54,7 @@ describe('Custom Cake Builder Page', () => {
     expect(screen.getByText('Review Custom Order')).toBeInTheDocument()
     
     expect(screen.getByText('anniversary')).toBeInTheDocument()
-    expect(screen.getByText('John Doe (+91 99999 88888)')).toBeInTheDocument()
+    expect(screen.getByText('John Doe (9999988888)')).toBeInTheDocument()
 
     // Submit custom order
     fireEvent.click(screen.getByText('CONFIRM CUSTOM CAKE'))
