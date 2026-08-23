@@ -1,8 +1,10 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { BrowserRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import ShopPlaceholder from '../pages/ShopPlaceholder'
 
-// Mock the custom hook to isolate query testing
+// Mock useCakes hook
 vi.mock('@/features/products/hooks/useCakes', () => ({
   useCakes: () => ({
     data: [
@@ -12,6 +14,9 @@ vi.mock('@/features/products/hooks/useCakes', () => ({
         slug: 'mock-belgian-chocolate',
         description: 'Test description',
         price: 799,
+        priceByWeight: {
+          '0.5kg': 799
+        },
         rating: 4.9,
         category: 'chocolate',
         imageUrl: '',
@@ -25,9 +30,17 @@ vi.mock('@/features/products/hooks/useCakes', () => ({
   })
 }))
 
+const queryClient = new QueryClient()
+
 describe('Menu Catalog page', () => {
   it('renders filter headings and filtered cake cards correctly', () => {
-    render(<ShopPlaceholder />)
+    render(
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <ShopPlaceholder />
+        </BrowserRouter>
+      </QueryClientProvider>
+    )
     expect(screen.getByText('Our Menu')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Search cakes...')).toBeInTheDocument()
     expect(screen.getByText('Mock Belgian Chocolate')).toBeInTheDocument()

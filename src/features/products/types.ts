@@ -5,7 +5,8 @@ export interface CakeProduct {
   name: string
   slug: string
   description: string
-  price: number
+  price: number // Base price for lowest weight
+  priceByWeight: Record<string, number> // Map from weight string (e.g. '0.5kg') to explicit price
   rating: number
   category: CakeCategory
   imageUrl: string

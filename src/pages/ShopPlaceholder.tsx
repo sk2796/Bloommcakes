@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useCakes } from '@/features/products/hooks/useCakes'
 import { CakeCategory } from '@/features/products/types'
 
@@ -132,7 +133,7 @@ export default function ShopPlaceholder() {
               className="bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-all duration-300 group border border-outline-variant/10 flex flex-col justify-between"
             >
               <div>
-                <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4 relative">
+                <Link to={`/product/${cake.slug}`} className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4 relative block">
                   {cake.isBestseller && (
                     <span className="absolute top-4 right-4 bg-primary text-on-primary text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider z-10">
                       Bestseller
@@ -148,12 +149,12 @@ export default function ShopPlaceholder() {
                     alt={cake.name}
                     src={cake.imageUrl}
                   />
-                </div>
+                </Link>
                 <div className="flex items-center gap-1.5 mb-1.5 justify-center">
                   <span className="material-symbols-outlined text-amber-500 text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
                   <span className="text-xs font-bold text-on-surface">{cake.rating}</span>
                 </div>
-                <h3 className="font-label-md text-label-md text-on-surface text-center mb-1 group-hover:text-primary transition-colors">{cake.name}</h3>
+                <Link to={`/product/${cake.slug}`} className="font-label-md text-label-md text-on-surface text-center mb-1 group-hover:text-primary transition-colors block font-semibold">{cake.name}</Link>
                 <p className="text-xs text-on-surface-variant text-center line-clamp-2 px-2 mb-4 leading-relaxed">{cake.description}</p>
               </div>
               <div className="border-t border-outline-variant/10 pt-4 flex items-center justify-between mt-auto">
@@ -161,9 +162,9 @@ export default function ShopPlaceholder() {
                   <span className="text-[10px] text-on-surface-variant uppercase tracking-wider">Starting at</span>
                   <span className="text-primary font-bold text-lg">₹{cake.price}</span>
                 </div>
-                <button className="bg-primary text-on-primary px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-on-primary-fixed-variant transition-colors shadow-sm">
-                  Add to Cart
-                </button>
+                <Link to={`/product/${cake.slug}`} className="bg-primary text-on-primary px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-on-primary-fixed-variant transition-colors shadow-sm text-center">
+                  Configure
+                </Link>
               </div>
             </div>
           ))}
