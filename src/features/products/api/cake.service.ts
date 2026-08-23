@@ -1,10 +1,6 @@
-import Papa from 'papaparse'
-import { CakeProduct, CakeCategory } from '../types'
+import { CakeProduct } from '../types'
 
-// Published Google Sheet CSV export link
-const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT5K76hN4tP8Wv7qZ1z2wZl7z_QGfW3v2qXw29w380zGvP4tZ8P6Xw29w380zGvP4tZ8P6Xw29w380z/pub?output=csv'
-
-// Backup offline catalog in case of networking issues
+// Mock premium cakes database entries matching trust specifications with weight pricing
 export const MOCK_CAKES: CakeProduct[] = [
   {
     id: 'c1',
@@ -105,88 +101,20 @@ export const MOCK_CAKES: CakeProduct[] = [
 ]
 
 export class CakeService {
-  static cachedProducts: CakeProduct[] | null = null
-
   static async getCakes(): Promise<CakeProduct[]> {
-    if (this.cachedProducts) {
-      return this.cachedProducts
-    }
-
-    try {
-      // Fetch dynamic sheet data
-      const response = await fetch(GOOGLE_SHEET_CSV_URL)
-      if (!response.ok) {
-        throw new Error('Network error fetching sheet data.')
-      }
-
-      const csvText = await response.text()
-      
-      return new Promise<CakeProduct[]>((resolve) => {
-        Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true,
-          complete: (results) => {
-            try {
-              const parsed = results.data.map((row: unknown) => {
-                const csvRow = row as Record<string, string>
-                let parsedWeights: string[] = ['0.5kg', '1kg']
-                if (csvRow.weightOptions) {
-                  parsedWeights = csvRow.weightOptions.split(',').map((w: string) => w.trim())
-                }
-
-                let parsedPriceByWeight: Record<string, number> = {
-                  '0.5kg': Number(csvRow.price) || 799,
-                  '1kg': (Number(csvRow.price) || 799) * 2 - 99
-                }
-                if (csvRow.priceByWeight) {
-                  try {
-                    parsedPriceByWeight = JSON.parse(csvRow.priceByWeight.trim())
-                  } catch (err) {
-                    console.warn('Failed parsing priceByWeight column:', csvRow.priceByWeight, err)
-                  }
-                }
-
-                return {
-                  id: csvRow.id || `sheet-${Math.random()}`,
-                  name: csvRow.name || 'Premium Cake',
-                  slug: csvRow.slug || 'premium-cake',
-                  description: csvRow.description || 'Artisan handmade fresh cake.',
-                  price: Number(csvRow.price) || 799,
-                  priceByWeight: parsedPriceByWeight,
-                  rating: Number(csvRow.rating) || 4.8,
-                  category: (csvRow.category || 'classics') as CakeCategory,
-                  imageUrl: csvRow.imageUrl || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80',
-                  isBestseller: csvRow.isBestseller === 'TRUE' || csvRow.isBestseller === 'true',
-                  weightOptions: parsedWeights
-                }
-              })
-              
-              if (parsed.length > 0) {
-                this.cachedProducts = parsed
-                resolve(parsed)
-              } else {
-                resolve(MOCK_CAKES)
-              }
-            } catch (err) {
-              console.error('Error mapping sheet rows:', err)
-              resolve(MOCK_CAKES)
-            }
-          },
-          error: (err: Error) => {
-            console.error('PapaParse error:', err)
-            resolve(MOCK_CAKES)
-          }
-        })
-      })
-    } catch (err) {
-      console.warn('Google Sheet fetch failed, falling back to local database.', err)
-      return MOCK_CAKES
-    }
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(MOCK_CAKES)
+      }, 200)
+    })
   }
 
   static async getCakeBySlug(slug: string): Promise<CakeProduct | null> {
-    const cakes = await this.getCakes()
-    const cake = cakes.find(c => c.slug === slug)
-    return cake || null
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const cake = MOCK_CAKES.find(c => c.slug === slug)
+        resolve(cake || null)
+      }, 200)
+    })
   }
 }
