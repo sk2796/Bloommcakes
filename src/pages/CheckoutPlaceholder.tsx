@@ -4,6 +4,8 @@ import { useCartStore } from '@/features/cart/store/useCartStore'
 
 const PIN_CODES_DELIVERABLE = ['380001', '380009', '380015', '380054', '382481']
 
+type OccasionType = 'birthday' | 'anniversary' | 'wedding' | 'engagement' | 'other'
+
 export default function CheckoutPlaceholder() {
   const { items, getCartTotal, clearCart } = useCartStore()
 
@@ -19,7 +21,9 @@ export default function CheckoutPlaceholder() {
     landmark: '',
     city: 'Ahmedabad', // default to Ahmedabad since we only deliver there
     date: '',
-    timeSlot: '12 PM - 3 PM'
+    timeSlot: '12 PM - 3 PM',
+    occasion: 'birthday' as OccasionType,
+    customOccasion: ''
   })
   
   const [orderConfirmed, setOrderConfirmed] = useState(false)
@@ -55,12 +59,16 @@ export default function CheckoutPlaceholder() {
     setOrderConfirmed(true)
     
     const fullAddress = `${formData.addressLine1}${formData.landmark ? `, Landmark: ${formData.landmark}` : ''}, ${formData.city} - ${pincode}`
-    
+    const occasionText = formData.occasion === 'other' 
+      ? `Other (${formData.customOccasion})` 
+      : formData.occasion.toUpperCase()
+
     // Auto compile WhatsApp details on confirmation
     const text = `*New Order Details (BloomCakes)*\n\n` +
       `*Customer details:*\n` +
       `- Name: ${formData.name}\n` +
       `- Phone: ${formData.phone}\n` +
+      `- Occasion: ${occasionText}\n` +
       `- Address: ${fullAddress}\n\n` +
       `*Order summary:*\n` +
       items.map(item => `  - ${item.name} (${item.weight}) x${item.quantity} = ₹${item.price * item.quantity}`).join('\n') +
@@ -93,7 +101,8 @@ export default function CheckoutPlaceholder() {
     isPhoneValid() && 
     formData.addressLine1.trim() && 
     formData.city.trim() && 
-    formData.date
+    formData.date &&
+    (formData.occasion !== 'other' || formData.customOccasion.trim().length > 0)
 
   if (orderConfirmed) {
     return (
@@ -171,13 +180,54 @@ export default function CheckoutPlaceholder() {
             )}
           </div>
 
-          {/* Section 2: Contact & Address details */}
+          {/* Section 2: Occasion Selection */}
+          <div className={`bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 shadow-sm flex flex-col gap-4 text-on-surface transition-opacity duration-300 ${
+            !isDeliverable ? 'opacity-50 pointer-events-none' : ''
+          }`}>
+            <h3 className="font-bold text-base flex items-center gap-2 text-primary">
+              <span className="material-symbols-outlined">celebration</span>
+              2. Select Occasion
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Occasion Type</label>
+                <select
+                  value={formData.occasion}
+                  onChange={(e) => handleInputChange('occasion', e.target.value)}
+                  className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold cursor-pointer"
+                >
+                  <option value="birthday">Birthday</option>
+                  <option value="anniversary">Anniversary</option>
+                  <option value="wedding">Wedding</option>
+                  <option value="engagement">Engagement</option>
+                  <option value="other">Other Occasion</option>
+                </select>
+              </div>
+
+              {formData.occasion === 'other' && (
+                <div className="space-y-1 animate-fade-in">
+                  <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Write custom occasion</label>
+                  <input
+                    required={formData.occasion === 'other'}
+                    type="text"
+                    placeholder="Enter custom occasion details"
+                    value={formData.customOccasion}
+                    onChange={(e) => handleInputChange('customOccasion', e.target.value)}
+                    className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Section 3: Contact & Address details */}
           <div className={`bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 shadow-sm flex flex-col gap-4 text-on-surface transition-opacity duration-300 ${
             !isDeliverable ? 'opacity-50 pointer-events-none' : ''
           }`}>
             <h3 className="font-bold text-base flex items-center gap-2 text-primary">
               <span className="material-symbols-outlined">person</span>
-              2. Delivery Address &amp; Customer details
+              3. Delivery Address &amp; Customer details
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -248,13 +298,13 @@ export default function CheckoutPlaceholder() {
             </div>
           </div>
 
-          {/* Section 3: Delivery slots */}
+          {/* Section 4: Delivery slots */}
           <div className={`bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 shadow-sm flex flex-col gap-4 text-on-surface transition-opacity duration-300 ${
             !isDeliverable ? 'opacity-50 pointer-events-none' : ''
           }`}>
             <h3 className="font-bold text-base flex items-center gap-2 text-primary">
               <span className="material-symbols-outlined">schedule</span>
-              3. Delivery Schedule &amp; Slots
+              4. Delivery Schedule &amp; Slots
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
