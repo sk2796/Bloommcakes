@@ -1,8 +1,10 @@
-import { CakeProduct } from '../types'
+import Papa from 'papaparse'
+import { CakeProduct, CakeCategory } from '../types'
 
-// Mock premium cakes database entries matching trust specifications with weight pricing
+// Sharing link based CSV export endpoint
+const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1RAZ5fhog6OtcBAXepYc57IYGLf-kz1-MUY87gj8vfEY/export?format=csv&gid=756144025'
+
 export const MOCK_CAKES: CakeProduct[] = [
-  // Cakes Category
   {
     id: 'c1',
     name: 'Belgian Chocolate Cake',
@@ -19,188 +21,98 @@ export const MOCK_CAKES: CakeProduct[] = [
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApZkJY6QschRPOB3x6-l8poxgy8aQmmu6tGSdCweuEr9GNxx80MjOyL-V6aPDgzTXkEnt9bEzdyvHM3ga5_WHNlz99MLqqUyBTHztAdF_idQhxFek4LpY-SmLqxAfqyqVxVny-1zqHSV2-gzfj4fTrvflbGADllc3ezN69kDBRlwKBGK0zMgF6JYbTMKgXCd5-z5NpSN_aixjKyGNho7lOOpf1I9w80b4lx0UvbJtdmE8ScIVfKKtY',
     isBestseller: true,
     weightOptions: ['0.5kg', '1kg', '2kg']
-  },
-  {
-    id: 'c2',
-    name: 'Red Velvet Supreme Cake',
-    slug: 'red-velvet-supreme',
-    description: 'A classic Red Velvet cake with perfectly smooth white cream cheese frosting, elegantly piped borders, and a sprinkle of red velvet crumbs.',
-    price: 899,
-    priceByWeight: {
-      '0.5kg': 899,
-      '1kg': 1699
-    },
-    rating: 4.8,
-    category: 'cakes',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRETRfPtfP-bA2VzWu7WPbBxbhNYY76Q1TcRPWK3-1uePZp3K7FTHbOseYXPGLtmZMnkanxiOD87rQA0RemZpgdYi97UuWcAQMXFt69fXeVf0vwG8PPIGcen0XTGcLPdyxQsTr0FEBRrLj8ol-Pb2sUfyZqju1v2Mp6HABFVwkXaygqIU4QCIwkGa1fet73QovnbVHj1zVI7GYgAx88F8cSF66dqKjwCzVW-meuvpmB1AhE_l5joSO',
-    isBestseller: true,
-    weightOptions: ['0.5kg', '1kg']
-  },
-  {
-    id: 'c3',
-    name: 'Butterscotch Crunch Cake',
-    slug: 'butterscotch-crunch',
-    description: 'An exquisite Butterscotch Crunch cake featuring layers of moist cake, rich butterscotch sauce, and generous crunchy praline pieces.',
-    price: 749,
-    priceByWeight: {
-      '0.5kg': 749,
-      '1kg': 1399,
-      '1.5kg': 1999
-    },
-    rating: 4.7,
-    category: 'cakes',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB5SWy7Qb6lqjOSFNcx6Uwk_csTMEYN27Hz5UU6BNCYyyP9eRfO32aVA4mxwePVyXvwEL-KL-BieXmP_yx0xe2RKPhqF1PmkdNxqao4CSfuXuzomKbfs4i2FeC4wLa-eD7NcOD3iocw8XrmDUWJPumldtnptojchgKRsQOcKdNco4gjtJl2U3cg0kzrQBZi46c-wgkJWwY_spYT3BBCzCrSaXlni_8cKqA0UkGyD1np9xUDfGYhIwbE',
-    weightOptions: ['0.5kg', '1kg', '1.5kg']
-  },
-  {
-    id: 'c4',
-    name: 'Blueberry Cheesecake',
-    slug: 'blueberry-cheesecake',
-    description: 'A visually stunning Blueberry Cheesecake with a perfect graham cracker crust, a creamy baked filling, and a glossy, deep purple blueberry compote.',
-    price: 999,
-    priceByWeight: {
-      '0.5kg': 999,
-      '1kg': 1899
-    },
-    rating: 4.9,
-    category: 'cakes',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAdx960xx5hnckATCpxOit7JMiNmp3wfnsQCXlJK3sCQDEdDETTHq7li5kRsBZwgyE7xa0TNAGJFZTehhmbUVjEySFFC6lmT6nxjwpNxoGrRaTAnx4j9PJLIhvyiIPVpOGUdTtLUF7yFFCDH_4-V8AETSibCU4NLfEUbPRI7ls0Z8T_9FTeeXtHuUhivZDLAWikMSltarpEgZApbhwkjhuUA1499xI1Wz4PjgaVyDEsPB6Wd81lC_Mh',
-    isBestseller: true,
-    weightOptions: ['0.5kg', '1kg']
-  },
-
-  // Muffins Category
-  {
-    id: 'm1',
-    name: 'Double Chocolate Muffin',
-    slug: 'double-chocolate-muffin',
-    description: 'Rich chocolate muffins loaded with premium dark chocolate chips and a soft, moist center.',
-    price: 149,
-    priceByWeight: {
-      '1 pc': 149,
-      'Pack of 4': 499
-    },
-    rating: 4.8,
-    category: 'muffins',
-    imageUrl: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=600&q=80',
-    weightOptions: ['1 pc', 'Pack of 4']
-  },
-  {
-    id: 'm2',
-    name: 'Blueberry Streusel Muffin',
-    slug: 'blueberry-streusel-muffin',
-    description: 'Bursting with fresh blueberries and topped with a crunchy, sweet cinnamon streusel crumble.',
-    price: 159,
-    priceByWeight: {
-      '1 pc': 159,
-      'Pack of 4': 549
-    },
-    rating: 4.7,
-    category: 'muffins',
-    imageUrl: 'https://images.unsplash.com/photo-1607958996333-41aef7caefaa?auto=format&fit=crop&w=600&q=80',
-    weightOptions: ['1 pc', 'Pack of 4']
-  },
-
-  // Pastries Category
-  {
-    id: 'p1',
-    name: 'Chocolate Truffle Pastry Slice',
-    slug: 'chocolate-truffle-pastry',
-    description: 'A decadent slice of dark chocolate truffle cake layered with velvety cocoa ganache.',
-    price: 120,
-    priceByWeight: {
-      '1 Slice': 120,
-      '2 Slices': 220
-    },
-    rating: 4.9,
-    category: 'pastries',
-    imageUrl: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=600&q=80',
-    weightOptions: ['1 Slice', '2 Slices']
-  },
-
-  // Cupcakes Category
-  {
-    id: 'cp1',
-    name: 'Red Velvet Cupcake',
-    slug: 'red-velvet-cupcake',
-    description: 'Fluffy red velvet cupcake base topped with a smooth, swirl of cream cheese frosting.',
-    price: 99,
-    priceByWeight: {
-      '1 pc': 99,
-      'Box of 6': 499
-    },
-    rating: 4.8,
-    category: 'cupcakes',
-    imageUrl: 'https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?auto=format&fit=crop&w=600&q=80',
-    weightOptions: ['1 pc', 'Box of 6']
-  },
-
-  // Brownies Category
-  {
-    id: 'b1',
-    name: 'Fudgy Walnut Brownie',
-    slug: 'fudgy-walnut-brownie',
-    description: 'Decadent chocolate brownie with a cracked top crust, rich fudgy center, and crunch walnuts.',
-    price: 129,
-    priceByWeight: {
-      '1 pc': 129,
-      'Box of 4': 449
-    },
-    rating: 4.9,
-    category: 'brownies',
-    imageUrl: 'https://images.unsplash.com/photo-1564355808539-22fda35bed7e?auto=format&fit=crop&w=600&q=80',
-    weightOptions: ['1 pc', 'Box of 4']
-  },
-
-  // Fruit Pies Category
-  {
-    id: 'fp1',
-    name: 'Classic Apple Pie',
-    slug: 'classic-apple-pie',
-    description: 'Flaky pastry crust stuffed with warm spiced apples, cinnamon, and caramel glaze.',
-    price: 699,
-    priceByWeight: {
-      'Whole Pie': 699
-    },
-    rating: 4.7,
-    category: 'fruit-pies',
-    imageUrl: 'https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&w=600&q=80',
-    weightOptions: ['Whole Pie']
-  },
-
-  // Cookies Category
-  {
-    id: 'ck1',
-    name: 'Chocochip Cookies Pack',
-    slug: 'chocochip-cookies-pack',
-    description: 'Crispy edges with soft centers, loaded heavily with semi-sweet chocolate chunks.',
-    price: 199,
-    priceByWeight: {
-      'Pack of 6': 199,
-      'Pack of 12': 349
-    },
-    rating: 4.8,
-    category: 'cookies',
-    imageUrl: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=600&q=80',
-    weightOptions: ['Pack of 6', 'Pack of 12']
   }
 ]
 
 export class CakeService {
+  static cachedProducts: CakeProduct[] | null = null
+
   static async getCakes(): Promise<CakeProduct[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(MOCK_CAKES)
-      }, 200)
-    })
+    if (this.cachedProducts) {
+      return this.cachedProducts
+    }
+
+    try {
+      const response = await fetch(GOOGLE_SHEET_CSV_URL)
+      if (!response.ok) {
+        throw new Error('Network error fetching sheet data.')
+      }
+
+      const csvText = await response.text()
+      
+      return new Promise<CakeProduct[]>((resolve) => {
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            try {
+              const parsed = results.data.map((row: unknown) => {
+                const csvRow = row as Record<string, string>
+                let parsedWeights: string[] = ['0.5kg', '1kg']
+                if (csvRow.weightOptions) {
+                  parsedWeights = csvRow.weightOptions.split(',').map((w: string) => w.trim())
+                }
+
+                // Parse custom separator format: "0.5kg:799; 1kg:1499; 2kg:2899"
+                let parsedPriceByWeight: Record<string, number> = {
+                  '0.5kg': Number(csvRow.price) || 799,
+                  '1kg': (Number(csvRow.price) || 799) * 2 - 99
+                }
+                if (csvRow.priceByWeight) {
+                  const parts = csvRow.priceByWeight.split(';')
+                  const tempObj: Record<string, number> = {}
+                  parts.forEach(part => {
+                    const match = part.trim().split(':')
+                    if (match.length === 2) {
+                      tempObj[match[0].trim()] = Number(match[1].trim())
+                    }
+                  })
+                  if (Object.keys(tempObj).length > 0) {
+                    parsedPriceByWeight = tempObj
+                  }
+                }
+
+                return {
+                  id: csvRow.id || `sheet-${Math.random()}`,
+                  name: csvRow.name || 'Premium Cake',
+                  slug: csvRow.slug || 'premium-cake',
+                  description: csvRow.description || 'Artisan handmade fresh cake.',
+                  price: Number(csvRow.price) || 799,
+                  priceByWeight: parsedPriceByWeight,
+                  rating: Number(csvRow.rating) || 4.8,
+                  category: (csvRow.category || 'cakes') as CakeCategory,
+                  imageUrl: csvRow.imageUrl || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80',
+                  isBestseller: csvRow.isBestseller === 'TRUE' || csvRow.isBestseller === 'true',
+                  weightOptions: parsedWeights
+                }
+              })
+              
+              if (parsed.length > 0) {
+                this.cachedProducts = parsed
+                resolve(parsed)
+              } else {
+                resolve(MOCK_CAKES)
+              }
+            } catch (err) {
+              console.error('Error mapping sheet rows:', err)
+              resolve(MOCK_CAKES)
+            }
+          },
+          error: (err: Error) => {
+            console.error('PapaParse error:', err)
+            resolve(MOCK_CAKES)
+          }
+        })
+      })
+    } catch (err) {
+      console.warn('Google Sheet fetch failed, falling back to local database.', err)
+      return MOCK_CAKES
+    }
   }
 
   static async getCakeBySlug(slug: string): Promise<CakeProduct | null> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const cake = MOCK_CAKES.find(c => c.slug === slug)
-        resolve(cake || null)
-      }, 200)
-    })
+    const cakes = await this.getCakes()
+    const cake = cakes.find(c => c.slug === slug)
+    return cake || null
   }
 }
