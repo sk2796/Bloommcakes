@@ -5,10 +5,13 @@ import { CakeCategory } from '@/features/products/types'
 
 const CATEGORIES: { value: CakeCategory | 'all'; label: string }[] = [
   { value: 'all', label: 'All Delights' },
-  { value: 'chocolate', label: 'Rich Chocolates' },
-  { value: 'cheesecakes', label: 'Cheesecakes' },
-  { value: 'classics', label: 'Classics' },
-  { value: 'fruit', label: 'Fruit Creations' }
+  { value: 'cakes', label: 'Cakes' },
+  { value: 'muffins', label: 'Muffins' },
+  { value: 'pastries', label: 'Pastries' },
+  { value: 'cupcakes', label: 'Cupcakes' },
+  { value: 'brownies', label: 'Brownies' },
+  { value: 'fruit-pies', label: 'Fruit Pies' },
+  { value: 'cookies', label: 'Cookies' }
 ]
 
 export default function ShopPlaceholder() {

@@ -18,7 +18,7 @@ vi.mock('@/features/products/hooks/useCakes', () => ({
           '0.5kg': 799
         },
         rating: 4.9,
-        category: 'chocolate',
+        category: 'cakes',
         imageUrl: '',
         isBestseller: true,
         weightOptions: ['0.5kg']

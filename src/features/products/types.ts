@@ -1,4 +1,4 @@
-export type CakeCategory = 'all' | 'chocolate' | 'cheesecakes' | 'classics' | 'fruit'
+export type CakeCategory = 'all' | 'muffins' | 'pastries' | 'cupcakes' | 'cakes' | 'brownies' | 'fruit-pies' | 'cookies'
 
 export interface CakeProduct {
   id: string
