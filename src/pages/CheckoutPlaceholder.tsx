@@ -2,9 +2,16 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCartStore } from '@/features/cart/store/useCartStore'
 
-const PIN_CODES_DELIVERABLE = ['380001', '380009', '380015', '380054', '382481']
+const PIN_CODES_DELIVERABLE = ['380001', '380009', '380015', '380054', '382481', '380058', '380021']
 
 type OccasionType = 'birthday' | 'anniversary' | 'wedding' | 'engagement' | 'other'
+
+// Mock promo codes database mapping
+const MOCK_PROMO_CODES: Record<string, { type: 'percent' | 'flat'; value: number }> = {
+  'BLOOM10': { type: 'percent', value: 10 },
+  'SWEET50': { type: 'flat', value: 50 },
+  'FESTIVE20': { type: 'percent', value: 20 }
+}
 
 export default function CheckoutPlaceholder() {
   const { items, getCartTotal, clearCart } = useCartStore()
@@ -28,9 +35,27 @@ export default function CheckoutPlaceholder() {
   
   const [orderConfirmed, setOrderConfirmed] = useState(false)
 
+  // Promo code states
+  const [promoCodeInput, setPromoCodeInput] = useState('')
+  const [activePromo, setActivePromo] = useState<string | null>(null)
+  const [promoError, setPromoError] = useState('')
+
   const subtotal = getCartTotal()
-  const shipping = subtotal > 1500 ? 0 : 99
-  const total = subtotal + shipping
+  
+  // Calculate discount
+  let discountAmount = 0
+  if (activePromo && MOCK_PROMO_CODES[activePromo]) {
+    const promo = MOCK_PROMO_CODES[activePromo]
+    if (promo.type === 'percent') {
+      discountAmount = Math.round((subtotal * promo.value) / 100)
+    } else if (promo.type === 'flat') {
+      discountAmount = Math.min(promo.value, subtotal)
+    }
+  }
+
+  const discountedSubtotal = Math.max(0, subtotal - discountAmount)
+  const shipping = discountedSubtotal > 1500 || subtotal === 0 ? 0 : 99
+  const total = discountedSubtotal + shipping
 
   // Calculate today's date formatted as YYYY-MM-DD for min date constraints
   const getMinDate = () => {
@@ -54,6 +79,23 @@ export default function CheckoutPlaceholder() {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
+  const handleApplyPromo = () => {
+    const normalized = promoCodeInput.trim().toUpperCase()
+    if (MOCK_PROMO_CODES[normalized]) {
+      setActivePromo(normalized)
+      setPromoError('')
+    } else {
+      setPromoError('Invalid promo code!')
+      setActivePromo(null)
+    }
+  }
+
+  const handleRemovePromo = () => {
+    setActivePromo(null)
+    setPromoCodeInput('')
+    setPromoError('')
+  }
+
   const handleConfirmOrder = (e: React.FormEvent) => {
     e.preventDefault()
     setOrderConfirmed(true)
@@ -72,8 +114,9 @@ export default function CheckoutPlaceholder() {
       `- Address: ${fullAddress}\n\n` +
       `*Order summary:*\n` +
       items.map(item => `  - ${item.name} (${item.weight}) x${item.quantity} = ₹${item.price * item.quantity}`).join('\n') +
-      `\n\n*Total amount:* ₹${total}\n\n` +
-      `*Delivery Schedule:*\n` +
+      `\n\n*Total amount:* ₹${total}` +
+      (activePromo ? ` (Promo code applied: ${activePromo} - Saved ₹${discountAmount})` : '') +
+      `\n\n*Delivery Schedule:*\n` +
       `- Date: ${formData.date}\n` +
       `- Slot: ${formData.timeSlot}`
 
@@ -173,7 +216,7 @@ export default function CheckoutPlaceholder() {
                 ) : (
                   <span className="text-red-500 flex items-center gap-1">
                     <span className="material-symbols-outlined text-sm leading-none">cancel</span>
-                    Delivery unavailable. Deliverable Pincodes: 380001, 380009, 380015, 380054, 382481
+                    Delivery unavailable. Deliverable Pincodes: 380001, 380009, 380015, 380054, 382481, 380058, 380021
                   </span>
                 )}
               </div>
@@ -355,11 +398,64 @@ export default function CheckoutPlaceholder() {
             ))}
           </div>
 
+          {/* Promo code application block */}
+          <div className="border-t border-outline-variant/20 pt-4 flex flex-col gap-2">
+            <label className="text-xs font-bold text-chocolate uppercase tracking-wider block text-left">Promo Code</label>
+            {activePromo ? (
+              <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-xl p-3 text-xs font-semibold text-green-800">
+                <span className="flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-sm">local_offer</span>
+                  {activePromo} Applied (Saved ₹{discountAmount})
+                </span>
+                <button 
+                  onClick={handleRemovePromo}
+                  type="button" 
+                  className="text-red-500 hover:text-red-700 font-bold uppercase tracking-wider text-[10px]"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  placeholder="Enter code (E.g. BLOOM10)"
+                  value={promoCodeInput}
+                  onChange={(e) => {
+                    setPromoCodeInput(e.target.value)
+                    setPromoError('')
+                  }}
+                  className="w-full px-3.5 py-2 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-xs font-semibold uppercase"
+                />
+                <button 
+                  onClick={handleApplyPromo}
+                  disabled={!promoCodeInput.trim()}
+                  type="button"
+                  className="bg-primary text-on-primary px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider hover:bg-on-primary-fixed-variant disabled:opacity-50"
+                >
+                  Apply
+                </button>
+              </div>
+            )}
+            {promoError && (
+              <span className="text-[10px] text-red-500 font-bold text-left block uppercase tracking-wide">{promoError}</span>
+            )}
+            {!activePromo && !promoError && (
+              <span className="text-[9px] text-on-surface-variant/70 text-left block">Try **BLOOM10** (10% off) or **SWEET50** (₹50 off)</span>
+            )}
+          </div>
+
           <div className="flex flex-col gap-3 text-sm border-t border-outline-variant/20 pt-4">
             <div className="flex justify-between">
               <span className="text-on-surface-variant">Subtotal</span>
               <span className="font-bold">₹{subtotal}</span>
             </div>
+            {discountAmount > 0 && (
+              <div className="flex justify-between text-green-700 font-semibold">
+                <span>Promo Discount</span>
+                <span>- ₹{discountAmount}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span className="text-on-surface-variant">Shipping</span>
               <span className="font-bold">{shipping === 0 ? 'FREE' : `₹${shipping}`}</span>
