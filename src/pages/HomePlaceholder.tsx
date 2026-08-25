@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 
 interface SlideData {
@@ -62,8 +62,38 @@ const HERO_SLIDES: SlideData[] = [
   }
 ]
 
+interface SignatureProduct {
+  name: string
+  price: string
+  imageUrl: string
+}
+
+const SIGNATURE_PRODUCTS: SignatureProduct[] = [
+  {
+    name: 'Belgian Chocolate',
+    price: '₹799',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApZkJY6QschRPOB3x6-l8poxgy8aQmmu6tGSdCweuEr9GNxx80MjOyL-V6aPDgzTXkEnt9bEzdyvHM3ga5_WHNlz99MLqqUyBTHztAdF_idQhxFek4LpY-SmLqxAfqyqVxVny-1zqHSV2-gzfj4fTrvflbGADllc3ezN69kDBRlwKBGK0zMgF6JYbTMKgXCd5-z5NpSN_aixjKyGNho7lOOpf1I9w80b4lx0UvbJtdmE8ScIVfKKtY'
+  },
+  {
+    name: 'Red Velvet',
+    price: '₹899',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRETRfPtfP-bA2VzWu7WPbBxbhNYY76Q1TcRPWK3-1uePZp3K7FTHbOseYXPGLtmZMnkanxiOD87rQA0RemZpgdYi97UuWcAQMXFt69fXeVf0vwG8PPIGcen0XTGcLPdyxQsTr0FEBRrLj8ol-Pb2sUfyZqju1v2Mp6HABFVwkXaygqIU4QCIwkGa1fet73QovnbVHj1zVI7GYgAx88F8cSF66dqKjwCzVW-meuvpmB1AhE_l5joSO'
+  },
+  {
+    name: 'Butterscotch Crunch',
+    price: '₹749',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB5SWy7Qb6lqjOSFNcx6Uwk_csTMEYN27Hz5UU6BNCYyyP9eRfO32aVA4mxwePVyXvwEL-KL-BieXmP_yx0xe2RKPhqF1PmkdNxqao4CSfuXuzomKbfs4i2FeC4wLa-eD7NcOD3iocw8XrmDUWJPumldtnptojchgKRsQOcKdNco4gjtJl2U3cg0kzrQBZi46c-wgkJWwY_spYT3BBCzCrSaXlni_8cKqA0UkGyD1np9xUDfGYhIwbE'
+  },
+  {
+    name: 'Blueberry Cheesecake',
+    price: '₹999',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAdx960xx5hnckATCpxOit7JMiNmp3wfnsQCXlJK3sCQDEdDETTHq7li5kRsBZwgyE7xa0TNAGJFZTehhmbUVjEySFFC6lmT6nxjwpNxoGrRaTAnx4j9PJLIhvyiIPVpOGUdTtLUF7yFFCDH_4-V8AETSibCU4NLfEUbPRI7ls0Z8T_9FTeeXtHuUhivZDLAWikMSltarpEgZApbhwkjhuUA1499xI1Wz4PjgaVyDEsPB6Wd81lC_Mh'
+  }
+]
+
 export default function HomePlaceholder() {
   const [activeSlide, setActiveSlide] = useState(0)
+  const signatureScrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -71,6 +101,16 @@ export default function HomePlaceholder() {
     }, 3000)
     return () => clearInterval(timer)
   }, [])
+
+  // Smooth scroll helper controls for Signature Collection Carousel
+  const scrollSignature = (direction: 'left' | 'right') => {
+    if (signatureScrollRef.current) {
+      const container = signatureScrollRef.current
+      const cardWidth = 304 // 280px min-width + 24px gap
+      const scrollAmount = direction === 'left' ? -cardWidth : cardWidth
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+    }
+  }
 
   return (
     <div className="bg-background text-on-background overflow-hidden">
@@ -178,7 +218,7 @@ export default function HomePlaceholder() {
         </div>
       </div>
 
-      {/* Signature Collection (Horizontal Scroll) */}
+      {/* Signature Collection (Slidable Carousel) */}
       <section className="py-section-gap bg-surface">
         <div className="max-w-container-max mx-auto px-margin-desktop">
           <div className="text-center mb-12">
@@ -189,60 +229,52 @@ export default function HomePlaceholder() {
               <div className="h-px w-12 bg-primary/30"></div>
             </div>
           </div>
-          <div className="relative">
-            <div className="flex overflow-x-auto gap-6 pb-8 snap-x hide-scrollbar" style={{ scrollbarWidth: 'none' }}>
-              {/* Card 1 */}
-              <div className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-shadow group">
-                <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4">
-                  <img 
-                    className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" 
-                    alt="Belgian Chocolate cake"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuApZkJY6QschRPOB3x6-l8poxgy8aQmmu6tGSdCweuEr9GNxx80MjOyL-V6aPDgzTXkEnt9bEzdyvHM3ga5_WHNlz99MLqqUyBTHztAdF_idQhxFek4LpY-SmLqxAfqyqVxVny-1zqHSV2-gzfj4fTrvflbGADllc3ezN69kDBRlwKBGK0zMgF6JYbTMKgXCd5-z5NpSN_aixjKyGNho7lOOpf1I9w80b4lx0UvbJtdmE8ScIVfKKtY"
-                  />
+
+          <div className="relative px-0 lg:px-12">
+            {/* Scroll Navigation left arrow button */}
+            <button 
+              onClick={() => scrollSignature('left')}
+              className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-outline/30 hidden lg:flex items-center justify-center hover:bg-primary hover:text-on-primary bg-surface/95 shadow-md transition-all duration-300 z-10"
+              aria-label="Scroll left"
+            >
+              <span className="material-symbols-outlined">chevron_left</span>
+            </button>
+
+            <div 
+              ref={signatureScrollRef}
+              className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scroll-smooth hide-scrollbar" 
+              style={{ scrollbarWidth: 'none' }}
+            >
+              {SIGNATURE_PRODUCTS.map((prod, index) => (
+                <div 
+                  key={index}
+                  className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-all duration-500 group border border-outline-variant/10"
+                >
+                  <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4">
+                    <img 
+                      className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" 
+                      alt={prod.name}
+                      src={prod.imageUrl}
+                    />
+                  </div>
+                  <h3 className="font-label-md text-label-md text-on-surface text-center mb-1 font-semibold">{prod.name}</h3>
+                  <p className="text-primary text-center font-bold">{prod.price}</p>
                 </div>
-                <h3 className="font-label-md text-label-md text-on-surface text-center mb-1">Belgian Chocolate</h3>
-                <p className="text-primary text-center font-bold">₹799</p>
-              </div>
-              {/* Card 2 */}
-              <div className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-shadow group">
-                <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4">
-                  <img 
-                    className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" 
-                    alt="Red Velvet cake"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRETRfPtfP-bA2VzWu7WPbBxbhNYY76Q1TcRPWK3-1uePZp3K7FTHbOseYXPGLtmZMnkanxiOD87rQA0RemZpgdYi97UuWcAQMXFt69fXeVf0vwG8PPIGcen0XTGcLPdyxQsTr0FEBRrLj8ol-Pb2sUfyZqju1v2Mp6HABFVwkXaygqIU4QCIwkGa1fet73QovnbVHj1zVI7GYgAx88F8cSF66dqKjwCzVW-meuvpmB1AhE_l5joSO"
-                  />
-                </div>
-                <h3 className="font-label-md text-label-md text-on-surface text-center mb-1">Red Velvet</h3>
-                <p className="text-primary text-center font-bold">₹899</p>
-              </div>
-              {/* Card 3 */}
-              <div className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-shadow group">
-                <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4">
-                  <img 
-                    className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" 
-                    alt="Butterscotch Crunch cake"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5SWy7Qb6lqjOSFNcx6Uwk_csTMEYN27Hz5UU6BNCYyyP9eRfO32aVA4mxwePVyXvwEL-KL-BieXmP_yx0xe2RKPhqF1PmkdNxqao4CSfuXuzomKbfs4i2FeC4wLa-eD7NcOD3iocw8XrmDUWJPumldtnptojchgKRsQOcKdNco4gjtJl2U3cg0kzrQBZi46c-wgkJWwY_spYT3BBCzCrSaXlni_8cKqA0UkGyD1np9xUDfGYhIwbE"
-                  />
-                </div>
-                <h3 className="font-label-md text-label-md text-on-surface text-center mb-1">Butterscotch Crunch</h3>
-                <p className="text-primary text-center font-bold">₹749</p>
-              </div>
-              {/* Card 4 */}
-              <div className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-shadow group">
-                <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4">
-                  <img 
-                    className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" 
-                    alt="Blueberry Cheesecake"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdx960xx5hnckATCpxOit7JMiNmp3wfnsQCXlJK3sCQDEdDETTHq7li5kRsBZwgyE7xa0TNAGJFZTehhmbUVjEySFFC6lmT6nxjwpNxoGrRaTAnx4j9PJLIhvyiIPVpOGUdTtLUF7yFFCDH_4-V8AETSibCU4NLfEUbPRI7ls0Z8T_9FTeeXtHuUhivZDLAWikMSltarpEgZApbhwkjhuUA1499xI1Wz4PjgaVyDEsPB6Wd81lC_Mh"
-                  />
-                </div>
-                <h3 className="font-label-md text-label-md text-on-surface text-center mb-1">Blueberry Cheesecake</h3>
-                <p className="text-primary text-center font-bold">₹999</p>
-              </div>
+              ))}
             </div>
-            <div className="text-center mt-8">
-              <Link to="/shop" className="border-2 border-outline text-on-surface px-8 py-2 rounded-full font-label-md text-label-md hover:bg-surface-container transition-colors inline-block">
-                VIEW ALL
+
+            {/* Scroll Navigation right arrow button */}
+            <button 
+              onClick={() => scrollSignature('right')}
+              className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-outline/30 hidden lg:flex items-center justify-center hover:bg-primary hover:text-on-primary bg-surface/95 shadow-md transition-all duration-300 z-10"
+              aria-label="Scroll right"
+            >
+              <span className="material-symbols-outlined">chevron_right</span>
+            </button>
+
+            <div className="text-center mt-4">
+              <Link to="/shop" className="border-2 border-outline text-on-surface px-8 py-2 rounded-full font-label-md text-label-md hover:bg-surface-container transition-colors inline-block font-semibold">
+                VIEW ALL DELIGHTS
               </Link>
             </div>
           </div>
