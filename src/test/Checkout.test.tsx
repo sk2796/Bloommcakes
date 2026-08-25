@@ -2,9 +2,26 @@ import { describe, it, expect } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import CheckoutPlaceholder from '../pages/CheckoutPlaceholder'
+import { useCartStore } from '@/features/cart/store/useCartStore'
 
 describe('Checkout Details Page', () => {
   it('checks pincode eligibility and unlocks form submit', () => {
+    // Populate items for test since cart default is now empty
+    useCartStore.setState({
+      items: [
+        {
+          id: 'item-2',
+          cakeId: 'c4',
+          name: 'Blueberry Cheesecake',
+          slug: 'blueberry-cheesecake',
+          imageUrl: '',
+          price: 999,
+          weight: '0.5kg',
+          quantity: 1
+        }
+      ]
+    })
+
     render(
       <BrowserRouter>
         <CheckoutPlaceholder />
