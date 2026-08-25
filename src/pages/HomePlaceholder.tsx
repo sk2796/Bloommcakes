@@ -1,66 +1,197 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 
+interface SlideData {
+  titleLine1: string
+  titleLine2: string
+  description: string
+  btnText: string
+  btnLink: string
+  imageUrl: string
+  badgeNumber: string
+  badgeText: string
+  tags: { icon: string; text: string }[]
+}
+
+const HERO_SLIDES: SlideData[] = [
+  {
+    titleLine1: 'Beautifully Crafted.',
+    titleLine2: 'Happily Celebrated.',
+    description: "From everyday moments to life's biggest celebrations, we craft artisanal cakes and desserts that make every moment bloom with flavor and joy.",
+    btnText: 'ORDER NOW',
+    btnLink: '/shop',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBo24FowZT4dx61_yrgUcj5_C8U2l7zG4e6WCTDMEFvSLEouWlqsu_xi4gaIZlKmxqbsL2jhCNQD-rCFJrN_8MPldEOEE1qUDNCfdAseQ6N4NkoWv0SSkAMSlqiH0Ce-WSjzrjRt8Lc6B1glKPOmwwka2RHWt4hfSMc1A8JXE9usy-k_oCUlTKNrS-mabM-kvFOMilVpvR0gyV69Wu6Sdbua9qjrKFnPDhGGS-6iiZo-Vtb6FrIKMsc',
+    badgeNumber: '5k+',
+    badgeText: 'Happy Customers',
+    tags: [
+      { icon: 'eco', text: 'Premium Ingredients' },
+      { icon: 'favorite', text: 'Made with Love' },
+      { icon: 'bakery_dining', text: 'Freshly Baked' },
+      { icon: 'eco', text: '100% Pure Veg' }
+    ]
+  },
+  {
+    titleLine1: 'Birthday Specials.',
+    titleLine2: 'Blow Out The Candles!',
+    description: 'Make birthdays unforgettable with our custom-designed, delicious celebration cakes. Crafted to match your theme and baked fresh just for you.',
+    btnText: 'CUSTOMIZE BIRTHDAY CAKE',
+    btnLink: '/custom-cake',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAWAGPl05WO82u_W2MYmijYeb_UUXtt0Ir7w_93OIStop9JXN21OJGU2Z1ktUNCIz1wT43yDbx-5FsgYYNjENemUB9Nc-Ecfrj4OgbUx_VZWLUVWv0dRf7IASDg5OVaByHjedyyu7K5LOD0IKXUn6e1Hy4MrH1eAgBpgEANxyAuVpmjA7QcFH62RGKJSRQ0HJXJBg4ggK7Buo0VG7BtpEagcqAIXkEJNslvoc-LUMwHNRrKL7UeY87h',
+    badgeNumber: '#1',
+    badgeText: 'Party Favorite',
+    tags: [
+      { icon: 'cake', text: 'Custom Themes' },
+      { icon: 'celebration', text: 'Fun Flavors' },
+      { icon: 'eco', text: 'Pure Veg Standard' }
+    ]
+  },
+  {
+    titleLine1: 'Anniversary Classics.',
+    titleLine2: 'Toast To Love.',
+    description: 'Celebrate years of love and togetherness with elegant tiered cakes and premium dessert selections curated for anniversary celebrations.',
+    btnText: 'EXPLORE ANNIVERSARY MENU',
+    btnLink: '/shop',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRETRfPtfP-bA2VzWu7WPbBxbhNYY76Q1TcRPWK3-1uePZp3K7FTHbOseYXPGLtmZMnkanxiOD87rQA0RemZpgdYi97UuWcAQMXFt69fXeVf0vwG8PPIGcen0XTGcLPdyxQsTr0FEBRrLj8ol-Pb2sUfyZqju1v2Mp6HABFVwkXaygqIU4QCIwkGa1fet73QovnbVHj1zVI7GYgAx88F8cSF66dqKjwCzVW-meuvpmB1AhE_l5joSO',
+    badgeNumber: '100%',
+    badgeText: 'Handcrafted',
+    tags: [
+      { icon: 'domain', text: 'Premium Styling' },
+      { icon: 'favorite', text: 'Artisanal Design' },
+      { icon: 'workspace_premium', text: 'Rich Fillings' }
+    ]
+  }
+]
+
+interface SignatureProduct {
+  name: string
+  price: string
+  imageUrl: string
+}
+
+const SIGNATURE_PRODUCTS: SignatureProduct[] = [
+  {
+    name: 'Belgian Chocolate',
+    price: '₹799',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApZkJY6QschRPOB3x6-l8poxgy8aQmmu6tGSdCweuEr9GNxx80MjOyL-V6aPDgzTXkEnt9bEzdyvHM3ga5_WHNlz99MLqqUyBTHztAdF_idQhxFek4LpY-SmLqxAfqyqVxVny-1zqHSV2-gzfj4fTrvflbGADllc3ezN69kDBRlwKBGK0zMgF6JYbTMKgXCd5-z5NpSN_aixjKyGNho7lOOpf1I9w80b4lx0UvbJtdmE8ScIVfKKtY'
+  },
+  {
+    name: 'Red Velvet',
+    price: '₹899',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRETRfPtfP-bA2VzWu7WPbBxbhNYY76Q1TcRPWK3-1uePZp3K7FTHbOseYXPGLtmZMnkanxiOD87rQA0RemZpgdYi97UuWcAQMXFt69fXeVf0vwG8PPIGcen0XTGcLPdyxQsTr0FEBRrLj8ol-Pb2sUfyZqju1v2Mp6HABFVwkXaygqIU4QCIwkGa1fet73QovnbVHj1zVI7GYgAx88F8cSF66dqKjwCzVW-meuvpmB1AhE_l5joSO'
+  },
+  {
+    name: 'Butterscotch Crunch',
+    price: '₹749',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB5SWy7Qb6lqjOSFNcx6Uwk_csTMEYN27Hz5UU6BNCYyyP9eRfO32aVA4mxwePVyXvwEL-KL-BieXmP_yx0xe2RKPhqF1PmkdNxqao4CSfuXuzomKbfs4i2FeC4wLa-eD7NcOD3iocw8XrmDUWJPumldtnptojchgKRsQOcKdNco4gjtJl2U3cg0kzrQBZi46c-wgkJWwY_spYT3BBCzCrSaXlni_8cKqA0UkGyD1np9xUDfGYhIwbE'
+  },
+  {
+    name: 'Blueberry Cheesecake',
+    price: '₹999',
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAdx960xx5hnckATCpxOit7JMiNmp3wfnsQCXlJK3sCQDEdDETTHq7li5kRsBZwgyE7xa0TNAGJFZTehhmbUVjEySFFC6lmT6nxjwpNxoGrRaTAnx4j9PJLIhvyiIPVpOGUdTtLUF7yFFCDH_4-V8AETSibCU4NLfEUbPRI7ls0Z8T_9FTeeXtHuUhivZDLAWikMSltarpEgZApbhwkjhuUA1499xI1Wz4PjgaVyDEsPB6Wd81lC_Mh'
+  }
+]
+
 export default function HomePlaceholder() {
+  const [activeSlide, setActiveSlide] = useState(0)
+  const signatureScrollRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
-    // Left empty since scroll events are handled globally on navigation elements
+    const timer = setInterval(() => {
+      setActiveSlide(prev => (prev + 1) % HERO_SLIDES.length)
+    }, 3000)
+    return () => clearInterval(timer)
   }, [])
 
+  // Smooth scroll helper controls for Signature Collection Carousel
+  const scrollSignature = (direction: 'left' | 'right') => {
+    if (signatureScrollRef.current) {
+      const container = signatureScrollRef.current
+      const cardWidth = 304 // 280px min-width + 24px gap
+      const scrollAmount = direction === 'left' ? -cardWidth : cardWidth
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+    }
+  }
+
   return (
-    <div className="bg-background text-on-background">
-      {/* Hero Section */}
-      <header className="relative pt-12 pb-24 lg:pt-24 lg:pb-32 overflow-hidden bg-gradient-to-br from-surface to-surface-container-low animate-fade-in">
-        <div className="max-w-container-max mx-auto px-margin-desktop grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-          <div className="flex flex-col gap-6 text-center lg:text-left">
-            <h1 className="font-headline-xl text-headline-xl text-primary max-w-2xl mx-auto lg:mx-0">
-              <span className="block text-on-surface font-light italic mb-2">Beautifully Crafted.</span>
-              Happily Celebrated.
-            </h1>
-            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-lg mx-auto lg:mx-0">
-              From everyday moments to life's biggest celebrations, we craft artisanal cakes and desserts that make every moment bloom with flavor and joy.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mt-4">
-              <Link to="/shop" className="bg-primary text-on-primary px-8 py-3 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-lg flex items-center justify-center gap-2">
-                ORDER NOW
-                <span className="material-symbols-outlined text-sm">arrow_forward</span>
-              </Link>
-              <Link to="/shop" className="border-2 border-primary text-primary px-8 py-3 rounded-full font-label-md text-label-md hover:bg-primary/5 transition-colors flex items-center justify-center">
-                EXPLORE MENU
-              </Link>
+    <div className="bg-background text-on-background overflow-hidden">
+      {/* Hero Slider Section with a sliding track */}
+      <header className="relative pt-12 pb-24 lg:pt-24 lg:pb-32 bg-gradient-to-br from-surface to-surface-container-low min-h-[600px] flex items-center">
+        
+        {/* Sliding Track container */}
+        <div 
+          className="flex transition-transform duration-700 ease-in-out w-full"
+          style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+        >
+          {HERO_SLIDES.map((slide, index) => (
+            <div key={index} className="w-full flex-shrink-0">
+              <div className="max-w-container-max mx-auto px-margin-desktop w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                
+                {/* Slide Text Content Column */}
+                <div className="flex flex-col gap-6 text-center lg:text-left">
+                  <h1 className="font-headline-xl text-headline-xl text-primary max-w-2xl mx-auto lg:mx-0 leading-tight">
+                    <span className="block text-on-surface font-light italic mb-2">{slide.titleLine1}</span>
+                    {slide.titleLine2}
+                  </h1>
+                  <p className="font-body-lg text-body-lg text-on-surface-variant max-w-lg mx-auto lg:mx-0 min-h-[80px]">
+                    {slide.description}
+                  </p>
+                  
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mt-4">
+                    <Link to={slide.btnLink} className="bg-primary text-on-primary px-8 py-3 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-lg flex items-center justify-center gap-2">
+                      {slide.btnText}
+                      <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                    </Link>
+                    <Link to="/shop" className="border-2 border-primary text-primary px-8 py-3 rounded-full font-label-md text-label-md hover:bg-primary/5 transition-colors flex items-center justify-center">
+                      EXPLORE MENU
+                    </Link>
+                  </div>
+
+                  <div className="flex flex-wrap justify-center lg:justify-start gap-6 mt-8 opacity-80">
+                    {slide.tags.map((tag, idx) => (
+                      <div key={idx} className="flex flex-col items-center gap-2">
+                        <span className={`material-symbols-outlined text-3xl ${tag.text.includes('Veg') ? 'text-green-600 font-bold' : 'text-primary'}`}>{tag.icon}</span>
+                        <span className="font-label-sm text-label-sm text-on-surface-variant text-center leading-tight whitespace-nowrap">{tag.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Slide Image Showcase Column */}
+                <div className="relative w-full aspect-square max-w-lg mx-auto">
+                  <div className="absolute inset-0 bg-primary-container/20 rounded-full blur-3xl scale-90"></div>
+                  <img 
+                    className="w-full h-full object-cover rounded-full soft-shadow relative z-10 border-8 border-surface" 
+                    alt={slide.titleLine2}
+                    src={slide.imageUrl}
+                  />
+                  {/* Floating Badge */}
+                  <div className="absolute -bottom-6 -right-6 glass-panel rounded-full p-4 flex flex-col items-center justify-center w-28 h-28 shadow-xl z-20 animate-bounce" style={{ animationDuration: '3s' }}>
+                    <span className="text-primary font-headline-md text-headline-md font-bold leading-none">{slide.badgeNumber}</span>
+                    <span className="text-on-surface-variant font-label-sm text-label-sm text-center leading-tight mt-1">{slide.badgeText}</span>
+                  </div>
+                </div>
+
+              </div>
             </div>
-            <div className="flex justify-center lg:justify-start gap-8 mt-8 opacity-80">
-              <div className="flex flex-col items-center gap-2">
-                <span className="material-symbols-outlined text-3xl text-primary">eco</span>
-                <span className="font-label-sm text-label-sm text-on-surface-variant text-center">Premium<br/>Ingredients</span>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <span className="material-symbols-outlined text-3xl text-primary">favorite</span>
-                <span className="font-label-sm text-label-sm text-on-surface-variant text-center">Made<br/>with Love</span>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <span className="material-symbols-outlined text-3xl text-primary">bakery_dining</span>
-                <span className="font-label-sm text-label-sm text-on-surface-variant text-center">Freshly<br/>Baked</span>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <span className="material-symbols-outlined text-3xl text-green-600 font-bold" style={{ fontVariationSettings: "'FILL' 1" }}>eco</span>
-                <span className="font-label-sm text-label-sm text-on-surface-variant text-center">100% Pure<br/>Veg Only</span>
-              </div>
-            </div>
-          </div>
-          <div className="relative w-full aspect-square max-w-lg mx-auto">
-            <div className="absolute inset-0 bg-primary-container/20 rounded-full blur-3xl scale-90"></div>
-            <img 
-              className="w-full h-full object-cover rounded-full soft-shadow relative z-10 border-8 border-surface transform hover:scale-105 transition-transform duration-700" 
-              alt="A spectacular celebration cake"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBo24FowZT4dx61_yrgUcj5_C8U2l7zG4e6WCTDMEFvSLEouWlqsu_xi4gaIZlKmxqbsL2jhCNQD-rCFJrN_8MPldEOEE1qUDNCfdAseQ6N4NkoWv0SSkAMSlqiH0Ce-WSjzrjRt8Lc6B1glKPOmwwka2RHWt4hfSMc1A8JXE9usy-k_oCUlTKNrS-mabM-kvFOMilVpvR0gyV69Wu6Sdbua9qjrKFnPDhGGS-6iiZo-Vtb6FrIKMsc"
-            />
-            {/* Floating Badge */}
-            <div className="absolute -bottom-6 -right-6 glass-panel rounded-full p-4 flex flex-col items-center justify-center w-28 h-28 shadow-xl z-20 animate-bounce" style={{ animationDuration: '3s' }}>
-              <span className="text-primary font-headline-md text-headline-md font-bold leading-none">5k+</span>
-              <span className="text-on-surface-variant font-label-sm text-label-sm text-center leading-tight mt-1">Happy<br/>Customers</span>
-            </div>
-          </div>
+          ))}
         </div>
+
+        {/* Carousel Navigation Indicators Dot indicators */}
+        <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-3 z-20">
+          {HERO_SLIDES.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setActiveSlide(index)}
+              className={`w-3.5 h-3.5 rounded-full border transition-all duration-300 ${
+                activeSlide === index 
+                  ? 'bg-primary border-primary scale-110' 
+                  : 'bg-surface-container-low border-outline hover:bg-outline-variant/30'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+
         {/* Decorative Background Elements */}
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-primary-container/10 to-transparent pointer-events-none"></div>
       </header>
@@ -87,7 +218,7 @@ export default function HomePlaceholder() {
         </div>
       </div>
 
-      {/* Signature Collection (Horizontal Scroll) */}
+      {/* Signature Collection (Slidable Carousel) */}
       <section className="py-section-gap bg-surface">
         <div className="max-w-container-max mx-auto px-margin-desktop">
           <div className="text-center mb-12">
@@ -98,60 +229,52 @@ export default function HomePlaceholder() {
               <div className="h-px w-12 bg-primary/30"></div>
             </div>
           </div>
-          <div className="relative">
-            <div className="flex overflow-x-auto gap-6 pb-8 snap-x hide-scrollbar" style={{ scrollbarWidth: 'none' }}>
-              {/* Card 1 */}
-              <div className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-shadow group">
-                <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4">
-                  <img 
-                    className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" 
-                    alt="Belgian Chocolate cake"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuApZkJY6QschRPOB3x6-l8poxgy8aQmmu6tGSdCweuEr9GNxx80MjOyL-V6aPDgzTXkEnt9bEzdyvHM3ga5_WHNlz99MLqqUyBTHztAdF_idQhxFek4LpY-SmLqxAfqyqVxVny-1zqHSV2-gzfj4fTrvflbGADllc3ezN69kDBRlwKBGK0zMgF6JYbTMKgXCd5-z5NpSN_aixjKyGNho7lOOpf1I9w80b4lx0UvbJtdmE8ScIVfKKtY"
-                  />
+
+          <div className="relative px-0 lg:px-12">
+            {/* Scroll Navigation left arrow button */}
+            <button 
+              onClick={() => scrollSignature('left')}
+              className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-outline/30 hidden lg:flex items-center justify-center hover:bg-primary hover:text-on-primary bg-surface/95 shadow-md transition-all duration-300 z-10"
+              aria-label="Scroll left"
+            >
+              <span className="material-symbols-outlined">chevron_left</span>
+            </button>
+
+            <div 
+              ref={signatureScrollRef}
+              className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scroll-smooth hide-scrollbar" 
+              style={{ scrollbarWidth: 'none' }}
+            >
+              {SIGNATURE_PRODUCTS.map((prod, index) => (
+                <div 
+                  key={index}
+                  className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-all duration-500 group border border-outline-variant/10"
+                >
+                  <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4">
+                    <img 
+                      className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" 
+                      alt={prod.name}
+                      src={prod.imageUrl}
+                    />
+                  </div>
+                  <h3 className="font-label-md text-label-md text-on-surface text-center mb-1 font-semibold">{prod.name}</h3>
+                  <p className="text-primary text-center font-bold">{prod.price}</p>
                 </div>
-                <h3 className="font-label-md text-label-md text-on-surface text-center mb-1">Belgian Chocolate</h3>
-                <p className="text-primary text-center font-bold">₹799</p>
-              </div>
-              {/* Card 2 */}
-              <div className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-shadow group">
-                <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4">
-                  <img 
-                    className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" 
-                    alt="Red Velvet cake"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRETRfPtfP-bA2VzWu7WPbBxbhNYY76Q1TcRPWK3-1uePZp3K7FTHbOseYXPGLtmZMnkanxiOD87rQA0RemZpgdYi97UuWcAQMXFt69fXeVf0vwG8PPIGcen0XTGcLPdyxQsTr0FEBRrLj8ol-Pb2sUfyZqju1v2Mp6HABFVwkXaygqIU4QCIwkGa1fet73QovnbVHj1zVI7GYgAx88F8cSF66dqKjwCzVW-meuvpmB1AhE_l5joSO"
-                  />
-                </div>
-                <h3 className="font-label-md text-label-md text-on-surface text-center mb-1">Red Velvet</h3>
-                <p className="text-primary text-center font-bold">₹899</p>
-              </div>
-              {/* Card 3 */}
-              <div className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-shadow group">
-                <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4">
-                  <img 
-                    className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" 
-                    alt="Butterscotch Crunch cake"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5SWy7Qb6lqjOSFNcx6Uwk_csTMEYN27Hz5UU6BNCYyyP9eRfO32aVA4mxwePVyXvwEL-KL-BieXmP_yx0xe2RKPhqF1PmkdNxqao4CSfuXuzomKbfs4i2FeC4wLa-eD7NcOD3iocw8XrmDUWJPumldtnptojchgKRsQOcKdNco4gjtJl2U3cg0kzrQBZi46c-wgkJWwY_spYT3BBCzCrSaXlni_8cKqA0UkGyD1np9xUDfGYhIwbE"
-                  />
-                </div>
-                <h3 className="font-label-md text-label-md text-on-surface text-center mb-1">Butterscotch Crunch</h3>
-                <p className="text-primary text-center font-bold">₹749</p>
-              </div>
-              {/* Card 4 */}
-              <div className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-shadow group">
-                <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4">
-                  <img 
-                    className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" 
-                    alt="Blueberry Cheesecake"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdx960xx5hnckATCpxOit7JMiNmp3wfnsQCXlJK3sCQDEdDETTHq7li5kRsBZwgyE7xa0TNAGJFZTehhmbUVjEySFFC6lmT6nxjwpNxoGrRaTAnx4j9PJLIhvyiIPVpOGUdTtLUF7yFFCDH_4-V8AETSibCU4NLfEUbPRI7ls0Z8T_9FTeeXtHuUhivZDLAWikMSltarpEgZApbhwkjhuUA1499xI1Wz4PjgaVyDEsPB6Wd81lC_Mh"
-                  />
-                </div>
-                <h3 className="font-label-md text-label-md text-on-surface text-center mb-1">Blueberry Cheesecake</h3>
-                <p className="text-primary text-center font-bold">₹999</p>
-              </div>
+              ))}
             </div>
-            <div className="text-center mt-8">
-              <Link to="/shop" className="border-2 border-outline text-on-surface px-8 py-2 rounded-full font-label-md text-label-md hover:bg-surface-container transition-colors inline-block">
-                VIEW ALL
+
+            {/* Scroll Navigation right arrow button */}
+            <button 
+              onClick={() => scrollSignature('right')}
+              className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-outline/30 hidden lg:flex items-center justify-center hover:bg-primary hover:text-on-primary bg-surface/95 shadow-md transition-all duration-300 z-10"
+              aria-label="Scroll right"
+            >
+              <span className="material-symbols-outlined">chevron_right</span>
+            </button>
+
+            <div className="text-center mt-4">
+              <Link to="/shop" className="border-2 border-outline text-on-surface px-8 py-2 rounded-full font-label-md text-label-md hover:bg-surface-container transition-colors inline-block font-semibold">
+                VIEW ALL DELIGHTS
               </Link>
             </div>
           </div>
