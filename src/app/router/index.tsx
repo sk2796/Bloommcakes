@@ -11,6 +11,7 @@ const CustomCakePlaceholder = lazy(() => import('@/pages/CustomCakePlaceholder')
 const CartPlaceholder = lazy(() => import('@/pages/CartPlaceholder'))
 const CheckoutPlaceholder = lazy(() => import('@/pages/CheckoutPlaceholder'))
 const AccountPlaceholder = lazy(() => import('@/pages/AccountPlaceholder'))
+const ContactPlaceholder = lazy(() => import('@/pages/ContactPlaceholder'))
 
 function LoadingSpinner() {
   return (
@@ -94,6 +95,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<LoadingSpinner />}>
             <AccountPlaceholder />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'contact',
+        element: (
+          <Suspense fallback={<LoadingSpinner />}>
+            <ContactPlaceholder />
           </Suspense>
         ),
       },
