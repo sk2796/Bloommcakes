@@ -7,6 +7,8 @@ export function Layout() {
   const location = useLocation()
   const { items } = useCartStore()
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
   // Sum total quantities of items in the cart
   const cartItemCount = items.reduce((total, item) => total + item.quantity, 0)
 
@@ -108,11 +110,28 @@ export function Layout() {
               )}
             </Link>
             <Link to="/shop" className="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-md hidden sm:block">ORDER NOW</Link>
-            <button className="md:hidden p-2 text-primary">
-              <span className="material-symbols-outlined" data-icon="menu">menu</span>
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden p-2 text-primary focus:outline-none"
+              aria-label="Toggle menu"
+            >
+              <span className="material-symbols-outlined" data-icon="menu">{isMenuOpen ? 'close' : 'menu'}</span>
             </button>
           </div>
         </div>
+
+        {/* Mobile Navigation Drawer overlay panel */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-surface border-t border-outline-variant/30 py-4 px-margin-desktop flex flex-col gap-4 animate-fade-in">
+            <Link onClick={() => setIsMenuOpen(false)} to="/" className={`font-semibold py-2 border-b border-outline-variant/10 text-sm ${location.pathname === '/' ? 'text-primary' : 'text-on-surface-variant'}`}>Home</Link>
+            <Link onClick={() => setIsMenuOpen(false)} to="/about" className={`font-semibold py-2 border-b border-outline-variant/10 text-sm ${location.pathname === '/about' ? 'text-primary' : 'text-on-surface-variant'}`}>About Us</Link>
+            <Link onClick={() => setIsMenuOpen(false)} to="/shop" className={`font-semibold py-2 border-b border-outline-variant/10 text-sm ${location.pathname.startsWith('/shop') ? 'text-primary' : 'text-on-surface-variant'}`}>Menu</Link>
+            <Link onClick={() => setIsMenuOpen(false)} to="/custom-cake" className={`font-semibold py-2 border-b border-outline-variant/10 text-sm ${location.pathname === '/custom-cake' ? 'text-primary' : 'text-on-surface-variant'}`}>Custom Cakes</Link>
+            <Link onClick={() => setIsMenuOpen(false)} to="/gallery" className={`font-semibold py-2 border-b border-outline-variant/10 text-sm ${location.pathname === '/gallery' ? 'text-primary' : 'text-on-surface-variant'}`}>Gallery</Link>
+            <Link onClick={() => setIsMenuOpen(false)} to="/contact" className={`font-semibold py-2 text-sm ${location.pathname === '/contact' ? 'text-primary' : 'text-on-surface-variant'}`}>Contact</Link>
+            <Link onClick={() => setIsMenuOpen(false)} to="/shop" className="bg-primary text-on-primary px-6 py-2.5 rounded-full text-center font-bold text-xs uppercase tracking-wider shadow-md mt-2">ORDER NOW</Link>
+          </div>
+        )}
       </nav>
 
       {/* Main page content wrapper */}
