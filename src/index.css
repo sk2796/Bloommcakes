@@ -73,6 +73,14 @@
   }
 }
 
+/* Responsive spacing overrides for mobile */
+@media (max-width: 768px) {
+  :root {
+    --section-gap: 40px;
+    --margin-desktop: 16px; /* Align desktop margins down to match mobile padding on small screens */
+  }
+}
+
 @layer utilities {
   .glass-panel {
     background: rgba(255, 255, 255, 0.6);
