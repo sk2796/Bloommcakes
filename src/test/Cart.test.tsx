@@ -2,9 +2,36 @@ import { describe, it, expect } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import CartPlaceholder from '../pages/CartPlaceholder'
+import { useCartStore } from '@/features/cart/store/useCartStore'
 
 describe('Shopping Cart Page', () => {
   it('renders pre-populated cart items, subtotal counters, and reacts to quantity changes', () => {
+    // Populate items for test since cart default is now empty
+    useCartStore.setState({
+      items: [
+        {
+          id: 'item-1',
+          cakeId: 'c1',
+          name: 'Belgian Chocolate Cake',
+          slug: 'belgian-chocolate',
+          imageUrl: '',
+          price: 1499,
+          weight: '1kg',
+          quantity: 1
+        },
+        {
+          id: 'item-2',
+          cakeId: 'c4',
+          name: 'Blueberry Cheesecake',
+          slug: 'blueberry-cheesecake',
+          imageUrl: '',
+          price: 999,
+          weight: '0.5kg',
+          quantity: 2
+        }
+      ]
+    })
+
     render(
       <BrowserRouter>
         <CartPlaceholder />
