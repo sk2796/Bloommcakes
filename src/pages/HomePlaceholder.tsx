@@ -64,6 +64,7 @@ const HERO_SLIDES: SlideData[] = [
 
 interface SignatureProduct {
   name: string
+  slug: string
   price: string
   imageUrl: string
 }
@@ -71,21 +72,25 @@ interface SignatureProduct {
 const SIGNATURE_PRODUCTS: SignatureProduct[] = [
   {
     name: 'Belgian Chocolate',
+    slug: 'belgian-chocolate',
     price: '₹799',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApZkJY6QschRPOB3x6-l8poxgy8aQmmu6tGSdCweuEr9GNxx80MjOyL-V6aPDgzTXkEnt9bEzdyvHM3ga5_WHNlz99MLqqUyBTHztAdF_idQhxFek4LpY-SmLqxAfqyqVxVny-1zqHSV2-gzfj4fTrvflbGADllc3ezN69kDBRlwKBGK0zMgF6JYbTMKgXCd5-z5NpSN_aixjKyGNho7lOOpf1I9w80b4lx0UvbJtdmE8ScIVfKKtY'
   },
   {
     name: 'Red Velvet',
+    slug: 'red-velvet-supreme',
     price: '₹899',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRETRfPtfP-bA2VzWu7WPbBxbhNYY76Q1TcRPWK3-1uePZp3K7FTHbOseYXPGLtmZMnkanxiOD87rQA0RemZpgdYi97UuWcAQMXFt69fXeVf0vwG8PPIGcen0XTGcLPdyxQsTr0FEBRrLj8ol-Pb2sUfyZqju1v2Mp6HABFVwkXaygqIU4QCIwkGa1fet73QovnbVHj1zVI7GYgAx88F8cSF66dqKjwCzVW-meuvpmB1AhE_l5joSO'
   },
   {
     name: 'Butterscotch Crunch',
+    slug: 'butterscotch-crunch',
     price: '₹749',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB5SWy7Qb6lqjOSFNcx6Uwk_csTMEYN27Hz5UU6BNCYyyP9eRfO32aVA4mxwePVyXvwEL-KL-BieXmP_yx0xe2RKPhqF1PmkdNxqao4CSfuXuzomKbfs4i2FeC4wLa-eD7NcOD3iocw8XrmDUWJPumldtnptojchgKRsQOcKdNco4gjtJl2U3cg0kzrQBZi46c-wgkJWwY_spYT3BBCzCrSaXlni_8cKqA0UkGyD1np9xUDfGYhIwbE'
   },
   {
     name: 'Blueberry Cheesecake',
+    slug: 'blueberry-cheesecake',
     price: '₹999',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAdx960xx5hnckATCpxOit7JMiNmp3wfnsQCXlJK3sCQDEdDETTHq7li5kRsBZwgyE7xa0TNAGJFZTehhmbUVjEySFFC6lmT6nxjwpNxoGrRaTAnx4j9PJLIhvyiIPVpOGUdTtLUF7yFFCDH_4-V8AETSibCU4NLfEUbPRI7ls0Z8T_9FTeeXtHuUhivZDLAWikMSltarpEgZApbhwkjhuUA1499xI1Wz4PjgaVyDEsPB6Wd81lC_Mh'
   }
@@ -246,9 +251,10 @@ export default function HomePlaceholder() {
               style={{ scrollbarWidth: 'none' }}
             >
               {SIGNATURE_PRODUCTS.map((prod, index) => (
-                <div 
+                <Link 
+                  to={`/product/${prod.slug}`}
                   key={index}
-                  className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg transition-all duration-500 group border border-outline-variant/10"
+                  className="min-w-[280px] w-[280px] snap-center bg-surface-container-lowest rounded-2xl p-4 soft-shadow hover:shadow-lg hover:border-primary/20 transition-all duration-500 group border border-outline-variant/10 block text-left"
                 >
                   <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-surface-container flex items-center justify-center p-4">
                     <img 
@@ -257,9 +263,9 @@ export default function HomePlaceholder() {
                       src={prod.imageUrl}
                     />
                   </div>
-                  <h3 className="font-label-md text-label-md text-on-surface text-center mb-1 font-semibold">{prod.name}</h3>
+                  <h3 className="font-label-md text-label-md text-on-surface text-center mb-1 font-semibold group-hover:text-primary transition-colors">{prod.name}</h3>
                   <p className="text-primary text-center font-bold">{prod.price}</p>
-                </div>
+                </Link>
               ))}
             </div>
 
