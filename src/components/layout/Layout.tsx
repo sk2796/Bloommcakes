@@ -81,16 +81,6 @@ export function Layout() {
             </Link>
             <Link 
               className={`font-label-md text-label-md transition-colors ${
-                location.pathname === '/gallery' 
-                  ? 'text-primary font-bold border-b-2 border-primary pb-1' 
-                  : 'text-on-surface-variant hover:text-primary'
-              }`} 
-              to="/gallery"
-            >
-              Gallery
-            </Link>
-            <Link 
-              className={`font-label-md text-label-md transition-colors ${
                 location.pathname === '/contact' 
                   ? 'text-primary font-bold border-b-2 border-primary pb-1' 
                   : 'text-on-surface-variant hover:text-primary'
@@ -127,7 +117,6 @@ export function Layout() {
             <Link onClick={() => setIsMenuOpen(false)} to="/about" className={`font-semibold py-2 border-b border-outline-variant/10 text-sm ${location.pathname === '/about' ? 'text-primary' : 'text-on-surface-variant'}`}>About Us</Link>
             <Link onClick={() => setIsMenuOpen(false)} to="/shop" className={`font-semibold py-2 border-b border-outline-variant/10 text-sm ${location.pathname.startsWith('/shop') ? 'text-primary' : 'text-on-surface-variant'}`}>Menu</Link>
             <Link onClick={() => setIsMenuOpen(false)} to="/custom-cake" className={`font-semibold py-2 border-b border-outline-variant/10 text-sm ${location.pathname === '/custom-cake' ? 'text-primary' : 'text-on-surface-variant'}`}>Custom Cakes</Link>
-            <Link onClick={() => setIsMenuOpen(false)} to="/gallery" className={`font-semibold py-2 border-b border-outline-variant/10 text-sm ${location.pathname === '/gallery' ? 'text-primary' : 'text-on-surface-variant'}`}>Gallery</Link>
             <Link onClick={() => setIsMenuOpen(false)} to="/contact" className={`font-semibold py-2 text-sm ${location.pathname === '/contact' ? 'text-primary' : 'text-on-surface-variant'}`}>Contact</Link>
             <Link onClick={() => setIsMenuOpen(false)} to="/shop" className="bg-primary text-on-primary px-6 py-2.5 rounded-full text-center font-bold text-xs uppercase tracking-wider shadow-md mt-2">ORDER NOW</Link>
           </div>
