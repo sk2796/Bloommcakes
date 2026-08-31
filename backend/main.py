@@ -38,6 +38,7 @@ app.add_middleware(
 EXCEL_FILE_PATH = os.path.join(os.path.dirname(__file__), "products.xlsx")
 PINCODES_FILE_PATH = os.path.join(os.path.dirname(__file__), "pincodes.xlsx")
 ORDERS_EXCEL_FILE_PATH = os.path.join(os.path.dirname(__file__), "orders.xlsx")
+CUSTOMERS_EXCEL_FILE_PATH = os.path.join(os.path.dirname(__file__), "customers.xlsx")
 
 # Mock databases models representation
 class CakeItem(BaseModel):
@@ -88,6 +89,14 @@ class VerifyPaymentRequest(BaseModel):
     razorpay_order_id: str
     razorpay_payment_id: str
     razorpay_signature: str
+
+class CustomerDetails(BaseModel):
+    name: str
+    phone: str
+    email: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    pincode: Optional[str] = None
 
 def read_products_from_excel() -> List[dict]:
     """Helper method to load product rows dynamically from local Excel database."""
@@ -246,3 +255,41 @@ def submit_order(order: OrderSubmission):
         "order_id": order_id,
         "message": "Order processed and stored successfully"
     }
+
+@app.post("/customers")
+def save_customer(customer: CustomerDetails):
+    """Save customer contact details profile in a separate Excel spreadsheet database."""
+    from datetime import datetime
+    new_cust_data = {
+        "name": customer.name,
+        "phone": customer.phone,
+        "email": customer.email or "",
+        "city": customer.city or "",
+        "state": customer.state or "",
+        "pincode": customer.pincode or "",
+        "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    
+    try:
+        if os.path.exists(CUSTOMERS_EXCEL_FILE_PATH):
+            df = pd.read_excel(CUSTOMERS_EXCEL_FILE_PATH)
+            df['phone'] = df['phone'].astype(str)
+            phone_str = str(customer.phone)
+            
+            existing_idx = df.index[df['phone'] == phone_str].tolist()
+            if existing_idx:
+                for col, val in new_cust_data.items():
+                    df.loc[existing_idx[0], col] = val
+            else:
+                new_row_df = pd.DataFrame([new_cust_data])
+                df = pd.concat([df, new_row_df], ignore_index=True)
+        else:
+            df = pd.DataFrame([new_cust_data])
+            
+        df.to_excel(CUSTOMERS_EXCEL_FILE_PATH, index=False)
+        print(f"Saved customer profile for {customer.name}.")
+    except Exception as e:
+        print(f"Error saving customer to Excel: {e}")
+        raise HTTPException(status_code=500, detail="Failed to save customer details.")
+        
+    return {"status": "success", "message": "Customer details stored successfully"}

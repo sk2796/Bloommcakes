@@ -251,6 +251,24 @@ export default function CheckoutPlaceholder() {
       console.error('Failed to save order to Excel:', err)
     }
 
+    // Submit customer details to backend to store in Excel database
+    try {
+      await fetch('http://127.0.0.1:8000/customers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email || undefined,
+          city: formData.city || undefined,
+          state: formData.state || undefined,
+          pincode: pincode || undefined
+        })
+      })
+    } catch (err) {
+      console.error('Failed to save customer details:', err)
+    }
+
     // Auto compile WhatsApp details on confirmation
     const text = `*New Order Details (BloomCakes)*\n\n` +
       `*Customer details:*\n` +
@@ -472,6 +490,17 @@ export default function CheckoutPlaceholder() {
                 {formData.phone.trim() && !isPhoneValid() && (
                   <span className="text-[10px] text-red-500 font-bold block uppercase tracking-wide">Please enter a valid 10-digit Indian phone number.</span>
                 )}
+              </div>
+
+              <div className="sm:col-span-2 space-y-1">
+                <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Email Address (Optional)</label>
+                <input
+                  type="email"
+                  placeholder="Enter email address (E.g. jane@example.com)"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold"
+                />
               </div>
 
               <div className="sm:col-span-2 space-y-1">
