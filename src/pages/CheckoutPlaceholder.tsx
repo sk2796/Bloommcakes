@@ -346,7 +346,7 @@ export default function CheckoutPlaceholder() {
                 ) : (
                   <span className="text-red-500 flex items-center gap-1">
                     <span className="material-symbols-outlined text-sm leading-none">cancel</span>
-                    Delivery unavailable. Deliverable Pincodes: 380001, 380009, 380015, 380054, 382481, 380058, 380021
+                    Delivery unavailable for this pincode.
                   </span>
                 )}
               </div>

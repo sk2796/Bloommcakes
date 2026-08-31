@@ -394,7 +394,7 @@ export default function CustomCakePlaceholder() {
                       {isDeliverable ? (
                         <span className="text-green-600">✓ Serviceable delivery location!</span>
                       ) : (
-                        <span className="text-red-500">✗ Unserviceable location. Serviceable codes: 380001, 380009, 380015, 380054, 382481</span>
+                        <span className="text-red-500">✗ Unserviceable location.</span>
                       )}
                     </div>
                   )}
