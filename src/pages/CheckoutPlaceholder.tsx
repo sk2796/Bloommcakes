@@ -71,8 +71,12 @@ export default function CheckoutPlaceholder() {
     try {
       const response = await fetch(`http://127.0.0.1:8000/pincodes?code=${pincode.trim()}`)
       if (response.ok) {
-        const isServiceable = await response.json()
-        setIsDeliverable(isServiceable === true)
+        const data = await response.json()
+        const isServiceable = data.serviceable === true
+        setIsDeliverable(isServiceable)
+        if (isServiceable && data.city) {
+          handleInputChange('city', data.city)
+        }
       } else {
         setIsDeliverable(false)
       }

@@ -58,8 +58,8 @@ export default function CustomCakePlaceholder() {
     try {
       const response = await fetch(`http://127.0.0.1:8000/pincodes?code=${pincode.trim()}`)
       if (response.ok) {
-        const isServiceable = await response.json()
-        setIsDeliverable(isServiceable === true)
+        const data = await response.json()
+        setIsDeliverable(data.serviceable === true)
       } else {
         setIsDeliverable(false)
       }

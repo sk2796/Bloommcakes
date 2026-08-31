@@ -18,7 +18,10 @@ global.fetch = vi.fn().mockImplementation((url: string) => {
     const isServiceable = MOCK_PINCODES.includes(code)
     return Promise.resolve({
       ok: true,
-      json: () => Promise.resolve(isServiceable),
+      json: () => Promise.resolve({
+        serviceable: isServiceable,
+        city: isServiceable ? 'Ahmedabad' : null
+      }),
     })
   }
   return Promise.resolve({

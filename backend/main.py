@@ -123,7 +123,10 @@ def read_root():
 def check_pincode(code: str):
     """Check if a specific pincode is serviceable by searching the Excel sheet."""
     pincodes = read_pincodes_from_excel()
-    return any(item.get("pincode") == code.strip() for item in pincodes)
+    for item in pincodes:
+        if item.get("pincode") == code.strip():
+            return {"serviceable": True, "city": item.get("city")}
+    return {"serviceable": False, "city": None}
 
 @app.get("/products", response_model=List[CakeItem])
 def get_products():
