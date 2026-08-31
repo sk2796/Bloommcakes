@@ -37,14 +37,14 @@ describe('Checkout Details Page', () => {
     fireEvent.change(pinField, { target: { value: '111111' } })
     fireEvent.click(screen.getByText('CHECK'))
     
-    expect(screen.getByText(/Delivery unavailable/i)).toBeInTheDocument()
+    expect(await screen.findByText(/Delivery unavailable/i)).toBeInTheDocument()
     expect(submitButton).toBeDisabled()
 
     // Input eligible pincode
     fireEvent.change(pinField, { target: { value: '380015' } })
     fireEvent.click(screen.getByText('CHECK'))
     
-    expect(screen.getByText(/We deliver to your location/i)).toBeInTheDocument()
+    expect(await screen.findByText(/We deliver to your location/i)).toBeInTheDocument()
 
     // Fill in rest of form configurations
     fireEvent.change(screen.getByPlaceholderText('Enter first & last name'), { target: { value: 'Jane Doe' } })

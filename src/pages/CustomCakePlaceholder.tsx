@@ -19,7 +19,7 @@ const OCCASIONS: { type: OccasionType; label: string; icon: string }[] = [
   { type: 'other', label: 'Other', icon: 'more_horiz' }
 ]
 
-const PIN_CODES_DELIVERABLE = ['380001', '380009', '380015', '380054', '382481']
+
 
 export default function CustomCakePlaceholder() {
   const [currentStep, setCurrentStep] = useState<number>(1)
@@ -54,12 +54,20 @@ export default function CustomCakePlaceholder() {
     return `${yyyy}-${mm}-${dd}`
   }
 
-  const checkPincode = () => {
-    setPinChecked(true)
-    if (PIN_CODES_DELIVERABLE.includes(pincode.trim())) {
-      setIsDeliverable(true)
-    } else {
+  const checkPincode = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/pincodes?code=${pincode.trim()}`)
+      if (response.ok) {
+        const isServiceable = await response.json()
+        setIsDeliverable(isServiceable === true)
+      } else {
+        setIsDeliverable(false)
+      }
+    } catch (err) {
+      console.error(err)
       setIsDeliverable(false)
+    } finally {
+      setPinChecked(true)
     }
   }
 

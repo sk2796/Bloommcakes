@@ -119,13 +119,11 @@ def read_pincodes_from_excel() -> List[dict]:
 def read_root():
     return {"message": "Welcome to BloomCakes Backend API. Visit /docs for Swagger specifications documentation."}
 
-@app.get("/pincodes", response_model=List[PincodeItem])
-def get_serviceable_pincodes():
-    """Retrieve all serviceable pincodes and their associated cities from the Excel sheet."""
+@app.get("/pincodes")
+def check_pincode(code: str):
+    """Check if a specific pincode is serviceable by searching the Excel sheet."""
     pincodes = read_pincodes_from_excel()
-    if not pincodes:
-        raise HTTPException(status_code=404, detail="No pincodes found in database.")
-    return pincodes
+    return any(item.get("pincode") == code.strip() for item in pincodes)
 
 @app.get("/products", response_model=List[CakeItem])
 def get_products():
