@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CustomCakeOrder, OccasionType } from '@/features/custom-cake/types'
+import { API_BASE_URL } from '@/config/api'
 
 const STEP_METADATA = [
   { step: 1, title: 'Occasion', desc: 'Choose the occasion' },
@@ -56,7 +57,7 @@ export default function CustomCakePlaceholder() {
 
   const checkPincode = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/pincodes?code=${pincode.trim()}`)
+      const response = await fetch(`${API_BASE_URL}/pincodes?code=${pincode.trim()}`)
       if (response.ok) {
         const data = await response.json()
         setIsDeliverable(data.serviceable === true)

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCartStore } from '@/features/cart/store/useCartStore'
+import { API_BASE_URL } from '@/config/api'
 
 
 
@@ -70,7 +71,7 @@ export default function CheckoutPlaceholder() {
 
   const checkPincode = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/pincodes?code=${pincode.trim()}`)
+      const response = await fetch(`${API_BASE_URL}/pincodes?code=${pincode.trim()}`)
       if (response.ok) {
         const data = await response.json()
         const isServiceable = data.serviceable === true
@@ -128,7 +129,7 @@ export default function CheckoutPlaceholder() {
 
     // 1. Contact Backend API to create orders reference
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/create-order', {
+      const response = await fetch(`${API_BASE_URL}/api/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -157,7 +158,7 @@ export default function CheckoutPlaceholder() {
         handler: async function (paymentRes: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) {
           // 3. Forward signature results validation details to verification endpoint
           try {
-            const verifyRes = await fetch('http://127.0.0.1:8000/api/verify-payment', {
+            const verifyRes = await fetch(`${API_BASE_URL}/api/verify-payment`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -220,7 +221,7 @@ export default function CheckoutPlaceholder() {
 
     // Submit order details to backend to store in Excel database
     try {
-      await fetch('http://127.0.0.1:8000/orders', {
+      await fetch(`${API_BASE_URL}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -253,7 +254,7 @@ export default function CheckoutPlaceholder() {
 
     // Submit customer details to backend to store in Excel database
     try {
-      await fetch('http://127.0.0.1:8000/customers', {
+      await fetch(`${API_BASE_URL}/customers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
