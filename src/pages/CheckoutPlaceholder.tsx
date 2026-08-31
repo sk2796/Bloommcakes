@@ -34,6 +34,7 @@ export default function CheckoutPlaceholder() {
   })
   
   const [orderConfirmed, setOrderConfirmed] = useState(false)
+  const [whatsappLink, setWhatsappLink] = useState('')
 
   // Promo code states
   const [promoCodeInput, setPromoCodeInput] = useState('')
@@ -221,7 +222,12 @@ export default function CheckoutPlaceholder() {
     const encoded = encodeURIComponent(text)
     const whatsappUrl = `https://wa.me/918420271983?text=${encoded}`
     
-    window.open(whatsappUrl, '_blank')
+    setWhatsappLink(whatsappUrl)
+    try {
+      window.open(whatsappUrl, '_blank')
+    } catch (e) {
+      console.error('Popup blocked:', e)
+    }
     clearCart()
   }
 
@@ -250,18 +256,33 @@ export default function CheckoutPlaceholder() {
 
   if (orderConfirmed) {
     return (
-      <div className="max-w-container-max mx-auto px-margin-desktop py-24 text-center animate-fade-in">
+      <div className="max-w-container-max mx-auto px-margin-desktop py-24 text-center animate-fade-in flex flex-col items-center justify-center">
         <span className="material-symbols-outlined text-green-500 text-6xl mb-4" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
         <h2 className="text-3xl font-bold text-primary mb-3">Order Confirmed!</h2>
-        <p className="text-on-surface-variant max-w-md mx-auto mb-4 font-body-lg">
-          Thank you, {formData.name}. We have opened WhatsApp to automatically forward your cake order summary parameters.
+        <p className="text-on-surface-variant max-w-md mx-auto mb-6 font-body-lg">
+          Thank you, {formData.name}. Your payment has been received successfully.
         </p>
-        <p className="text-xs text-on-surface-variant max-w-sm mx-auto mb-8">
-          You can reach us directly for order confirmation or tracking queries at **+91 84202 71983**.
+        <p className="text-sm text-on-surface-variant max-w-md mx-auto mb-8">
+          Please click the button below to automatically send your order summary to us on WhatsApp to finalize your delivery slot.
         </p>
-        <Link to="/shop" className="bg-primary text-on-primary px-8 py-3.5 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-md font-bold">
-          CONTINUE SHOPPING
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+          {whatsappLink && (
+            <a
+              href={whatsappLink}
+              target="_blank"
+              rel="noreferrer"
+              className="bg-green-600 text-white px-8 py-3.5 rounded-full font-label-md text-label-md hover:bg-green-700 transition-colors shadow-md font-bold flex items-center gap-2"
+            >
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.248 8.477 3.517 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.731-1.456L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.625 1.451 5.403.002 9.803-4.394 9.806-9.8.001-2.618-1.01-5.08-2.859-6.931C16.378 2.025 13.92 1.015 11.999 1.015c-5.412 0-9.816 4.404-9.82 9.81-.001 1.936.568 3.826 1.648 5.446l-.999 3.65 3.82-.967zm12.355-6.52c-.3-.15-1.77-.875-2.045-.975-.276-.1-.476-.15-.676.15-.2.3-.775.975-.95 1.175-.175.2-.35.225-.65.075-1.025-.512-1.745-.882-2.427-2.05-.181-.31.181-.287.519-.96.062-.125.031-.237-.015-.337-.046-.1-.476-1.144-.652-1.569-.172-.412-.344-.356-.476-.362-.125-.006-.268-.007-.412-.007s-.377.05-.575.268c-.198.219-.756.738-.756 1.8s.772 2.088.88 2.238c.108.15 1.517 2.316 3.675 3.248 1.25.541 1.9.619 2.583.518.775-.115 2.378-.973 2.712-1.916.335-.943.335-1.75.235-1.9-.1-.15-.4-.25-.7-.4z"/>
+              </svg>
+              SEND DETAILS ON WHATSAPP
+            </a>
+          )}
+          <Link to="/shop" className="border border-outline px-8 py-3.5 rounded-full font-label-md text-label-md hover:bg-surface-container-low transition-colors shadow-sm font-bold">
+            CONTINUE SHOPPING
+          </Link>
+        </div>
       </div>
     )
   }
