@@ -96,8 +96,106 @@ export default function CheckoutPlaceholder() {
     setPromoError('')
   }
 
-  const handleConfirmOrder = (e: React.FormEvent) => {
+  // Name validation: Must contain at least a first and last name (alphabetical, min 2 chars each)
+  const isNameValid = () => {
+    const trimmed = formData.name.trim()
+    return /^[a-zA-Z]{2,}\s+[a-zA-Z]{2,}/.test(trimmed)
+  }
+
+  // Phone validation: Must match standard Indian 10-digit formats (optionally prefixed with +91 or 0)
+  const isPhoneValid = () => {
+    const trimmed = formData.phone.trim().replace(/[\s-]/g, '')
+    return /^(?:\+91|0)?[6-9]\d{9}$/.test(trimmed)
+  }
+
+  const startPaymentCheckoutFlow = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // 1. Contact Backend API to create orders reference
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: total * 100, // convert INR to paise
+          currency: 'INR',
+          // eslint-disable-next-line react-hooks/purity
+          receipt: `rcpt_${Math.floor(Math.random() * 1000000)}`
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Order creation failed on backend server.')
+      }
+
+      const orderData = await response.json()
+
+      // 2. Configure Razorpay client checkout modal parameters
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TWKVpMlrWThBL5',
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'BloomCakes',
+        description: 'Premium Handcrafted Cakes Order',
+        image: '/logo.jpg',
+        order_id: orderData.order_id,
+        handler: async function (paymentRes: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) {
+          // 3. Forward signature results validation details to verification endpoint
+          try {
+            const verifyRes = await fetch('http://127.0.0.1:8000/api/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: paymentRes.razorpay_order_id,
+                razorpay_payment_id: paymentRes.razorpay_payment_id,
+                razorpay_signature: paymentRes.razorpay_signature
+              })
+            })
+
+            if (verifyRes.ok) {
+              // Proceed with order confirmation routing on successful signatures check
+              handleConfirmOrder()
+            } else {
+              alert('Payment validation check failed. Transaction signatures mismatch.')
+            }
+          } catch (err) {
+            console.error(err)
+            alert('Unable to reach verification api server.')
+          }
+        },
+        prefill: {
+          name: formData.name,
+          contact: formData.phone,
+          email: formData.email || undefined
+        },
+        theme: { color: '#E0A3B6' },
+        modal: {
+          ondismiss: function () {
+            alert('Checkout payment modal dismissed by user.')
+          }
+        }
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (typeof window !== 'undefined' && (window as any).Razorpay) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const rzp = new (window as any).Razorpay(options)
+        rzp.on('payment.failed', function (resp: { error: { description: string } }) {
+          alert(`Payment transaction failed: ${resp.error.description}`)
+        })
+        rzp.open()
+      } else {
+        throw new Error('Razorpay SDK not loaded on window client.')
+      }
+
+    } catch (err: unknown) {
+      console.error(err)
+      const errorMsg = err instanceof Error ? err.message : 'Unknown error'
+      alert(`Checkout initialization failed: ${errorMsg}`)
+    }
+  }
+
+  const handleConfirmOrder = () => {
     setOrderConfirmed(true)
     
     const fullAddress = `${formData.addressLine1}${formData.landmark ? `, Landmark: ${formData.landmark}` : ''}, ${formData.city} - ${pincode}`
@@ -125,18 +223,6 @@ export default function CheckoutPlaceholder() {
     
     window.open(whatsappUrl, '_blank')
     clearCart()
-  }
-
-  // Name validation: Must contain at least a first and last name (alphabetical, min 2 chars each)
-  const isNameValid = () => {
-    const trimmed = formData.name.trim()
-    return /^[a-zA-Z]{2,}\s+[a-zA-Z]{2,}/.test(trimmed)
-  }
-
-  // Phone validation: Must match standard Indian 10-digit formats (optionally prefixed with +91 or 0)
-  const isPhoneValid = () => {
-    const trimmed = formData.phone.trim().replace(/[\s-]/g, '')
-    return /^(?:\+91|0)?[6-9]\d{9}$/.test(trimmed)
   }
 
   const isFormValid = isDeliverable && 
@@ -172,7 +258,7 @@ export default function CheckoutPlaceholder() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Left main forms columns */}
-        <form onSubmit={handleConfirmOrder} className="lg:col-span-8 flex flex-col gap-6">
+        <form onSubmit={startPaymentCheckoutFlow} className="lg:col-span-8 flex flex-col gap-6">
           
           {/* Section 1: Pincode Checker */}
           <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 shadow-sm flex flex-col gap-4 text-on-surface">
@@ -470,7 +556,7 @@ export default function CheckoutPlaceholder() {
             type="submit"
             onClick={(e) => {
               if (isFormValid) {
-                handleConfirmOrder(e)
+                startPaymentCheckoutFlow(e)
               }
             }}
             disabled={!isFormValid}
@@ -480,7 +566,7 @@ export default function CheckoutPlaceholder() {
                 : 'bg-primary text-on-primary hover:bg-on-primary-fixed-variant'
             }`}
           >
-            PLACE ORDER VIA WHATSAPP
+            PROCEED TO PAY
           </button>
         </div>
       </div>

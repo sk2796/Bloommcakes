@@ -1,9 +1,24 @@
 import os
-from fastapi import FastAPI, HTTPException
+import hmac
+import hashlib
+from fastapi import FastAPI, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import pandas as pd
+import razorpay
+from dotenv import load_dotenv
+
+# Load credentials from .env configurations file
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), ".env"))
+
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
+
+# Initialize Razorpay Client wrapper
+razorpay_client = None
+if RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET:
+    razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
 app = FastAPI(
     title="BloomCakes Backend API",
@@ -58,6 +73,16 @@ class OrderSubmission(BaseModel):
     discountAmount: int = 0
     totalAmount: int
 
+class CreateOrderRequest(BaseModel):
+    amount: int  # in paise
+    currency: str = "INR"
+    receipt: Optional[str] = None
+
+class VerifyPaymentRequest(BaseModel):
+    razorpay_order_id: str
+    razorpay_payment_id: str
+    razorpay_signature: str
+
 def read_products_from_excel() -> List[dict]:
     """Helper method to load product rows dynamically from local Excel database."""
     if not os.path.exists(EXCEL_FILE_PATH):
@@ -95,6 +120,57 @@ def get_product_by_slug(slug: str):
         if prod.get("slug") == slug:
             return prod
     raise HTTPException(status_code=404, detail="Product not found.")
+
+@app.post("/api/create-order")
+def create_razorpay_order(req: CreateOrderRequest):
+    """Create order record identifier in Razorpay gateway client."""
+    if not razorpay_client:
+        raise HTTPException(status_code=401, detail="Razorpay credentials not initialized.")
+    
+    if req.amount < 100:
+        raise HTTPException(status_code=400, detail="Minimum amount must be 100 paise.")
+
+    try:
+        order_data = {
+            "amount": req.amount,
+            "currency": req.currency,
+            "receipt": req.receipt or "rcpt_bloomcakes",
+            "payment_capture": 1
+        }
+        order = razorpay_client.order.create(data=order_data)
+        return {
+            "order_id": order["id"],
+            "amount": order["amount"],
+            "currency": order["currency"]
+        }
+    except Exception as e:
+        print(f"Razorpay API Error: {e}")
+        raise HTTPException(status_code=500, detail=f"Razorpay API Order creation failed: {str(e)}")
+
+@app.post("/api/verify-payment")
+def verify_payment_signature(req: VerifyPaymentRequest):
+    """Verify cryptographic validity of payment signature generated client-side."""
+    if not RAZORPAY_KEY_SECRET:
+        raise HTTPException(status_code=401, detail="Razorpay secret key configurations unavailable.")
+
+    # Format verification message payload data
+    msg = f"{req.razorpay_order_id}|{req.razorpay_payment_id}"
+    
+    try:
+        # Generate hash verification signatures
+        generated_signature = hmac.new(
+            key=RAZORPAY_KEY_SECRET.encode("utf-8"),
+            msg=msg.encode("utf-8"),
+            digestmod=hashlib.sha256
+        ).hexdigest()
+
+        if generated_signature == req.razorpay_signature:
+            return {"status": "success", "message": "Payment signature verified successfully"}
+        else:
+            raise HTTPException(status_code=400, detail="Signature mismatch validation error")
+    except Exception as e:
+        print(f"Verification Failure: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/orders")
 def submit_order(order: OrderSubmission):

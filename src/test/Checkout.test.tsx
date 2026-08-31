@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import CheckoutPlaceholder from '../pages/CheckoutPlaceholder'
 import { useCartStore } from '@/features/cart/store/useCartStore'
 
 describe('Checkout Details Page', () => {
-  it('checks pincode eligibility and unlocks form submit', () => {
+  it('checks pincode eligibility and unlocks form submit', async () => {
     // Populate items for test since cart default is now empty
     useCartStore.setState({
       items: [
@@ -29,7 +29,7 @@ describe('Checkout Details Page', () => {
     )
 
     // Initially form buttons must be disabled
-    const submitButton = screen.getByText('PLACE ORDER VIA WHATSAPP')
+    const submitButton = screen.getByText('PROCEED TO PAY')
     expect(submitButton).toBeDisabled()
 
     // Input invalid pincode
@@ -56,11 +56,42 @@ describe('Checkout Details Page', () => {
     const dateInput = screen.getByLabelText(/Delivery Date/i)
     fireEvent.change(dateInput, { target: { value: '2026-10-31' } })
 
+    // Mock window.Razorpay constructor function configuration using spy assertions
+    const mockOpen = vi.fn()
+    const mockOn = vi.fn()
+    const mockAlert = vi.fn()
+    window.alert = mockAlert
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mockConstructor = vi.fn().mockImplementation(function (this: any) {
+      this.open = mockOpen
+      this.on = mockOn
+    })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(window as any).Razorpay = mockConstructor
+
+    // Mock window.fetch for API orders creation calls
+    const mockFetch = vi.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ order_id: 'order_123', amount: 99900, currency: 'INR' })
+      })
+    )
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    window.fetch = mockFetch as any
+
     // Order confirmation should now be clickable
     expect(submitButton).toBeEnabled()
-    fireEvent.click(submitButton)
+    
+    // Call checkout flow function manually since click doesn't trigger mock actions inside jsdom directly
+    const formElement = document.querySelector('form')
+    if (formElement) {
+      fireEvent.submit(formElement)
+    }
 
-    // Confirm receipt redirect renders
-    expect(screen.getByText('Order Confirmed!')).toBeInTheDocument()
+    // Wait for the async fetch and constructor call to occur
+    await vi.waitFor(() => {
+      expect(mockConstructor).toHaveBeenCalled()
+    })
   })
 })
