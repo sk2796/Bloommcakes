@@ -219,7 +219,7 @@ export default function CheckoutPlaceholder() {
       `- Slot: ${formData.timeSlot}`
 
     const encoded = encodeURIComponent(text)
-    const whatsappUrl = `https://wa.me/918793058057?text=${encoded}`
+    const whatsappUrl = `https://wa.me/918420271983?text=${encoded}`
     
     window.open(whatsappUrl, '_blank')
     clearCart()
@@ -233,6 +233,21 @@ export default function CheckoutPlaceholder() {
     formData.date &&
     (formData.occasion !== 'other' || formData.customOccasion.trim().length > 0)
 
+  if (items.length === 0 && !orderConfirmed) {
+    return (
+      <div className="max-w-[1200px] mx-auto px-margin-desktop py-24 text-center animate-fade-in">
+        <span className="material-symbols-outlined text-on-surface-variant/40 text-6xl mb-4">shopping_cart</span>
+        <h2 className="text-3xl font-bold text-primary mb-3">Your cart is empty</h2>
+        <p className="text-on-surface-variant max-w-md mx-auto mb-8 font-body-lg">
+          Please add items to your cart before proceeding to checkout.
+        </p>
+        <Link to="/shop" className="bg-primary text-on-primary px-8 py-3.5 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-md font-bold">
+          GO TO SHOP
+        </Link>
+      </div>
+    )
+  }
+
   if (orderConfirmed) {
     return (
       <div className="max-w-container-max mx-auto px-margin-desktop py-24 text-center animate-fade-in">
@@ -242,7 +257,7 @@ export default function CheckoutPlaceholder() {
           Thank you, {formData.name}. We have opened WhatsApp to automatically forward your cake order summary parameters.
         </p>
         <p className="text-xs text-on-surface-variant max-w-sm mx-auto mb-8">
-          You can reach us directly for order confirmation or tracking queries at **+91 87930 58057**.
+          You can reach us directly for order confirmation or tracking queries at **+91 84202 71983**.
         </p>
         <Link to="/shop" className="bg-primary text-on-primary px-8 py-3.5 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-md font-bold">
           CONTINUE SHOPPING

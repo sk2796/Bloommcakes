@@ -17,7 +17,7 @@ describe('Contact Us Page', () => {
 
     // Input contact form details
     fireEvent.change(screen.getByPlaceholderText('Enter first & last name'), { target: { value: 'Jane Doe' } })
-    fireEvent.change(screen.getByPlaceholderText('E.g., +91 98765 43210'), { target: { value: '+91 87930 58057' } })
+    fireEvent.change(screen.getByPlaceholderText('E.g., +91 98765 43210'), { target: { value: '+91 84202 71983' } })
     fireEvent.change(screen.getByPlaceholderText('Tell us what you are looking for...'), { target: { value: 'Hello BloomCakes, I need custom cakes.' } })
 
     expect(submitButton).toBeEnabled()

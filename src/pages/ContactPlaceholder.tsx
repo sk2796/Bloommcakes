@@ -43,7 +43,7 @@ export default function ContactPlaceholder() {
       `${formData.message}`
 
     const encoded = encodeURIComponent(text)
-    const whatsappUrl = `https://wa.me/918793058057?text=${encoded}`
+    const whatsappUrl = `https://wa.me/918420271983?text=${encoded}`
     
     window.open(whatsappUrl, '_blank')
   }
@@ -72,7 +72,7 @@ export default function ContactPlaceholder() {
               <span className="material-symbols-outlined text-primary text-2xl p-2 bg-primary/10 rounded-xl">call</span>
               <div>
                 <h4 className="font-bold text-sm text-on-surface uppercase tracking-wider">Phone Call</h4>
-                <p className="text-sm font-semibold text-on-surface-variant mt-0.5">+91 87930 58057</p>
+                <p className="text-sm font-semibold text-on-surface-variant mt-0.5">+91 84202 71983</p>
                 <p className="text-xs text-on-surface-variant/70 mt-0.5">Mon - Sun (9 AM - 9 PM)</p>
               </div>
             </div>
