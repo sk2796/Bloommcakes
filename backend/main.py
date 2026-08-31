@@ -125,8 +125,8 @@ def check_pincode(code: str):
     pincodes = read_pincodes_from_excel()
     for item in pincodes:
         if item.get("pincode") == code.strip():
-            return {"serviceable": True, "city": item.get("city")}
-    return {"serviceable": False, "city": None}
+            return {"serviceable": True, "city": item.get("city"), "state": item.get("state")}
+    return {"serviceable": False, "city": None, "state": None}
 
 @app.get("/products", response_model=List[CakeItem])
 def get_products():

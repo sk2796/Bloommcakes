@@ -26,7 +26,8 @@ export default function CheckoutPlaceholder() {
     email: '',
     addressLine1: '',
     landmark: '',
-    city: 'Ahmedabad', // default to Ahmedabad since we only deliver there
+    city: '',
+    state: '',
     date: '',
     timeSlot: '12 PM - 3 PM',
     occasion: 'birthday' as OccasionType,
@@ -74,8 +75,9 @@ export default function CheckoutPlaceholder() {
         const data = await response.json()
         const isServiceable = data.serviceable === true
         setIsDeliverable(isServiceable)
-        if (isServiceable && data.city) {
-          handleInputChange('city', data.city)
+        if (isServiceable) {
+          if (data.city) handleInputChange('city', data.city)
+          if (data.state) handleInputChange('state', data.state)
         }
       } else {
         setIsDeliverable(false)
@@ -211,7 +213,7 @@ export default function CheckoutPlaceholder() {
   const handleConfirmOrder = () => {
     setOrderConfirmed(true)
     
-    const fullAddress = `${formData.addressLine1}${formData.landmark ? `, Landmark: ${formData.landmark}` : ''}, ${formData.city} - ${pincode}`
+    const fullAddress = `${formData.addressLine1}${formData.landmark ? `, Landmark: ${formData.landmark}` : ''}, ${formData.city}, ${formData.state} - ${pincode}`
     const occasionText = formData.occasion === 'other' 
       ? `Other (${formData.customOccasion})` 
       : formData.occasion.toUpperCase()
@@ -248,6 +250,7 @@ export default function CheckoutPlaceholder() {
     isPhoneValid() && 
     formData.addressLine1.trim() && 
     formData.city.trim() && 
+    formData.state.trim() && 
     formData.date &&
     (formData.occasion !== 'other' || formData.customOccasion.trim().length > 0)
 
@@ -450,7 +453,7 @@ export default function CheckoutPlaceholder() {
                 />
               </div>
 
-              <div className="space-y-1">
+              <div className="sm:col-span-2 space-y-1">
                 <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Landmark (Optional)</label>
                 <input
                   type="text"
@@ -469,6 +472,18 @@ export default function CheckoutPlaceholder() {
                   placeholder="City"
                   value={formData.city}
                   onChange={(e) => handleInputChange('city', e.target.value)}
+                  className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">State</label>
+                <input
+                  required={isDeliverable}
+                  type="text"
+                  placeholder="State"
+                  value={formData.state}
+                  onChange={(e) => handleInputChange('state', e.target.value)}
                   className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold"
                 />
               </div>
