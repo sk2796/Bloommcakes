@@ -43,7 +43,7 @@ export default function ContactPlaceholder() {
       `${formData.message}`
 
     const encoded = encodeURIComponent(text)
-    const whatsappUrl = `https://wa.me/918420271983?text=${encoded}`
+    const whatsappUrl = `https://wa.me/918420271938?text=${encoded}`
     
     window.open(whatsappUrl, '_blank')
   }

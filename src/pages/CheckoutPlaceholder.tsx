@@ -285,7 +285,7 @@ export default function CheckoutPlaceholder() {
       `- Slot: ${formData.timeSlot}`
 
     const encoded = encodeURIComponent(text)
-    const whatsappUrl = `https://wa.me/918420271983?text=${encoded}`
+    const whatsappUrl = `https://wa.me/918420271938?text=${encoded}`
     
     setWhatsappLink(whatsappUrl)
     try {

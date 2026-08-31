@@ -111,7 +111,7 @@ export default function CustomCakePlaceholder() {
       `- Address: ${formData.deliveryAddress}`
 
     const encodedText = encodeURIComponent(text)
-    const whatsappUrl = `https://wa.me/918420271983?text=${encodedText}`
+    const whatsappUrl = `https://wa.me/918420271938?text=${encodedText}`
     
     // Open the compiled WhatsApp chat redirect automatically
     window.open(whatsappUrl, '_blank')
@@ -215,7 +215,7 @@ export default function CustomCakePlaceholder() {
               <p className="text-xs text-on-surface-variant">Chat with us on WhatsApp for quick help.</p>
             </div>
             <a 
-              href="https://wa.me/918420271983" 
+              href="https://wa.me/918420271938" 
               target="_blank" 
               rel="noreferrer"
               className="w-full border border-primary text-primary px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-primary/5 transition-all flex items-center justify-center gap-2"
@@ -552,7 +552,7 @@ export default function CustomCakePlaceholder() {
             ) : (
               <div className="flex gap-4 items-center">
                 <a
-                  href={`https://wa.me/918420271983?text=${encodeURIComponent(
+                  href={`https://wa.me/918420271938?text=${encodeURIComponent(
                     `*Custom Cake Customization Inquiry (BloomCakes)*\n\n` +
                     `I need further customizations on my order. Here are the preliminary choices:\n` +
                     `- Occasion: ${formData.occasion.toUpperCase()}\n` +
