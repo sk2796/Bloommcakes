@@ -260,7 +260,16 @@ def submit_order(order: OrderSubmission):
 def save_customer(customer: CustomerDetails):
     """Save customer contact details profile in a separate Excel spreadsheet database."""
     from datetime import datetime
+    
+    # Generate customer ID template
+    phone_clean = "".join(filter(str.isdigit, customer.phone))
+    phone_suffix = phone_clean[-4:] if len(phone_clean) >= 4 else "0000"
+    name_clean = "".join(filter(str.isalpha, customer.name)).upper()
+    name_prefix = name_clean[:3] if len(name_clean) >= 3 else "CST"
+    generated_cust_id = f"BC-CUST-{name_prefix}-{phone_suffix}"
+
     new_cust_data = {
+        "customer_id": generated_cust_id,
         "name": customer.name,
         "phone": customer.phone,
         "email": customer.email or "",
@@ -273,11 +282,20 @@ def save_customer(customer: CustomerDetails):
     try:
         if os.path.exists(CUSTOMERS_EXCEL_FILE_PATH):
             df = pd.read_excel(CUSTOMERS_EXCEL_FILE_PATH)
+            # Ensure proper string comparison on phone numbers
             df['phone'] = df['phone'].astype(str)
             phone_str = str(customer.phone)
             
             existing_idx = df.index[df['phone'] == phone_str].tolist()
             if existing_idx:
+                # If they already have a customer_id, preserve it
+                existing_row = df.loc[existing_idx[0]]
+                cust_id = existing_row.get("customer_id")
+                if pd.isna(cust_id) or not cust_id:
+                    cust_id = generated_cust_id
+                
+                new_cust_data["customer_id"] = cust_id
+                
                 for col, val in new_cust_data.items():
                     df.loc[existing_idx[0], col] = val
             else:
@@ -287,9 +305,9 @@ def save_customer(customer: CustomerDetails):
             df = pd.DataFrame([new_cust_data])
             
         df.to_excel(CUSTOMERS_EXCEL_FILE_PATH, index=False)
-        print(f"Saved customer profile for {customer.name}.")
+        print(f"Saved customer profile for {customer.name} (ID: {new_cust_data['customer_id']}).")
     except Exception as e:
         print(f"Error saving customer to Excel: {e}")
         raise HTTPException(status_code=500, detail="Failed to save customer details.")
         
-    return {"status": "success", "message": "Customer details stored successfully"}
+    return {"status": "success", "message": "Customer details stored successfully", "customer_id": new_cust_data["customer_id"]}
