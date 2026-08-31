@@ -37,20 +37,21 @@ describe('Checkout Details Page', () => {
     fireEvent.change(pinField, { target: { value: '111111' } })
     fireEvent.click(screen.getByText('CHECK'))
     
-    expect(screen.getByText(/Delivery unavailable/i)).toBeInTheDocument()
+    expect(await screen.findByText(/Delivery unavailable/i)).toBeInTheDocument()
     expect(submitButton).toBeDisabled()
 
     // Input eligible pincode
     fireEvent.change(pinField, { target: { value: '380015' } })
     fireEvent.click(screen.getByText('CHECK'))
     
-    expect(screen.getByText(/We deliver to your location/i)).toBeInTheDocument()
+    expect(await screen.findByText(/We deliver to your location/i)).toBeInTheDocument()
 
     // Fill in rest of form configurations
     fireEvent.change(screen.getByPlaceholderText('Enter first & last name'), { target: { value: 'Jane Doe' } })
     fireEvent.change(screen.getByPlaceholderText('E.g., +91 98765 43210'), { target: { value: '+91 84202 71983' } })
     fireEvent.change(screen.getByPlaceholderText('Flat/House no., Floor, Building, Street details'), { target: { value: '123 Bakery Lane' } })
     fireEvent.change(screen.getByPlaceholderText('City'), { target: { value: 'Ahmedabad' } })
+    fireEvent.change(screen.getByPlaceholderText('State'), { target: { value: 'Gujarat' } })
     
     // Select date
     const dateInput = screen.getByLabelText(/Delivery Date/i)

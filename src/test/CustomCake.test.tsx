@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import CustomCakePlaceholder from '../pages/CustomCakePlaceholder'
 
 describe('Custom Cake Builder Page', () => {
-  it('navigates through steps and retains configurations', () => {
+  it('navigates through steps and retains configurations', async () => {
     render(
       <BrowserRouter>
         <CustomCakePlaceholder />
@@ -35,6 +35,8 @@ describe('Custom Cake Builder Page', () => {
     const pinField = screen.getByPlaceholderText('Enter 6-digit Pincode')
     fireEvent.change(pinField, { target: { value: '380015' } })
     fireEvent.click(screen.getByText('Check'))
+    
+    expect(await screen.findByText(/Serviceable delivery location!/i)).toBeInTheDocument()
 
     // Fill in required contact info
     const addressInput = screen.getByPlaceholderText('Street address, Appt, Area, Ahmedabad')

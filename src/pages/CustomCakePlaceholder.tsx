@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CustomCakeOrder, OccasionType } from '@/features/custom-cake/types'
+import { API_BASE_URL } from '@/config/api'
 
 const STEP_METADATA = [
   { step: 1, title: 'Occasion', desc: 'Choose the occasion' },
@@ -19,7 +20,7 @@ const OCCASIONS: { type: OccasionType; label: string; icon: string }[] = [
   { type: 'other', label: 'Other', icon: 'more_horiz' }
 ]
 
-const PIN_CODES_DELIVERABLE = ['380001', '380009', '380015', '380054', '382481']
+
 
 export default function CustomCakePlaceholder() {
   const [currentStep, setCurrentStep] = useState<number>(1)
@@ -54,12 +55,20 @@ export default function CustomCakePlaceholder() {
     return `${yyyy}-${mm}-${dd}`
   }
 
-  const checkPincode = () => {
-    setPinChecked(true)
-    if (PIN_CODES_DELIVERABLE.includes(pincode.trim())) {
-      setIsDeliverable(true)
-    } else {
+  const checkPincode = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/pincodes?code=${pincode.trim()}`)
+      if (response.ok) {
+        const data = await response.json()
+        setIsDeliverable(data.serviceable === true)
+      } else {
+        setIsDeliverable(false)
+      }
+    } catch (err) {
+      console.error(err)
       setIsDeliverable(false)
+    } finally {
+      setPinChecked(true)
     }
   }
 
@@ -103,7 +112,7 @@ export default function CustomCakePlaceholder() {
       `- Address: ${formData.deliveryAddress}`
 
     const encodedText = encodeURIComponent(text)
-    const whatsappUrl = `https://wa.me/918420271983?text=${encodedText}`
+    const whatsappUrl = `https://wa.me/918420271938?text=${encodedText}`
     
     // Open the compiled WhatsApp chat redirect automatically
     window.open(whatsappUrl, '_blank')
@@ -207,7 +216,7 @@ export default function CustomCakePlaceholder() {
               <p className="text-xs text-on-surface-variant">Chat with us on WhatsApp for quick help.</p>
             </div>
             <a 
-              href="https://wa.me/918420271983" 
+              href="https://wa.me/918420271938" 
               target="_blank" 
               rel="noreferrer"
               className="w-full border border-primary text-primary px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-primary/5 transition-all flex items-center justify-center gap-2"
@@ -386,7 +395,7 @@ export default function CustomCakePlaceholder() {
                       {isDeliverable ? (
                         <span className="text-green-600">✓ Serviceable delivery location!</span>
                       ) : (
-                        <span className="text-red-500">✗ Unserviceable location. Serviceable codes: 380001, 380009, 380015, 380054, 382481</span>
+                        <span className="text-red-500">✗ Unserviceable location.</span>
                       )}
                     </div>
                   )}
@@ -544,7 +553,7 @@ export default function CustomCakePlaceholder() {
             ) : (
               <div className="flex gap-4 items-center">
                 <a
-                  href={`https://wa.me/918420271983?text=${encodeURIComponent(
+                  href={`https://wa.me/918420271938?text=${encodeURIComponent(
                     `*Custom Cake Customization Inquiry (BloomCakes)*\n\n` +
                     `I need further customizations on my order. Here are the preliminary choices:\n` +
                     `- Occasion: ${formData.occasion.toUpperCase()}\n` +

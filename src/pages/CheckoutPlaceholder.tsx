@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCartStore } from '@/features/cart/store/useCartStore'
+import { API_BASE_URL } from '@/config/api'
 
-const PIN_CODES_DELIVERABLE = ['380001', '380009', '380015', '380054', '382481', '380058', '380021']
+
 
 type OccasionType = 'birthday' | 'anniversary' | 'wedding' | 'engagement' | 'other'
 
@@ -26,7 +27,8 @@ export default function CheckoutPlaceholder() {
     email: '',
     addressLine1: '',
     landmark: '',
-    city: 'Ahmedabad', // default to Ahmedabad since we only deliver there
+    city: '',
+    state: '',
     date: '',
     timeSlot: '12 PM - 3 PM',
     occasion: 'birthday' as OccasionType,
@@ -67,12 +69,25 @@ export default function CheckoutPlaceholder() {
     return `${yyyy}-${mm}-${dd}`
   }
 
-  const checkPincode = () => {
-    setPinChecked(true)
-    if (PIN_CODES_DELIVERABLE.includes(pincode.trim())) {
-      setIsDeliverable(true)
-    } else {
+  const checkPincode = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/pincodes?code=${pincode.trim()}`)
+      if (response.ok) {
+        const data = await response.json()
+        const isServiceable = data.serviceable === true
+        setIsDeliverable(isServiceable)
+        if (isServiceable) {
+          if (data.city) handleInputChange('city', data.city)
+          if (data.state) handleInputChange('state', data.state)
+        }
+      } else {
+        setIsDeliverable(false)
+      }
+    } catch (err) {
+      console.error(err)
       setIsDeliverable(false)
+    } finally {
+      setPinChecked(true)
     }
   }
 
@@ -114,7 +129,7 @@ export default function CheckoutPlaceholder() {
 
     // 1. Contact Backend API to create orders reference
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/create-order', {
+      const response = await fetch(`${API_BASE_URL}/api/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -143,7 +158,7 @@ export default function CheckoutPlaceholder() {
         handler: async function (paymentRes: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) {
           // 3. Forward signature results validation details to verification endpoint
           try {
-            const verifyRes = await fetch('http://127.0.0.1:8000/api/verify-payment', {
+            const verifyRes = await fetch(`${API_BASE_URL}/api/verify-payment`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -196,13 +211,64 @@ export default function CheckoutPlaceholder() {
     }
   }
 
-  const handleConfirmOrder = () => {
+  const handleConfirmOrder = async () => {
     setOrderConfirmed(true)
     
-    const fullAddress = `${formData.addressLine1}${formData.landmark ? `, Landmark: ${formData.landmark}` : ''}, ${formData.city} - ${pincode}`
+    const fullAddress = `${formData.addressLine1}${formData.landmark ? `, Landmark: ${formData.landmark}` : ''}, ${formData.city}, ${formData.state} - ${pincode}`
     const occasionText = formData.occasion === 'other' 
       ? `Other (${formData.customOccasion})` 
       : formData.occasion.toUpperCase()
+
+    // Submit order details to backend to store in Excel database
+    try {
+      await fetch(`${API_BASE_URL}/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email || undefined,
+          addressLine1: formData.addressLine1,
+          landmark: formData.landmark || undefined,
+          city: formData.city,
+          pincode: pincode,
+          date: formData.date,
+          timeSlot: formData.timeSlot,
+          occasion: formData.occasion,
+          customOccasion: formData.customOccasion || undefined,
+          items: items.map(item => ({
+            cakeId: item.cakeId,
+            name: item.name,
+            weight: item.weight,
+            price: item.price,
+            quantity: item.quantity
+          })),
+          activePromo: activePromo || undefined,
+          discountAmount: discountAmount,
+          totalAmount: total
+        })
+      })
+    } catch (err) {
+      console.error('Failed to save order to Excel:', err)
+    }
+
+    // Submit customer details to backend to store in Excel database
+    try {
+      await fetch(`${API_BASE_URL}/customers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email || undefined,
+          city: formData.city || undefined,
+          state: formData.state || undefined,
+          pincode: pincode || undefined
+        })
+      })
+    } catch (err) {
+      console.error('Failed to save customer details:', err)
+    }
 
     // Auto compile WhatsApp details on confirmation
     const text = `*New Order Details (BloomCakes)*\n\n` +
@@ -220,7 +286,7 @@ export default function CheckoutPlaceholder() {
       `- Slot: ${formData.timeSlot}`
 
     const encoded = encodeURIComponent(text)
-    const whatsappUrl = `https://wa.me/918420271983?text=${encoded}`
+    const whatsappUrl = `https://wa.me/918420271938?text=${encoded}`
     
     setWhatsappLink(whatsappUrl)
     try {
@@ -236,6 +302,7 @@ export default function CheckoutPlaceholder() {
     isPhoneValid() && 
     formData.addressLine1.trim() && 
     formData.city.trim() && 
+    formData.state.trim() && 
     formData.date &&
     (formData.occasion !== 'other' || formData.customOccasion.trim().length > 0)
 
@@ -338,7 +405,7 @@ export default function CheckoutPlaceholder() {
                 ) : (
                   <span className="text-red-500 flex items-center gap-1">
                     <span className="material-symbols-outlined text-sm leading-none">cancel</span>
-                    Delivery unavailable. Deliverable Pincodes: 380001, 380009, 380015, 380054, 382481, 380058, 380021
+                    Delivery unavailable for this pincode.
                   </span>
                 )}
               </div>
@@ -427,6 +494,17 @@ export default function CheckoutPlaceholder() {
               </div>
 
               <div className="sm:col-span-2 space-y-1">
+                <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Email Address (Optional)</label>
+                <input
+                  type="email"
+                  placeholder="Enter email address (E.g. jane@example.com)"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold"
+                />
+              </div>
+
+              <div className="sm:col-span-2 space-y-1">
                 <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Flat / House no. / Street address</label>
                 <input
                   required={isDeliverable}
@@ -438,7 +516,7 @@ export default function CheckoutPlaceholder() {
                 />
               </div>
 
-              <div className="space-y-1">
+              <div className="sm:col-span-2 space-y-1">
                 <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">Landmark (Optional)</label>
                 <input
                   type="text"
@@ -457,6 +535,18 @@ export default function CheckoutPlaceholder() {
                   placeholder="City"
                   value={formData.city}
                   onChange={(e) => handleInputChange('city', e.target.value)}
+                  className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-chocolate uppercase tracking-wider block">State</label>
+                <input
+                  required={isDeliverable}
+                  type="text"
+                  placeholder="State"
+                  value={formData.state}
+                  onChange={(e) => handleInputChange('state', e.target.value)}
                   className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:border-primary text-sm font-semibold"
                 />
               </div>
