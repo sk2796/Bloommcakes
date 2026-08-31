@@ -206,10 +206,25 @@ def verify_payment_signature(req: VerifyPaymentRequest):
         print(f"Verification Failure: {e}")
         raise HTTPException(status_code=400, detail=str(e))
 
+def clean_phone_to_10_digits(phone: str) -> str:
+    # Remove all non-digit characters
+    digits = "".join(filter(str.isdigit, str(phone)))
+    # If it starts with 91 and has 12 digits, strip the leading 91
+    if len(digits) == 12 and digits.startswith("91"):
+        return digits[2:]
+    # Otherwise, return the last 10 digits if it's longer
+    if len(digits) >= 10:
+        return digits[-10:]
+    return digits
+
 @app.post("/orders")
 def submit_order(order: OrderSubmission):
+    # Clean phone number to exactly 10 digits
+    clean_phone = clean_phone_to_10_digits(order.phone)
+    phone_suffix = clean_phone[-4:] if len(clean_phone) >= 4 else "0000"
+    
     # Generate order ID
-    order_id = f"BC-ORD-{int(order.phone[-4:])}-{order.date.replace('-', '')}"
+    order_id = f"BC-ORD-{phone_suffix}-{order.date.replace('-', '')}"
     
     # Format items list to a human-readable summary
     items_summary = ", ".join([f"{item.name} ({item.weight}) x{item.quantity}" for item in order.items])
@@ -218,7 +233,7 @@ def submit_order(order: OrderSubmission):
     new_order_data = {
         "order_id": order_id,
         "name": order.name,
-        "phone": order.phone,
+        "phone": clean_phone,
         "email": order.email or "",
         "addressLine1": order.addressLine1,
         "landmark": order.landmark or "",
@@ -239,6 +254,8 @@ def submit_order(order: OrderSubmission):
     try:
         if os.path.exists(ORDERS_EXCEL_FILE_PATH):
             df = pd.read_excel(ORDERS_EXCEL_FILE_PATH)
+            # Clean existing phone records in DF
+            df['phone'] = df['phone'].apply(lambda x: clean_phone_to_10_digits(str(x)))
             new_row_df = pd.DataFrame([new_order_data])
             df = pd.concat([df, new_row_df], ignore_index=True)
         else:
@@ -261,9 +278,10 @@ def save_customer(customer: CustomerDetails):
     """Save customer contact details profile in a separate Excel spreadsheet database."""
     from datetime import datetime
     
+    clean_phone = clean_phone_to_10_digits(customer.phone)
+    
     # Generate customer ID template
-    phone_clean = "".join(filter(str.isdigit, customer.phone))
-    phone_suffix = phone_clean[-4:] if len(phone_clean) >= 4 else "0000"
+    phone_suffix = clean_phone[-4:] if len(clean_phone) >= 4 else "0000"
     name_clean = "".join(filter(str.isalpha, customer.name)).upper()
     name_prefix = name_clean[:3] if len(name_clean) >= 3 else "CST"
     generated_cust_id = f"BC-CUST-{name_prefix}-{phone_suffix}"
@@ -271,7 +289,7 @@ def save_customer(customer: CustomerDetails):
     new_cust_data = {
         "customer_id": generated_cust_id,
         "name": customer.name,
-        "phone": customer.phone,
+        "phone": clean_phone,
         "email": customer.email or "",
         "city": customer.city or "",
         "state": customer.state or "",
@@ -282,11 +300,10 @@ def save_customer(customer: CustomerDetails):
     try:
         if os.path.exists(CUSTOMERS_EXCEL_FILE_PATH):
             df = pd.read_excel(CUSTOMERS_EXCEL_FILE_PATH)
-            # Ensure proper string comparison on phone numbers
-            df['phone'] = df['phone'].astype(str)
-            phone_str = str(customer.phone)
+            # Clean and stringify existing phone records for precise matches
+            df['phone'] = df['phone'].apply(lambda x: clean_phone_to_10_digits(str(x)))
             
-            existing_idx = df.index[df['phone'] == phone_str].tolist()
+            existing_idx = df.index[df['phone'] == clean_phone].tolist()
             if existing_idx:
                 # If they already have a customer_id, preserve it
                 existing_row = df.loc[existing_idx[0]]
