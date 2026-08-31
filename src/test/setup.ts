@@ -7,10 +7,10 @@ afterEach(() => {
   cleanup()
 })
 
-// Mock global.fetch to support pincode checks in tests
+// Mock fetch to support pincode checks in tests
 const MOCK_PINCODES = ['380001', '380009', '380015', '380054', '382481', '380058', '380021']
 
-global.fetch = vi.fn().mockImplementation((url: string) => {
+vi.stubGlobal('fetch', vi.fn().mockImplementation((url: string) => {
   if (url.includes('/pincodes')) {
     // Parse URL code query parameter safely
     const codeMatch = url.match(/code=([^&]+)/)
@@ -28,4 +28,4 @@ global.fetch = vi.fn().mockImplementation((url: string) => {
     ok: true,
     json: () => Promise.resolve({}),
   })
-})
+}))
