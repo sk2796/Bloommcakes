@@ -177,28 +177,28 @@ export default function ProductPlaceholder() {
               </div>
 
               {/* Dynamic Price Display & Cart Button */}
-              <div className="flex-1 flex items-center justify-between gap-6 w-full">
-                <div className="flex flex-col">
-                  <span className="text-xs text-on-surface-variant uppercase tracking-wider">Total Price</span>
-                  <span className="text-primary font-bold text-2xl">₹{totalPrice}</span>
-                </div>
-                <div className="flex flex-1 gap-3">
+              <div className="flex-1 flex flex-col gap-3 w-full">
+                <div className="flex items-center justify-between gap-6 w-full">
+                  <div className="flex flex-col">
+                    <span className="text-xs text-on-surface-variant uppercase tracking-wider">Total Price</span>
+                    <span className="text-primary font-bold text-2xl">₹{totalPrice}</span>
+                  </div>
                   <button 
                     onClick={handleAddToCart}
-                    className="bg-primary text-on-primary px-6 py-3.5 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-md flex-1 text-center font-bold"
+                    className="bg-primary text-on-primary px-8 py-3.5 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-md text-center font-bold min-w-[160px] sm:min-w-[200px]"
                   >
                     ADD TO CART
                   </button>
-                  {items.length > 0 && (
-                    <Link
-                      to="/cart"
-                      className="border border-primary text-primary px-6 py-3.5 rounded-full font-label-md text-label-md hover:bg-primary/5 transition-colors shadow-sm flex-1 text-center font-bold flex items-center justify-center gap-2"
-                    >
-                      GO TO CART
-                      <span className="material-symbols-outlined text-sm">shopping_cart</span>
-                    </Link>
-                  )}
                 </div>
+                {items.length > 0 && (
+                  <Link
+                    to="/cart"
+                    className="w-full border border-primary text-primary py-3 rounded-full font-label-md text-label-md hover:bg-primary/5 transition-all shadow-sm text-center font-bold flex items-center justify-center gap-2 animate-fade-in"
+                  >
+                    GO TO CART
+                    <span className="material-symbols-outlined text-sm">shopping_cart</span>
+                  </Link>
+                )}
               </div>
             </div>
           </div>
