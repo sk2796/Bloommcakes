@@ -36,6 +36,7 @@ app.add_middleware(
 )
 
 EXCEL_FILE_PATH = os.path.join(os.path.dirname(__file__), "products.xlsx")
+PINCODES_FILE_PATH = os.path.join(os.path.dirname(__file__), "pincodes.xlsx")
 
 # Mock databases models representation
 class CakeItem(BaseModel):
@@ -48,6 +49,10 @@ class CakeItem(BaseModel):
     imageUrl: str
     isBestseller: bool
     rating: float
+
+class PincodeItem(BaseModel):
+    pincode: str
+    city: str
 
 class OrderSummaryItem(BaseModel):
     cakeId: str
@@ -96,13 +101,31 @@ def read_products_from_excel() -> List[dict]:
         print(f"Error reading Excel sheet: {e}")
         return []
 
+def read_pincodes_from_excel() -> List[dict]:
+    """Helper method to load pincodes and associated cities dynamically from local Excel database."""
+    if not os.path.exists(PINCODES_FILE_PATH):
+        return []
+    try:
+        df = pd.read_excel(PINCODES_FILE_PATH)
+        df['pincode'] = df['pincode'].astype(str)
+        # Standardize NaN values to None for clean JSON outputs representation
+        df = df.where(pd.notnull(df), None)
+        return df.to_dict(orient="records")
+    except Exception as e:
+        print(f"Error reading pincodes Excel sheet: {e}")
+        return []
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to BloomCakes Backend API. Visit /docs for Swagger specifications documentation."}
 
-@app.get("/pincodes")
+@app.get("/pincodes", response_model=List[PincodeItem])
 def get_serviceable_pincodes():
-    return ["380001", "380009", "380015", "380054", "382481", "380058", "380021"]
+    """Retrieve all serviceable pincodes and their associated cities from the Excel sheet."""
+    pincodes = read_pincodes_from_excel()
+    if not pincodes:
+        raise HTTPException(status_code=404, detail="No pincodes found in database.")
+    return pincodes
 
 @app.get("/products", response_model=List[CakeItem])
 def get_products():
