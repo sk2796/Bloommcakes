@@ -37,6 +37,7 @@ app.add_middleware(
 
 EXCEL_FILE_PATH = os.path.join(os.path.dirname(__file__), "products.xlsx")
 PINCODES_FILE_PATH = os.path.join(os.path.dirname(__file__), "pincodes.xlsx")
+ORDERS_EXCEL_FILE_PATH = os.path.join(os.path.dirname(__file__), "orders.xlsx")
 
 # Mock databases models representation
 class CakeItem(BaseModel):
@@ -198,10 +199,50 @@ def verify_payment_signature(req: VerifyPaymentRequest):
 
 @app.post("/orders")
 def submit_order(order: OrderSubmission):
-    # Process order log / database entry simulation
-    print(f"Processed order for {order.name} - Total: ₹{order.totalAmount}")
+    # Generate order ID
+    order_id = f"BC-ORD-{int(order.phone[-4:])}-{order.date.replace('-', '')}"
+    
+    # Format items list to a human-readable summary
+    items_summary = ", ".join([f"{item.name} ({item.weight}) x{item.quantity}" for item in order.items])
+    
+    from datetime import datetime
+    new_order_data = {
+        "order_id": order_id,
+        "name": order.name,
+        "phone": order.phone,
+        "email": order.email or "",
+        "addressLine1": order.addressLine1,
+        "landmark": order.landmark or "",
+        "city": order.city,
+        "pincode": order.pincode,
+        "date": order.date,
+        "timeSlot": order.timeSlot,
+        "occasion": order.occasion,
+        "customOccasion": order.customOccasion or "",
+        "items_summary": items_summary,
+        "activePromo": order.activePromo or "",
+        "discountAmount": order.discountAmount,
+        "totalAmount": order.totalAmount,
+        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    
+    # Load existing orders or create new DataFrame and save to Excel
+    try:
+        if os.path.exists(ORDERS_EXCEL_FILE_PATH):
+            df = pd.read_excel(ORDERS_EXCEL_FILE_PATH)
+            new_row_df = pd.DataFrame([new_order_data])
+            df = pd.concat([df, new_row_df], ignore_index=True)
+        else:
+            df = pd.DataFrame([new_order_data])
+            
+        df.to_excel(ORDERS_EXCEL_FILE_PATH, index=False)
+        print(f"Stored order {order_id} to Excel.")
+    except Exception as e:
+        print(f"Error saving order to Excel: {e}")
+        raise HTTPException(status_code=500, detail="Failed to save order to database sheet.")
+
     return {
         "status": "success",
-        "order_id": f"BC-ORD-{int(order.phone[-4:])}-{order.date.replace('-', '')}",
-        "message": "Order processed successfully"
+        "order_id": order_id,
+        "message": "Order processed and stored successfully"
     }

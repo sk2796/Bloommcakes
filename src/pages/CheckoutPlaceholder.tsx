@@ -210,13 +210,46 @@ export default function CheckoutPlaceholder() {
     }
   }
 
-  const handleConfirmOrder = () => {
+  const handleConfirmOrder = async () => {
     setOrderConfirmed(true)
     
     const fullAddress = `${formData.addressLine1}${formData.landmark ? `, Landmark: ${formData.landmark}` : ''}, ${formData.city}, ${formData.state} - ${pincode}`
     const occasionText = formData.occasion === 'other' 
       ? `Other (${formData.customOccasion})` 
       : formData.occasion.toUpperCase()
+
+    // Submit order details to backend to store in Excel database
+    try {
+      await fetch('http://127.0.0.1:8000/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email || undefined,
+          addressLine1: formData.addressLine1,
+          landmark: formData.landmark || undefined,
+          city: formData.city,
+          pincode: pincode,
+          date: formData.date,
+          timeSlot: formData.timeSlot,
+          occasion: formData.occasion,
+          customOccasion: formData.customOccasion || undefined,
+          items: items.map(item => ({
+            cakeId: item.cakeId,
+            name: item.name,
+            weight: item.weight,
+            price: item.price,
+            quantity: item.quantity
+          })),
+          activePromo: activePromo || undefined,
+          discountAmount: discountAmount,
+          totalAmount: total
+        })
+      })
+    } catch (err) {
+      console.error('Failed to save order to Excel:', err)
+    }
 
     // Auto compile WhatsApp details on confirmation
     const text = `*New Order Details (BloomCakes)*\n\n` +
