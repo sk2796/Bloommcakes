@@ -3,12 +3,14 @@ import { useParams, Link } from 'react-router-dom'
 import { useCakeDetail } from '@/features/products/hooks/useCakeDetail'
 import { useCakes } from '@/features/products/hooks/useCakes'
 import { useCartStore } from '@/features/cart/store/useCartStore'
+import { useLocationStore } from '@/features/location/store/useLocationStore'
 
 export default function ProductPlaceholder() {
   const { slug } = useParams<{ slug: string }>()
   const { data: cake, isLoading, isError } = useCakeDetail(slug || '')
   const { data: allCakes } = useCakes()
   const { items, addItem } = useCartStore()
+  const { location } = useLocationStore()
   
   const [selectedWeight, setSelectedWeight] = useState<string>('')
   const [quantity, setQuantity] = useState<number>(1)
@@ -190,6 +192,23 @@ export default function ProductPlaceholder() {
                     ADD TO CART
                   </button>
                 </div>
+                {/* Delivery Location Status Reassurance */}
+                <div className="pt-2 text-xs">
+                  {location ? (
+                    <div className="flex items-center gap-1.5 text-green-700 bg-green-50 border border-green-200/80 px-3 py-1.5 rounded-xl font-medium">
+                      <span className="material-symbols-outlined text-sm leading-none text-green-600">local_shipping</span>
+                      <span>Delivery available to <strong className="font-bold">{location.city} ({location.pincode})</strong></span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between gap-1 text-on-surface-variant bg-surface-container-low px-3 py-1.5 rounded-xl font-medium">
+                      <span className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-sm leading-none text-primary">location_on</span>
+                        <span>Check delivery to your area using the location selector in the top menu</span>
+                      </span>
+                    </div>
+                  )}
+                </div>
+
                 {items.length > 0 && (
                   <Link
                     to="/cart"

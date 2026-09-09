@@ -11,7 +11,7 @@ describe('Shopping Cart Page', () => {
       items: [
         {
           id: 'item-1',
-          cakeId: 'c1',
+          cakeId: 'BC-CAKE-BELGIAN-CHOC',
           name: 'Belgian Chocolate Cake',
           slug: 'belgian-chocolate',
           imageUrl: '',
@@ -21,7 +21,7 @@ describe('Shopping Cart Page', () => {
         },
         {
           id: 'item-2',
-          cakeId: 'c4',
+          cakeId: 'BC-CAKE-BLUEBERRY-CHZ',
           name: 'Blueberry Cheesecake',
           slug: 'blueberry-cheesecake',
           imageUrl: '',

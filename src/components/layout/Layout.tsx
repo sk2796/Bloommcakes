@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useCartStore } from '@/features/cart/store/useCartStore'
+import { LocationSelector } from '@/features/location/components/LocationSelector'
+import { UserNavButton } from '@/features/auth/components/UserNavButton'
 
 export function Layout() {
   const [scrolled, setScrolled] = useState(false)
@@ -33,14 +35,14 @@ export function Layout() {
         }`} 
         id="main-nav"
       >
-        <div className="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto">
-          <Link to="/" className="flex items-center gap-3">
-            <img src="/logo.jpg" alt="BloomCakes Logo" className="w-10 h-10 rounded-full object-cover border border-primary/20" />
-            <span className="text-headline-md font-headline-lg text-primary dark:text-primary-fixed font-bold tracking-tight">BloomCakes</span>
+        <div className="flex justify-between items-center w-full px-4 sm:px-6 lg:px-margin-desktop py-3.5 max-w-container-max mx-auto gap-2 lg:gap-6">
+          <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
+            <img src="/logo.jpg" alt="BloomCakes Logo" className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-primary/20" />
+            <span className="text-xl lg:text-headline-md font-bold text-primary dark:text-primary-fixed tracking-tight">BloomCakes</span>
           </Link>
-          <div className="hidden md:flex gap-8 items-center">
+          <div className="hidden xl:flex gap-6 lg:gap-8 items-center flex-shrink-0">
             <Link 
-              className={`font-label-md text-label-md transition-colors ${
+              className={`font-label-md text-label-md whitespace-nowrap transition-colors ${
                 location.pathname === '/' 
                   ? 'text-primary font-bold border-b-2 border-primary pb-1' 
                   : 'text-on-surface-variant hover:text-primary'
@@ -50,7 +52,7 @@ export function Layout() {
               Home
             </Link>
             <Link 
-              className={`font-label-md text-label-md transition-colors ${
+              className={`font-label-md text-label-md whitespace-nowrap transition-colors ${
                 location.pathname === '/about' 
                   ? 'text-primary font-bold border-b-2 border-primary pb-1' 
                   : 'text-on-surface-variant hover:text-primary'
@@ -60,7 +62,7 @@ export function Layout() {
               About Us
             </Link>
             <Link 
-              className={`font-label-md text-label-md transition-colors ${
+              className={`font-label-md text-label-md whitespace-nowrap transition-colors ${
                 location.pathname.startsWith('/shop') 
                   ? 'text-primary font-bold border-b-2 border-primary pb-1' 
                   : 'text-on-surface-variant hover:text-primary'
@@ -70,7 +72,7 @@ export function Layout() {
               Menu
             </Link>
             <Link 
-              className={`font-label-md text-label-md transition-colors ${
+              className={`font-label-md text-label-md whitespace-nowrap transition-colors ${
                 location.pathname === '/custom-cake' 
                   ? 'text-primary font-bold border-b-2 border-primary pb-1' 
                   : 'text-on-surface-variant hover:text-primary'
@@ -80,7 +82,7 @@ export function Layout() {
               Custom Cakes
             </Link>
             <Link 
-              className={`font-label-md text-label-md transition-colors ${
+              className={`font-label-md text-label-md whitespace-nowrap transition-colors ${
                 location.pathname === '/contact' 
                   ? 'text-primary font-bold border-b-2 border-primary pb-1' 
                   : 'text-on-surface-variant hover:text-primary'
@@ -90,8 +92,10 @@ export function Layout() {
               Contact
             </Link>
           </div>
-          <div className="flex items-center gap-4">
-            <Link to="/cart" className="relative p-2 text-primary hover:bg-surface-container rounded-full transition-colors">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
+            <LocationSelector />
+            <UserNavButton />
+            <Link to="/cart" className="relative p-2 text-primary hover:bg-surface-container rounded-full transition-colors flex-shrink-0" aria-label="Shopping Cart">
               <span className="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
               {cartItemCount > 0 && (
                 <span className="absolute top-0 right-0 bg-primary-container text-on-primary-container text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold">
@@ -99,10 +103,10 @@ export function Layout() {
                 </span>
               )}
             </Link>
-            <Link to="/shop" className="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-md hidden sm:block">ORDER NOW</Link>
+            <Link to="/shop" className="bg-primary text-on-primary px-5 py-2 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-md hidden 2xl:block flex-shrink-0 whitespace-nowrap">ORDER NOW</Link>
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 text-primary focus:outline-none"
+              className="xl:hidden p-2 text-primary focus:outline-none flex-shrink-0"
               aria-label="Toggle menu"
             >
               <span className="material-symbols-outlined" data-icon="menu">{isMenuOpen ? 'close' : 'menu'}</span>
@@ -110,14 +114,15 @@ export function Layout() {
           </div>
         </div>
 
-        {/* Mobile Navigation Drawer overlay panel */}
+        {/* Navigation Drawer overlay panel for viewports below xl */}
         {isMenuOpen && (
-          <div className="md:hidden bg-surface border-t border-outline-variant/30 py-4 px-margin-desktop flex flex-col gap-4 animate-fade-in">
+          <div className="xl:hidden bg-surface border-t border-outline-variant/30 py-4 px-4 sm:px-6 lg:px-margin-desktop flex flex-col gap-4 animate-fade-in shadow-lg">
             <Link onClick={() => setIsMenuOpen(false)} to="/" className={`font-semibold py-2 border-b border-outline-variant/10 text-sm ${location.pathname === '/' ? 'text-primary' : 'text-on-surface-variant'}`}>Home</Link>
             <Link onClick={() => setIsMenuOpen(false)} to="/about" className={`font-semibold py-2 border-b border-outline-variant/10 text-sm ${location.pathname === '/about' ? 'text-primary' : 'text-on-surface-variant'}`}>About Us</Link>
             <Link onClick={() => setIsMenuOpen(false)} to="/shop" className={`font-semibold py-2 border-b border-outline-variant/10 text-sm ${location.pathname.startsWith('/shop') ? 'text-primary' : 'text-on-surface-variant'}`}>Menu</Link>
             <Link onClick={() => setIsMenuOpen(false)} to="/custom-cake" className={`font-semibold py-2 border-b border-outline-variant/10 text-sm ${location.pathname === '/custom-cake' ? 'text-primary' : 'text-on-surface-variant'}`}>Custom Cakes</Link>
-            <Link onClick={() => setIsMenuOpen(false)} to="/contact" className={`font-semibold py-2 text-sm ${location.pathname === '/contact' ? 'text-primary' : 'text-on-surface-variant'}`}>Contact</Link>
+            <Link onClick={() => setIsMenuOpen(false)} to="/contact" className={`font-semibold py-2 border-b border-outline-variant/10 text-sm ${location.pathname === '/contact' ? 'text-primary' : 'text-on-surface-variant'}`}>Contact</Link>
+            <Link onClick={() => setIsMenuOpen(false)} to="/account" className={`font-semibold py-2 text-sm ${location.pathname.startsWith('/account') ? 'text-primary' : 'text-on-surface-variant'}`}>My Account</Link>
             <Link onClick={() => setIsMenuOpen(false)} to="/shop" className="bg-primary text-on-primary px-6 py-2.5 rounded-full text-center font-bold text-xs uppercase tracking-wider shadow-md mt-2">ORDER NOW</Link>
           </div>
         )}
@@ -168,6 +173,10 @@ export function Layout() {
             <Link className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" to="/about">About Us</Link>
             <Link className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" to="/shop">Menu</Link>
             <Link className="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" to="/custom-cake">Custom Cakes</Link>
+            <Link className="text-[#e76f51] hover:text-[#d35b3d] font-semibold transition-colors font-body-md text-body-md flex items-center gap-1 mt-1" to="/admin">
+              <span>Admin Portal</span>
+              <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 bg-[#f4a261]/20 rounded border border-[#f4a261]/40">Staff</span>
+            </Link>
           </div>
           <div className="flex flex-col gap-3">
             <h4 className="font-label-md text-label-md text-on-surface dark:text-inverse-on-surface mb-2">Information</h4>

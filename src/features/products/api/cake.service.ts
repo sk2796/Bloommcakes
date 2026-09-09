@@ -4,7 +4,7 @@ import { CakeProduct } from '../types'
 export const MOCK_CAKES: CakeProduct[] = [
   // Cakes Category
   {
-    id: 'c1',
+    id: 'BC-CAKE-BELGIAN-CHOC',
     name: 'Belgian Chocolate Cake',
     slug: 'belgian-chocolate',
     description: 'A rich, decadent Belgian Chocolate cake, beautifully decorated with chocolate shards and a smooth chocolate ganache drip.',
@@ -21,7 +21,7 @@ export const MOCK_CAKES: CakeProduct[] = [
     weightOptions: ['0.5kg', '1kg', '2kg']
   },
   {
-    id: 'c2',
+    id: 'BC-CAKE-RED-VELVET',
     name: 'Red Velvet Supreme Cake',
     slug: 'red-velvet-supreme',
     description: 'A classic Red Velvet cake with perfectly smooth white cream cheese frosting, elegantly piped borders, and a sprinkle of red velvet crumbs.',
@@ -37,7 +37,7 @@ export const MOCK_CAKES: CakeProduct[] = [
     weightOptions: ['0.5kg', '1kg']
   },
   {
-    id: 'c3',
+    id: 'BC-CAKE-BUTTERSCOTCH',
     name: 'Butterscotch Crunch Cake',
     slug: 'butterscotch-crunch',
     description: 'An exquisite Butterscotch Crunch cake featuring layers of moist cake, rich butterscotch sauce, and generous crunchy praline pieces.',
@@ -53,7 +53,7 @@ export const MOCK_CAKES: CakeProduct[] = [
     weightOptions: ['0.5kg', '1kg', '1.5kg']
   },
   {
-    id: 'c4',
+    id: 'BC-CAKE-BLUEBERRY-CHZ',
     name: 'Blueberry Cheesecake',
     slug: 'blueberry-cheesecake',
     description: 'A visually stunning Blueberry Cheesecake with a perfect graham cracker crust, a creamy baked filling, and a glossy, deep purple blueberry compote.',
@@ -64,14 +64,14 @@ export const MOCK_CAKES: CakeProduct[] = [
     },
     rating: 4.9,
     category: 'cakes',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAdx960xx5hnckATCpxOit7JMiNmp3wfnsQCXlJK3sCQDEdDETTHq7li5kRsBZwgyE7xa0TNAGJFZTehhmbUVjEySFFC6lmT6nxjwpNxoGrRaTAnx4j9PJLIhvyiIPVpOGUdTtLUF7yFFCDH_4-V8AETSibCU4NLfEUbPRI7ls0Z8T_9FTeeXtHuUhivZDLAWikMSltarpEgZApbhwkjhuUA1499xI1Wz4PjgaVyDEsPB6Wd81lC_Mh',
+    imageUrl: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=600&q=80',
     isBestseller: true,
     weightOptions: ['0.5kg', '1kg']
   },
 
   // Muffins Category
   {
-    id: 'm1',
+    id: 'BC-MUF-DBL-CHOC',
     name: 'Double Chocolate Muffin',
     slug: 'double-chocolate-muffin',
     description: 'Rich chocolate muffins loaded with premium dark chocolate chips and a soft, moist center.',
@@ -86,7 +86,7 @@ export const MOCK_CAKES: CakeProduct[] = [
     weightOptions: ['1 pc', 'Pack of 4']
   },
   {
-    id: 'm2',
+    id: 'BC-MUF-BLUEBERRY',
     name: 'Blueberry Streusel Muffin',
     slug: 'blueberry-streusel-muffin',
     description: 'Bursting with fresh blueberries and topped with a crunchy, sweet cinnamon streusel crumble.',
@@ -103,7 +103,7 @@ export const MOCK_CAKES: CakeProduct[] = [
 
   // Pastries Category
   {
-    id: 'p1',
+    id: 'BC-PAS-TRUFFLE-SLICE',
     name: 'Chocolate Truffle Pastry Slice',
     slug: 'chocolate-truffle-pastry',
     description: 'A decadent slice of dark chocolate truffle cake layered with velvety cocoa ganache.',
@@ -120,7 +120,7 @@ export const MOCK_CAKES: CakeProduct[] = [
 
   // Cupcakes Category
   {
-    id: 'cp1',
+    id: 'BC-CUP-RED-VELVET',
     name: 'Red Velvet Cupcake',
     slug: 'red-velvet-cupcake',
     description: 'Fluffy red velvet cupcake base topped with a smooth, swirl of cream cheese frosting.',
@@ -137,7 +137,7 @@ export const MOCK_CAKES: CakeProduct[] = [
 
   // Brownies Category
   {
-    id: 'b1',
+    id: 'BC-BRW-WALNUT-FUDGE',
     name: 'Fudgy Walnut Brownie',
     slug: 'fudgy-walnut-brownie',
     description: 'Decadent chocolate brownie with a cracked top crust, rich fudgy center, and crunch walnuts.',
@@ -154,7 +154,7 @@ export const MOCK_CAKES: CakeProduct[] = [
 
   // Fruit Pies Category
   {
-    id: 'fp1',
+    id: 'BC-PIE-APPLE-CLASSIC',
     name: 'Classic Apple Pie',
     slug: 'classic-apple-pie',
     description: 'Flaky pastry crust stuffed with warm spiced apples, cinnamon, and caramel glaze.',
@@ -170,7 +170,7 @@ export const MOCK_CAKES: CakeProduct[] = [
 
   // Cookies Category
   {
-    id: 'ck1',
+    id: 'BC-COK-CHOCOCHIP',
     name: 'Chocochip Cookies Pack',
     slug: 'chocochip-cookies-pack',
     description: 'Crispy edges with soft centers, loaded heavily with semi-sweet chocolate chunks.',
@@ -186,21 +186,69 @@ export const MOCK_CAKES: CakeProduct[] = [
   }
 ]
 
+import { API_BASE_URL } from '@/config/api'
+
 export class CakeService {
   static async getCakes(): Promise<CakeProduct[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(MOCK_CAKES)
-      }, 200)
-    })
+    try {
+      const res = await fetch(`${API_BASE_URL}/products`)
+      if (res.ok) {
+        const backendProducts = await res.json()
+        if (Array.isArray(backendProducts) && backendProducts.length > 0) {
+          return backendProducts.map((bp: any) => {
+            const mockMatch = MOCK_CAKES.find(m => m.id === bp.id || m.slug === bp.slug)
+            return {
+              id: bp.id,
+              name: bp.name,
+              slug: bp.slug,
+              description: bp.description || mockMatch?.description || '',
+              price: bp.price,
+              priceByWeight: mockMatch?.priceByWeight || {
+                '0.5kg': bp.price,
+                '1kg': Math.round(bp.price * 1.85)
+              },
+              rating: bp.rating || 4.8,
+              category: bp.category,
+              imageUrl: bp.imageUrl || mockMatch?.imageUrl || '',
+              isBestseller: bp.isBestseller,
+              weightOptions: mockMatch?.weightOptions || ['0.5kg', '1kg']
+            }
+          })
+        }
+      }
+    } catch (e) {
+      console.warn('Backend unavailable, falling back to local catalog:', e)
+    }
+    return MOCK_CAKES
   }
 
   static async getCakeBySlug(slug: string): Promise<CakeProduct | null> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const cake = MOCK_CAKES.find(c => c.slug === slug)
-        resolve(cake || null)
-      }, 200)
-    })
+    try {
+      const res = await fetch(`${API_BASE_URL}/products/${slug}`)
+      if (res.ok) {
+        const bp = await res.json()
+        const mockMatch = MOCK_CAKES.find(m => m.id === bp.id || m.slug === bp.slug)
+        return {
+          id: bp.id,
+          name: bp.name,
+          slug: bp.slug,
+          description: bp.description || mockMatch?.description || '',
+          price: bp.price,
+          priceByWeight: mockMatch?.priceByWeight || {
+            '0.5kg': bp.price,
+            '1kg': Math.round(bp.price * 1.85)
+          },
+          rating: bp.rating || 4.8,
+          category: bp.category,
+          imageUrl: bp.imageUrl || mockMatch?.imageUrl || '',
+          isBestseller: bp.isBestseller,
+          weightOptions: mockMatch?.weightOptions || ['0.5kg', '1kg']
+        }
+      }
+    } catch (e) {
+      console.warn('Backend unavailable for cake slug, falling back to local:', e)
+    }
+    const cake = MOCK_CAKES.find(c => c.slug === slug)
+    return cake || null
   }
 }
