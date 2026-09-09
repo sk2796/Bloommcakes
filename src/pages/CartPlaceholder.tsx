@@ -1,8 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useCartStore } from '@/features/cart/store/useCartStore'
+import { useLocationStore } from '@/features/location/store/useLocationStore'
 
 export default function CartPlaceholder() {
   const { items, updateQuantity, removeItem, getCartTotal } = useCartStore()
+  const { location } = useLocationStore()
   const navigate = useNavigate()
   
   const subtotal = getCartTotal()
@@ -113,6 +115,13 @@ export default function CartPlaceholder() {
               <span>Total amount</span>
               <span className="text-primary text-lg">₹{total}</span>
             </div>
+
+            {location && (
+              <div className="flex items-center gap-1.5 text-xs text-green-700 bg-green-50 border border-green-200/80 px-3 py-2 rounded-xl mt-1">
+                <span className="material-symbols-outlined text-sm leading-none text-green-600">check_circle</span>
+                <span>Delivering to <strong>{location.city} ({location.pincode})</strong></span>
+              </div>
+            )}
           </div>
 
           <button 

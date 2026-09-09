@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useCartStore } from '@/features/cart/store/useCartStore'
+import { useLocationStore } from '@/features/location/store/useLocationStore'
+import { useAuthStore } from '@/features/auth/store/useAuthStore'
 import { API_BASE_URL } from '@/config/api'
-
-
 
 type OccasionType = 'birthday' | 'anniversary' | 'wedding' | 'engagement' | 'other'
 
@@ -16,24 +16,40 @@ const MOCK_PROMO_CODES: Record<string, { type: 'percent' | 'flat'; value: number
 
 export default function CheckoutPlaceholder() {
   const { items, getCartTotal, clearCart } = useCartStore()
+  const { location, setLocation } = useLocationStore()
+  const { user } = useAuthStore()
 
-  const [pincode, setPincode] = useState('')
-  const [pinChecked, setPinChecked] = useState(false)
-  const [isDeliverable, setIsDeliverable] = useState(false)
+  const [pincode, setPincode] = useState(location?.pincode || '')
+  const [pinChecked, setPinChecked] = useState(!!location)
+  const [isDeliverable, setIsDeliverable] = useState(location?.isServiceable || false)
 
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
+    name: user?.name || '',
+    phone: user?.phone || '',
+    email: user?.email || '',
     addressLine1: '',
     landmark: '',
-    city: '',
-    state: '',
+    city: location?.city || '',
+    state: location?.state || '',
     date: '',
     timeSlot: '12 PM - 3 PM',
     occasion: 'birthday' as OccasionType,
     customOccasion: ''
   })
+
+  // Sync if location changes in store
+  useEffect(() => {
+    if (location) {
+      setPincode(location.pincode)
+      setPinChecked(true)
+      setIsDeliverable(location.isServiceable)
+      setFormData(prev => ({
+        ...prev,
+        city: location.city || prev.city,
+        state: location.state || prev.state
+      }))
+    }
+  }, [location])
   
   const [orderConfirmed, setOrderConfirmed] = useState(false)
   const [whatsappLink, setWhatsappLink] = useState('')
@@ -79,6 +95,12 @@ export default function CheckoutPlaceholder() {
         if (isServiceable) {
           if (data.city) handleInputChange('city', data.city)
           if (data.state) handleInputChange('state', data.state)
+          setLocation({
+            pincode: pincode.trim(),
+            city: data.city || 'Ahmedabad',
+            state: data.state || 'Gujarat',
+            isServiceable: true
+          })
         }
       } else {
         setIsDeliverable(false)
@@ -228,6 +250,7 @@ export default function CheckoutPlaceholder() {
           name: formData.name,
           phone: formData.phone,
           email: formData.email || undefined,
+          customer_id: user?.id || undefined,
           addressLine1: formData.addressLine1,
           landmark: formData.landmark || undefined,
           city: formData.city,

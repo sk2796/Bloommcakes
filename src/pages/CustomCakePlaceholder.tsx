@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { CustomCakeOrder, OccasionType } from '@/features/custom-cake/types'
+import { useLocationStore } from '@/features/location/store/useLocationStore'
 import { API_BASE_URL } from '@/config/api'
 
 const STEP_METADATA = [
@@ -20,13 +21,20 @@ const OCCASIONS: { type: OccasionType; label: string; icon: string }[] = [
   { type: 'other', label: 'Other', icon: 'more_horiz' }
 ]
 
-
-
 export default function CustomCakePlaceholder() {
+  const { location, setLocation } = useLocationStore()
   const [currentStep, setCurrentStep] = useState<number>(1)
-  const [pincode, setPincode] = useState('')
-  const [pinChecked, setPinChecked] = useState(false)
-  const [isDeliverable, setIsDeliverable] = useState(false)
+  const [pincode, setPincode] = useState(location?.pincode || '')
+  const [pinChecked, setPinChecked] = useState(!!location)
+  const [isDeliverable, setIsDeliverable] = useState(location?.isServiceable || false)
+
+  useEffect(() => {
+    if (location) {
+      setPincode(location.pincode)
+      setPinChecked(true)
+      setIsDeliverable(location.isServiceable)
+    }
+  }, [location])
 
   const [formData, setFormData] = useState<CustomCakeOrder>({
     occasion: 'birthday',
@@ -60,7 +68,16 @@ export default function CustomCakePlaceholder() {
       const response = await fetch(`${API_BASE_URL}/pincodes?code=${pincode.trim()}`)
       if (response.ok) {
         const data = await response.json()
-        setIsDeliverable(data.serviceable === true)
+        const isServiceable = data.serviceable === true
+        setIsDeliverable(isServiceable)
+        if (isServiceable) {
+          setLocation({
+            pincode: pincode.trim(),
+            city: data.city || 'Ahmedabad',
+            state: data.state || 'Gujarat',
+            isServiceable: true
+          })
+        }
       } else {
         setIsDeliverable(false)
       }
