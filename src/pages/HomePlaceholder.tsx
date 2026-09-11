@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 
+import { SEO } from '@/components/seo/SEO'
+
 interface SlideData {
   titleLine1: string
   titleLine2: string
@@ -119,6 +121,11 @@ export default function HomePlaceholder() {
 
   return (
     <div className="bg-background text-on-background overflow-hidden">
+      <SEO 
+        title="Order Fresh Artisanal Cakes Online | BloomCakes"
+        description="Best bakery for fresh birthday cakes, custom wedding cakes, and artisanal desserts. Order online for fast, safe doorstep delivery."
+      />
+      
       {/* Hero Slider Section with a sliding track */}
       <header className="relative pt-12 pb-24 lg:pt-24 lg:pb-32 bg-gradient-to-br from-surface to-surface-container-low min-h-[600px] flex items-center">
         

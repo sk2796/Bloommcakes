@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { 
   TrendingUp, 
@@ -13,11 +13,16 @@ import {
 } from 'lucide-react'
 import { adminService } from '@/features/admin/adminService'
 import { AdminAnalytics } from '@/features/admin/types'
+import { AdminFilterBar } from '@/components/admin/AdminFilterBar'
 
 export default function AdminDashboardPage() {
   const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  // Common filters state
+  const [search, setSearch] = useState('')
+  const [dateRange, setDateRange] = useState('all')
 
   const loadData = async () => {
     setLoading(true)
@@ -35,6 +40,35 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     loadData()
   }, [])
+
+  // Filter recent orders based on search and date range
+  const filteredRecentOrders = useMemo(() => {
+    if (!analytics?.recent_orders) return []
+    const now = new Date()
+    return analytics.recent_orders.filter((ord) => {
+      // Search
+      const q = search.toLowerCase().trim()
+      const matchesSearch = !q ||
+        ord.order_id.toLowerCase().includes(q) ||
+        ord.name.toLowerCase().includes(q) ||
+        ord.phone.includes(q) ||
+        ord.status.toLowerCase().includes(q)
+
+      // Date
+      let matchesDate = true
+      if (dateRange !== 'all' && ord.created_at) {
+        const ordDate = new Date(ord.created_at)
+        if (!isNaN(ordDate.getTime())) {
+          const diffDays = (now.getTime() - ordDate.getTime()) / (1000 * 3600 * 24)
+          if (dateRange === 'today') matchesDate = diffDays <= 1
+          else if (dateRange === '7d') matchesDate = diffDays <= 7
+          else if (dateRange === '30d') matchesDate = diffDays <= 30
+        }
+      }
+
+      return matchesSearch && matchesDate
+    })
+  }, [analytics, search, dateRange])
 
   return (
     <div className="space-y-8">
@@ -182,6 +216,21 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
+      {/* Common Filter Toolbar */}
+      <AdminFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Filter dashboard by order ID, customer name, phone, or status..."
+        dateRange={dateRange}
+        onDateRangeChange={setDateRange}
+        totalCount={analytics?.recent_orders?.length || 0}
+        filteredCount={filteredRecentOrders.length}
+        onResetAll={() => {
+          setSearch('')
+          setDateRange('all')
+        }}
+      />
+
       {/* Recent Orders Section */}
       <div className="bg-white rounded-2xl border border-[#ebd8d0] shadow-sm overflow-hidden">
         <div className="p-6 border-b border-[#ebd8d0] flex items-center justify-between">
@@ -197,9 +246,9 @@ export default function AdminDashboardPage() {
           </Link>
         </div>
 
-        {analytics?.recent_orders && analytics.recent_orders.length > 0 ? (
+        {filteredRecentOrders.length > 0 ? (
           <div className="divide-y divide-[#ebd8d0]/60">
-            {analytics.recent_orders.map((ord) => (
+            {filteredRecentOrders.map((ord) => (
               <div key={ord.order_id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#fffcfb] transition-colors">
                 <div>
                   <div className="flex items-center gap-2.5">
@@ -236,7 +285,9 @@ export default function AdminDashboardPage() {
           </div>
         ) : (
           <div className="p-10 text-center text-sm text-[#916b61]">
-            No recent orders recorded yet. They will appear here as customers place orders.
+            {analytics?.recent_orders && analytics.recent_orders.length > 0 
+              ? 'No orders match your active search or date filter.'
+              : 'No recent orders recorded yet. They will appear here as customers place orders.'}
           </div>
         )}
       </div>

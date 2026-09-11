@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { 
   Plus, 
-  Search, 
   Trash2, 
   Edit3, 
   Sparkles, 
@@ -12,6 +11,7 @@ import {
 } from 'lucide-react'
 import { adminService } from '@/features/admin/adminService'
 import { AdminProduct, AdminProductPayload } from '@/features/admin/types'
+import { AdminFilterBar } from '@/components/admin/AdminFilterBar'
 
 const CATEGORIES = [
   { value: 'cakes', label: 'Cakes', prefix: 'CAKE' },
@@ -28,6 +28,8 @@ export default function AdminProductsPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [priceFilter, setPriceFilter] = useState<string>('all')
+  const [sortBy, setSortBy] = useState<string>('name-asc')
 
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -144,7 +146,18 @@ export default function AdminProductsPage() {
                           p.id.toLowerCase().includes(search.toLowerCase()) ||
                           p.slug.toLowerCase().includes(search.toLowerCase())
     const matchesCat = selectedCategory === 'all' || p.category === selectedCategory
-    return matchesSearch && matchesCat
+    
+    let matchesPrice = true
+    if (priceFilter === 'under500') matchesPrice = p.price < 500
+    else if (priceFilter === '500to1000') matchesPrice = p.price >= 500 && p.price <= 1000
+    else if (priceFilter === 'above1000') matchesPrice = p.price > 1000
+
+    return matchesSearch && matchesCat && matchesPrice
+  }).sort((a, b) => {
+    if (sortBy === 'price-low') return a.price - b.price
+    if (sortBy === 'price-high') return b.price - a.price
+    if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0)
+    return a.name.localeCompare(b.name)
   })
 
   return (
@@ -169,49 +182,52 @@ export default function AdminProductsPage() {
         </button>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-[#ebd8d0] shadow-sm flex flex-col md:flex-row items-center gap-4 justify-between">
-        <div className="relative w-full md:w-96">
-          <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#916b61]" />
-          <input
-            type="text"
-            placeholder="Search by name, ID, or slug..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-[#e5d5cf] focus:outline-none focus:ring-2 focus:ring-[#e76f51] bg-[#fdfaf8]"
-          />
-        </div>
-
-        {/* Category Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
-          <button
-            onClick={() => setSelectedCategory('all')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-              selectedCategory === 'all'
-                ? 'bg-[#4a1525] text-white'
-                : 'bg-[#fdfaf8] text-[#735751] hover:bg-[#faeee8] border border-[#e5d5cf]'
-            }`}
-          >
-            All Items ({products.length})
-          </button>
-          {CATEGORIES.map(c => {
-            const count = products.filter(p => p.category === c.value).length
-            return (
-              <button
-                key={c.value}
-                onClick={() => setSelectedCategory(c.value)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                  selectedCategory === c.value
-                    ? 'bg-[#4a1525] text-white'
-                    : 'bg-[#fdfaf8] text-[#735751] hover:bg-[#faeee8] border border-[#e5d5cf]'
-                }`}
-              >
-                {c.label} ({count})
-              </button>
-            )
-          })}
-        </div>
-      </div>
+      {/* Common Filter Toolbar */}
+      <AdminFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search catalog by cake name, SKU ID, or slug..."
+        totalCount={products.length}
+        filteredCount={filteredProducts.length}
+        dropdownFilters={[
+          {
+            id: 'category',
+            label: 'Category',
+            value: selectedCategory,
+            onChange: setSelectedCategory,
+            options: [
+              { label: 'All Categories', value: 'all' },
+              ...CATEGORIES.map(c => ({ label: c.label, value: c.value }))
+            ]
+          },
+          {
+            id: 'price',
+            label: 'Price Range',
+            value: priceFilter,
+            onChange: setPriceFilter,
+            options: [
+              { label: 'All Prices', value: 'all' },
+              { label: 'Under ₹500', value: 'under500' },
+              { label: '₹500 - ₹1,000', value: '500to1000' },
+              { label: 'Above ₹1,000', value: 'above1000' }
+            ]
+          }
+        ]}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        sortOptions={[
+          { label: 'Name (A - Z)', value: 'name-asc' },
+          { label: 'Price: Low to High', value: 'price-low' },
+          { label: 'Price: High to Low', value: 'price-high' },
+          { label: 'Highest Rated', value: 'rating' }
+        ]}
+        onResetAll={() => {
+          setSearch('')
+          setSelectedCategory('all')
+          setPriceFilter('all')
+          setSortBy('name-asc')
+        }}
+      />
 
       {/* Product List Table / Grid */}
       {loading ? (

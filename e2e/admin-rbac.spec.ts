@@ -47,4 +47,32 @@ test.describe('Admin Portal & RBAC Security E2E', () => {
     await expect(page.getByRole('heading', { name: /admin staff & access control/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /add staff user/i })).toBeVisible();
   });
+
+  test('admin can use common filters to filter and reset data', async ({ page }) => {
+    // Login
+    await page.goto('/admin/login');
+    await page.locator('input[type="email"]').fill('admin@bloomcakes.co');
+    await page.locator('input[type="password"]').fill('Admin@Bloom123');
+    await page.getByRole('button', { name: /sign in to dashboard/i }).click();
+
+    // Navigate to Products
+    await page.getByRole('button', { name: /products & menu/i }).click();
+    await expect(page).toHaveURL(/.*\/admin\/products/);
+
+    // Verify common filter bar is visible
+    const searchInput = page.getByPlaceholder(/search catalog/i);
+    await expect(searchInput).toBeVisible();
+
+    // Filter by search query
+    await searchInput.fill('chocolate');
+    await expect(page.getByText(/showing.*record/i)).toBeVisible();
+
+    // Clear filters using reset button
+    const resetBtn = page.getByRole('button', { name: /reset/i });
+    if (await resetBtn.isVisible()) {
+      await resetBtn.click();
+      await expect(searchInput).toHaveValue('');
+    }
+  });
 });
+

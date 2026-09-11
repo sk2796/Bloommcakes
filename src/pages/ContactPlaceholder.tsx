@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SEO } from '@/components/seo/SEO'
 
 export default function ContactPlaceholder() {
   const [formData, setFormData] = useState({
@@ -50,6 +51,10 @@ export default function ContactPlaceholder() {
 
   return (
     <div className="max-w-[1200px] mx-auto px-margin-desktop py-12 animate-fade-in text-left">
+      <SEO 
+        title="Contact Us | BloomCakes"
+        description="Get in touch with BloomCakes. We are a pure veg bakery offering fresh birthday cakes, custom wedding cakes, and more in Ahmedabad."
+      />
       <div className="text-center mb-12">
         <h2 className="font-headline-lg text-headline-lg text-primary font-bold mb-2">Contact Us</h2>
         <p className="text-on-surface-variant font-body-md max-w-lg mx-auto">

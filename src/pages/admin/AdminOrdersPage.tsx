@@ -1,24 +1,35 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { 
-  Search, 
   ShoppingBag, 
   Calendar, 
   Clock, 
   Phone, 
   ChevronDown, 
   RefreshCw,
-  Tag
+  Tag,
+  Truck,
+  Navigation,
+  Eye
 } from 'lucide-react'
 import { adminService } from '@/features/admin/adminService'
 import { AdminOrder } from '@/features/admin/types'
+import { AdminFilterBar } from '@/components/admin/AdminFilterBar'
+import { DeliveryDispatchModal } from '@/components/admin/DeliveryDispatchModal'
+import { DeliveryTracker } from '@/components/admin/DeliveryTracker'
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<AdminOrder[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [dateRange, setDateRange] = useState('all')
+  const [sortBy, setSortBy] = useState('date-desc')
   const [updatingId, setUpdatingId] = useState<string | null>(null)
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null)
+
+  // Delivery modal state
+  const [dispatchOrder, setDispatchOrder] = useState<AdminOrder | null>(null)
+  const [trackingOrderId, setTrackingOrderId] = useState<string | null>(null)
 
   const fetchOrders = async () => {
     setLoading(true)
@@ -48,16 +59,42 @@ export default function AdminOrdersPage() {
     }
   }
 
-  const filteredOrders = orders.filter(o => {
-    const matchesSearch = 
-      o.order_id.toLowerCase().includes(search.toLowerCase()) ||
-      o.name.toLowerCase().includes(search.toLowerCase()) ||
-      o.phone.includes(search) ||
-      (o.customer_id && o.customer_id.toLowerCase().includes(search.toLowerCase()))
-    
-    const matchesStatus = statusFilter === 'all' || (o.status || 'order_confirmed') === statusFilter
-    return matchesSearch && matchesStatus
-  })
+  const filteredOrders = useMemo(() => {
+    const now = new Date()
+    return orders.filter(o => {
+      const q = search.toLowerCase().trim()
+      const matchesSearch = !q ||
+        o.order_id.toLowerCase().includes(q) ||
+        o.name.toLowerCase().includes(q) ||
+        o.phone.includes(q) ||
+        (o.customer_id && o.customer_id.toLowerCase().includes(q)) ||
+        (o.city && o.city.toLowerCase().includes(q)) ||
+        (o.pincode && o.pincode.includes(q))
+      
+      const matchesStatus = statusFilter === 'all' || (o.status || 'order_confirmed') === statusFilter
+
+      let matchesDate = true
+      if (dateRange !== 'all') {
+        const orderDateStr = o.created_at || o.date
+        if (orderDateStr) {
+          const ordDate = new Date(orderDateStr)
+          if (!isNaN(ordDate.getTime())) {
+            const diffDays = (now.getTime() - ordDate.getTime()) / (1000 * 3600 * 24)
+            if (dateRange === 'today') matchesDate = diffDays <= 1
+            else if (dateRange === '7d') matchesDate = diffDays <= 7
+            else if (dateRange === '30d') matchesDate = diffDays <= 30
+          }
+        }
+      }
+
+      return matchesSearch && matchesStatus && matchesDate
+    }).sort((a, b) => {
+      if (sortBy === 'amount-high') return (b.totalAmount || 0) - (a.totalAmount || 0)
+      if (sortBy === 'amount-low') return (a.totalAmount || 0) - (b.totalAmount || 0)
+      if (sortBy === 'date-asc') return (a.created_at || a.date || '').localeCompare(b.created_at || b.date || '')
+      return (b.created_at || b.date || '').localeCompare(a.created_at || a.date || '')
+    })
+  }, [orders, search, statusFilter, dateRange, sortBy])
 
   return (
     <div className="space-y-6">
@@ -68,7 +105,7 @@ export default function AdminOrdersPage() {
             Order Fulfillment Pipeline
           </h1>
           <p className="text-sm text-[#735751] mt-1">
-            Track customer deliveries, update order statuses, and view delivery details.
+            Track customer deliveries, dispatch riders, update order statuses, and view delivery details.
           </p>
         </div>
 
@@ -82,42 +119,46 @@ export default function AdminOrdersPage() {
         </button>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-[#ebd8d0] shadow-sm flex flex-col md:flex-row items-center gap-4 justify-between">
-        <div className="relative w-full md:w-96">
-          <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#916b61]" />
-          <input
-            type="text"
-            placeholder="Search by Order ID, name, or phone..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-[#e5d5cf] focus:outline-none focus:ring-2 focus:ring-[#e76f51] bg-[#fdfaf8]"
-          />
-        </div>
-
-        {/* Status Filters */}
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
-          {[
-            { id: 'all', label: 'All Orders' },
-            { id: 'order_confirmed', label: 'Confirmed' },
-            { id: 'shipped', label: 'Out for Delivery' },
-            { id: 'delivered', label: 'Delivered' },
-            { id: 'cancelled', label: 'Cancelled' }
-          ].map(st => (
-            <button
-              key={st.id}
-              onClick={() => setStatusFilter(st.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                statusFilter === st.id
-                  ? 'bg-[#4a1525] text-white'
-                  : 'bg-[#fdfaf8] text-[#735751] hover:bg-[#faeee8] border border-[#e5d5cf]'
-              }`}
-            >
-              {st.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* Common Filter Toolbar */}
+      <AdminFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search orders by Order ID, customer, phone, city, or pincode..."
+        dateRange={dateRange}
+        onDateRangeChange={setDateRange}
+        totalCount={orders.length}
+        filteredCount={filteredOrders.length}
+        dropdownFilters={[
+          {
+            id: 'status',
+            label: 'Order Status',
+            value: statusFilter,
+            onChange: setStatusFilter,
+            options: [
+              { label: 'All Orders', value: 'all' },
+              { label: 'Confirmed / Queued', value: 'order_confirmed' },
+              { label: 'Dispatched', value: 'dispatched' },
+              { label: 'Out for Delivery', value: 'shipped' },
+              { label: 'Delivered', value: 'delivered' },
+              { label: 'Cancelled', value: 'cancelled' }
+            ]
+          }
+        ]}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        sortOptions={[
+          { label: 'Date: Newest First', value: 'date-desc' },
+          { label: 'Date: Oldest First', value: 'date-asc' },
+          { label: 'Amount: High to Low', value: 'amount-high' },
+          { label: 'Amount: Low to High', value: 'amount-low' }
+        ]}
+        onResetAll={() => {
+          setSearch('')
+          setStatusFilter('all')
+          setDateRange('all')
+          setSortBy('date-desc')
+        }}
+      />
 
       {/* Order Cards / Roster */}
       {loading ? (
@@ -137,6 +178,8 @@ export default function AdminOrdersPage() {
             const isExpanded = expandedOrderId === ord.order_id
             const currentStatus = ord.status || 'order_confirmed'
             const isUpdating = updatingId === ord.order_id
+            const canDispatch = currentStatus === 'order_confirmed'
+            const hasActiveDelivery = currentStatus === 'dispatched' || currentStatus === 'shipped'
 
             return (
               <div
@@ -179,7 +222,7 @@ export default function AdminOrdersPage() {
                   </div>
 
                   {/* Status & Action Controls */}
-                  <div className="flex items-center gap-4 self-end lg:self-auto flex-wrap">
+                  <div className="flex items-center gap-3 self-end lg:self-auto flex-wrap">
                     <div className="text-right mr-2">
                       <div className="text-xs text-[#916b61] uppercase tracking-wider font-semibold">Total Paid</div>
                       <div className="text-lg font-bold text-[#2d0e17]">₹{ord.totalAmount}</div>
@@ -194,19 +237,54 @@ export default function AdminOrdersPage() {
                         className={`
                           text-xs font-bold uppercase tracking-wider px-3.5 py-2 rounded-xl border appearance-none pr-8 cursor-pointer transition-all
                           ${currentStatus === 'delivered' ? 'bg-emerald-50 text-emerald-800 border-emerald-300' :
-                            currentStatus === 'shipped' ? 'bg-amber-50 text-amber-800 border-amber-300' :
+                            currentStatus === 'shipped' || currentStatus === 'dispatched' ? 'bg-amber-50 text-amber-800 border-amber-300' :
                             currentStatus === 'cancelled' ? 'bg-rose-50 text-rose-800 border-rose-300' :
                             'bg-blue-50 text-blue-800 border-blue-300'}
                           disabled:opacity-50
                         `}
                       >
                         <option value="order_confirmed">Confirmed</option>
+                        <option value="dispatched">Dispatched</option>
                         <option value="shipped">Out for Delivery</option>
                         <option value="delivered">Delivered</option>
                         <option value="cancelled">Cancelled</option>
                       </select>
                       <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-current opacity-70" />
                     </div>
+
+                    {/* Delivery Actions */}
+                    {canDispatch && (
+                      <button
+                        onClick={() => setDispatchOrder(ord)}
+                        className="px-3 py-2 rounded-xl bg-gradient-to-r from-[#e76f51] to-[#f4845f] text-white text-xs font-bold shadow-sm hover:shadow-md transition-all flex items-center gap-1.5"
+                        title="Dispatch delivery rider"
+                      >
+                        <Truck size={13} />
+                        Dispatch
+                      </button>
+                    )}
+
+                    {hasActiveDelivery && (
+                      <button
+                        onClick={() => setTrackingOrderId(ord.order_id)}
+                        className="px-3 py-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold hover:bg-blue-100 transition-colors flex items-center gap-1.5"
+                        title="Track delivery"
+                      >
+                        <Navigation size={13} />
+                        Track
+                      </button>
+                    )}
+
+                    {currentStatus === 'delivered' && (
+                      <button
+                        onClick={() => setTrackingOrderId(ord.order_id)}
+                        className="px-3 py-2 rounded-xl border border-[#e5d5cf] text-[#735751] text-xs font-semibold hover:bg-[#faeee8] transition-colors flex items-center gap-1.5"
+                        title="View delivery details"
+                      >
+                        <Eye size={13} />
+                        Delivery
+                      </button>
+                    )}
 
                     {/* Expand Details button */}
                     <button
@@ -274,6 +352,26 @@ export default function AdminOrdersPage() {
             )
           })}
         </div>
+      )}
+
+      {/* Delivery Dispatch Modal */}
+      {dispatchOrder && (
+        <DeliveryDispatchModal
+          order={dispatchOrder}
+          isOpen={!!dispatchOrder}
+          onClose={() => setDispatchOrder(null)}
+          onDispatched={fetchOrders}
+        />
+      )}
+
+      {/* Delivery Tracker Modal */}
+      {trackingOrderId && (
+        <DeliveryTracker
+          orderId={trackingOrderId}
+          isOpen={!!trackingOrderId}
+          onClose={() => setTrackingOrderId(null)}
+          onStatusChanged={fetchOrders}
+        />
       )}
     </div>
   )

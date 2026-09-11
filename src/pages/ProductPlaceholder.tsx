@@ -4,6 +4,7 @@ import { useCakeDetail } from '@/features/products/hooks/useCakeDetail'
 import { useCakes } from '@/features/products/hooks/useCakes'
 import { useCartStore } from '@/features/cart/store/useCartStore'
 import { useLocationStore } from '@/features/location/store/useLocationStore'
+import { SEO } from '@/components/seo/SEO'
 
 export default function ProductPlaceholder() {
   const { slug } = useParams<{ slug: string }>()
@@ -39,6 +40,7 @@ export default function ProductPlaceholder() {
   if (isError || !cake) {
     return (
       <div className="max-w-container-max mx-auto px-margin-desktop py-24 text-center">
+        <SEO title="Cake Not Found | BloomCakes" description="The product you are looking for does not exist." />
         <span className="material-symbols-outlined text-red-500 text-5xl mb-4">error</span>
         <h3 className="text-xl font-bold mb-2">Cake not found</h3>
         <p className="text-on-surface-variant mb-6">The product you are looking for does not exist or has been removed.</p>
@@ -75,6 +77,11 @@ export default function ProductPlaceholder() {
 
   return (
     <div className="max-w-container-max mx-auto px-margin-desktop py-12 animate-fade-in">
+      <SEO 
+        title={`Order ${cake.name} Online | BloomCakes`} 
+        description={`Buy fresh, pure veg ${cake.name} starting at ₹${cake.price}. ${cake.description.slice(0, 100)}...`}
+        image={cake.imageUrl}
+      />
       {/* Added to cart notification badge */}
       {addedAlert && (
         <div className="fixed top-24 right-8 bg-green-50 text-green-800 border border-green-200 px-6 py-3.5 rounded-2xl shadow-lg z-50 flex items-center gap-3 animate-fade-in font-bold text-xs uppercase tracking-wide">
