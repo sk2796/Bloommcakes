@@ -1,3 +1,4 @@
+import { SEO } from '@/components/seo/SEO'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { CustomCakeOrder, OccasionType } from '@/features/custom-cake/types'
@@ -157,6 +158,7 @@ export default function CustomCakePlaceholder() {
   if (isSubmitted) {
     return (
       <div className="max-w-container-max mx-auto px-margin-desktop py-24 text-center animate-fade-in">
+        <SEO title="Order Received | BloomCakes" description="Your custom cake order has been received successfully." />
         <span className="material-symbols-outlined text-green-500 text-6xl mb-4" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
         <h2 className="text-3xl font-bold text-primary mb-3">Order Received!</h2>
         <p className="text-on-surface-variant max-w-md mx-auto mb-4 font-body-lg">
@@ -174,6 +176,10 @@ export default function CustomCakePlaceholder() {
 
   return (
     <div className="max-[1200px] mx-auto px-margin-desktop py-12">
+      <SEO 
+        title="Order Custom Celebration Cakes | BloomCakes"
+        description="Design your perfect custom cake online. Personalized birthday cakes, anniversary tiered cakes, and bespoke wedding cakes delivered fresh."
+      />
       {/* Title Header */}
       <div className="text-center mb-12">
         <h2 className="font-headline-xl text-headline-xl text-on-surface mb-2 font-bold">Custom Cake Order</h2>

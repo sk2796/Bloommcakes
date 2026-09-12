@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { 
   UserPlus, 
-  Search, 
   Trash2, 
   Shield, 
   X, 
@@ -10,6 +9,7 @@ import {
 } from 'lucide-react'
 import { adminService } from '@/features/admin/adminService'
 import { AdminUser, AdminUserPayload, AdminRole } from '@/features/admin/types'
+import { AdminFilterBar } from '@/components/admin/AdminFilterBar'
 
 const ROLES_INFO: Record<AdminRole, { label: string; desc: string; badgeColor: string }> = {
   super_admin: {
@@ -38,6 +38,9 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<AdminUser[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [roleFilter, setRoleFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [sortBy, setSortBy] = useState('name-asc')
 
   // Add modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -132,12 +135,25 @@ export default function AdminUsersPage() {
     }
   }
 
-  const filteredUsers = users.filter(u => 
-    u.name.toLowerCase().includes(search.toLowerCase()) ||
-    u.email.toLowerCase().includes(search.toLowerCase()) ||
-    u.admin_id.toLowerCase().includes(search.toLowerCase()) ||
-    u.role.toLowerCase().includes(search.toLowerCase())
-  )
+  const filteredUsers = useMemo(() => {
+    return users.filter(u => {
+      const q = search.toLowerCase().trim()
+      const matchesSearch = !q ||
+        u.name.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q) ||
+        u.admin_id.toLowerCase().includes(q) ||
+        u.role.toLowerCase().includes(q)
+
+      const matchesRole = roleFilter === 'all' || u.role === roleFilter
+      const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' ? u.is_active : !u.is_active)
+
+      return matchesSearch && matchesRole && matchesStatus
+    }).sort((a, b) => {
+      if (sortBy === 'role') return a.role.localeCompare(b.role)
+      if (sortBy === 'status') return Number(b.is_active) - Number(a.is_active)
+      return a.name.localeCompare(b.name)
+    })
+  }, [users, search, roleFilter, statusFilter, sortBy])
 
   return (
     <div className="space-y-6">
@@ -156,7 +172,7 @@ export default function AdminUsersPage() {
           <button
             onClick={fetchUsers}
             disabled={loading}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-[#e5d5cf] text-[#2d0e17] text-sm font-medium hover:bg-[#faeee8] transition-colors shadow-sm disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-[#e5d5cf] text-[#2d0e17] text-sm font-medium hover:bg-[#faeee8] transition-colors shadow-sm disabled:opacity-50"
           >
             <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
             <span>Refresh</span>
@@ -164,9 +180,9 @@ export default function AdminUsersPage() {
 
           <button
             onClick={handleOpenAdd}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#e76f51] to-[#f4a261] text-white font-semibold text-sm shadow-lg shadow-[#e76f51]/30 hover:opacity-95 transition-all"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-[#e76f51] to-[#f4a261] text-white font-semibold text-sm shadow-lg shadow-[#e76f51]/30 hover:opacity-95 transition-all"
           >
-            <UserPlus size={18} />
+            <UserPlus size={17} />
             <span>Add Staff User</span>
           </button>
         </div>
@@ -192,22 +208,53 @@ export default function AdminUsersPage() {
         })}
       </div>
 
-      {/* Search Input */}
-      <div className="bg-white p-4 rounded-2xl border border-[#ebd8d0] shadow-sm flex items-center justify-between">
-        <div className="relative w-full max-w-sm">
-          <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#916b61]" />
-          <input
-            type="text"
-            placeholder="Search by name, email, or role..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-[#e5d5cf] focus:outline-none focus:ring-2 focus:ring-[#e76f51] bg-[#fdfaf8]"
-          />
-        </div>
-        <div className="text-xs font-semibold text-[#735751]">
-          Total Team Members: <span className="text-[#2d0e17] font-bold">{users.length}</span>
-        </div>
-      </div>
+      {/* Common Filter Toolbar */}
+      <AdminFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search staff by name, email, role, or Admin ID..."
+        totalCount={users.length}
+        filteredCount={filteredUsers.length}
+        dropdownFilters={[
+          {
+            id: 'role',
+            label: 'Role Filter',
+            value: roleFilter,
+            onChange: setRoleFilter,
+            options: [
+              { label: 'All Roles', value: 'all' },
+              { label: 'Super Admin', value: 'super_admin' },
+              { label: 'Store Manager', value: 'manager' },
+              { label: 'Delivery Staff', value: 'delivery_staff' },
+              { label: 'Catalog Editor', value: 'catalog_editor' }
+            ]
+          },
+          {
+            id: 'status',
+            label: 'Status Filter',
+            value: statusFilter,
+            onChange: setStatusFilter,
+            options: [
+              { label: 'All Statuses', value: 'all' },
+              { label: 'Active Only', value: 'active' },
+              { label: 'Suspended Only', value: 'suspended' }
+            ]
+          }
+        ]}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        sortOptions={[
+          { label: 'Name (A - Z)', value: 'name-asc' },
+          { label: 'Group by Role', value: 'role' },
+          { label: 'Status (Active First)', value: 'status' }
+        ]}
+        onResetAll={() => {
+          setSearch('')
+          setRoleFilter('all')
+          setStatusFilter('all')
+          setSortBy('name-asc')
+        }}
+      />
 
       {/* Users Table */}
       {loading ? (

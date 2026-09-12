@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { 
   Users, 
-  Search, 
   Phone, 
   Mail, 
   MapPin, 
@@ -9,12 +8,15 @@ import {
 } from 'lucide-react'
 import { adminService } from '@/features/admin/adminService'
 import { AdminCustomer, AdminOrder } from '@/features/admin/types'
+import { AdminFilterBar } from '@/components/admin/AdminFilterBar'
 
 export default function AdminCustomersPage() {
   const [customers, setCustomers] = useState<AdminCustomer[]>([])
   const [orders, setOrders] = useState<AdminOrder[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [activityFilter, setActivityFilter] = useState('all')
+  const [sortBy, setSortBy] = useState('spend-desc')
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null)
 
   const fetchData = async () => {
@@ -37,15 +39,6 @@ export default function AdminCustomersPage() {
     fetchData()
   }, [])
 
-  const filteredCustomers = customers.filter(c => {
-    return (
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.phone.includes(search) ||
-      (c.email && c.email.toLowerCase().includes(search.toLowerCase())) ||
-      c.customer_id.toLowerCase().includes(search.toLowerCase())
-    )
-  })
-
   // Calculate customer spending & order count metrics
   const getCustomerMetrics = (customerId: string, phone: string) => {
     const cleanPhone = phone.replace(/\D/g, '').slice(-10)
@@ -59,6 +52,31 @@ export default function AdminCustomersPage() {
       orders: matched
     }
   }
+
+  const filteredCustomers = useMemo(() => {
+    return customers.filter(c => {
+      const q = search.toLowerCase().trim()
+      const matchesSearch = !q ||
+        c.name.toLowerCase().includes(q) ||
+        c.phone.includes(q) ||
+        (c.email && c.email.toLowerCase().includes(q)) ||
+        c.customer_id.toLowerCase().includes(q) ||
+        (c.city && c.city.toLowerCase().includes(q))
+
+      const metrics = getCustomerMetrics(c.customer_id, c.phone)
+      let matchesActivity = true
+      if (activityFilter === 'buyers') matchesActivity = metrics.orderCount > 0
+      else if (activityFilter === 'new') matchesActivity = metrics.orderCount === 0
+
+      return matchesSearch && matchesActivity
+    }).sort((a, b) => {
+      const metA = getCustomerMetrics(a.customer_id, a.phone)
+      const metB = getCustomerMetrics(b.customer_id, b.phone)
+      if (sortBy === 'spend-desc') return metB.totalSpend - metA.totalSpend
+      if (sortBy === 'orders-desc') return metB.orderCount - metA.orderCount
+      return a.name.localeCompare(b.name)
+    })
+  }, [customers, orders, search, activityFilter, sortBy])
 
   const selectedCustomer = customers.find(c => c.customer_id === selectedCustomerId)
   const selectedMetrics = selectedCustomer ? getCustomerMetrics(selectedCustomer.customer_id, selectedCustomer.phone) : null
@@ -86,19 +104,39 @@ export default function AdminCustomersPage() {
         </button>
       </div>
 
-      {/* Search Input */}
-      <div className="bg-white p-4 rounded-2xl border border-[#ebd8d0] shadow-sm">
-        <div className="relative w-full md:w-96">
-          <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#916b61]" />
-          <input
-            type="text"
-            placeholder="Search by customer name, phone, or ID..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-[#e5d5cf] focus:outline-none focus:ring-2 focus:ring-[#e76f51] bg-[#fdfaf8]"
-          />
-        </div>
-      </div>
+      {/* Common Filter Toolbar */}
+      <AdminFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search directory by customer name, phone, email, city, or ID..."
+        totalCount={customers.length}
+        filteredCount={filteredCustomers.length}
+        dropdownFilters={[
+          {
+            id: 'activity',
+            label: 'Customer Activity',
+            value: activityFilter,
+            onChange: setActivityFilter,
+            options: [
+              { label: 'All Customers', value: 'all' },
+              { label: 'Active Buyers (≥1 order)', value: 'buyers' },
+              { label: 'New Accounts (0 orders)', value: 'new' }
+            ]
+          }
+        ]}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        sortOptions={[
+          { label: 'Highest Lifetime Spend', value: 'spend-desc' },
+          { label: 'Most Orders Placed', value: 'orders-desc' },
+          { label: 'Name (A - Z)', value: 'name-asc' }
+        ]}
+        onResetAll={() => {
+          setSearch('')
+          setActivityFilter('all')
+          setSortBy('spend-desc')
+        }}
+      />
 
       {/* Customers List & Profile Panel Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

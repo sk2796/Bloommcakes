@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react'
-import { MapPin, Plus, Trash2, Search, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react'
+import { useEffect, useState, useMemo } from 'react'
+import { MapPin, Plus, Trash2, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react'
 import { adminService } from '@/features/admin/adminService'
 import { AdminPincode } from '@/features/admin/types'
+import { AdminFilterBar } from '@/components/admin/AdminFilterBar'
 
 export default function AdminPincodesPage() {
   const [pincodes, setPincodes] = useState<AdminPincode[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [cityFilter, setCityFilter] = useState('all')
+  const [sortBy, setSortBy] = useState('pin-asc')
 
   // Add modal / form state
   const [newPin, setNewPin] = useState('')
@@ -67,11 +70,29 @@ export default function AdminPincodesPage() {
     }
   }
 
-  const filteredPincodes = pincodes.filter(p => 
-    p.pincode.includes(search) || 
-    p.city.toLowerCase().includes(search.toLowerCase()) ||
-    p.state.toLowerCase().includes(search.toLowerCase())
-  )
+  // Extract unique cities for the dropdown filter
+  const uniqueCities = useMemo(() => {
+    const cities = Array.from(new Set(pincodes.map(p => p.city.trim()).filter(Boolean)))
+    return cities.sort((a, b) => a.localeCompare(b))
+  }, [pincodes])
+
+  const filteredPincodes = useMemo(() => {
+    return pincodes.filter(p => {
+      const q = search.toLowerCase().trim()
+      const matchesSearch = !q ||
+        p.pincode.includes(q) || 
+        p.city.toLowerCase().includes(q) ||
+        (p.state && p.state.toLowerCase().includes(q))
+      
+      const matchesCity = cityFilter === 'all' || p.city.toLowerCase().trim() === cityFilter.toLowerCase().trim()
+
+      return matchesSearch && matchesCity
+    }).sort((a, b) => {
+      if (sortBy === 'pin-desc') return b.pincode.localeCompare(a.pincode)
+      if (sortBy === 'city-asc') return a.city.localeCompare(b.city)
+      return a.pincode.localeCompare(b.pincode)
+    })
+  }, [pincodes, search, cityFilter, sortBy])
 
   return (
     <div className="space-y-6">
@@ -175,21 +196,38 @@ export default function AdminPincodesPage() {
 
         {/* Existing Pincodes List */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white p-4 rounded-2xl border border-[#ebd8d0] shadow-sm flex items-center justify-between">
-            <div className="relative w-full max-w-sm">
-              <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#916b61]" />
-              <input
-                type="text"
-                placeholder="Search pincode, city, or state..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-[#e5d5cf] focus:outline-none focus:ring-2 focus:ring-[#e76f51] bg-[#fdfaf8]"
-              />
-            </div>
-            <div className="text-xs font-semibold text-[#735751]">
-              Total Active: <span className="text-[#2d0e17] font-bold">{pincodes.length}</span>
-            </div>
-          </div>
+          {/* Common Filter Toolbar */}
+          <AdminFilterBar
+            search={search}
+            onSearchChange={setSearch}
+            searchPlaceholder="Search by 6-digit pincode, city, or state..."
+            totalCount={pincodes.length}
+            filteredCount={filteredPincodes.length}
+            dropdownFilters={[
+              {
+                id: 'city',
+                label: 'City Filter',
+                value: cityFilter,
+                onChange: setCityFilter,
+                options: [
+                  { label: 'All Cities', value: 'all' },
+                  ...uniqueCities.map(c => ({ label: c, value: c }))
+                ]
+              }
+            ]}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+            sortOptions={[
+              { label: 'Pincode: Low to High', value: 'pin-asc' },
+              { label: 'Pincode: High to Low', value: 'pin-desc' },
+              { label: 'City (A - Z)', value: 'city-asc' }
+            ]}
+            onResetAll={() => {
+              setSearch('')
+              setCityFilter('all')
+              setSortBy('pin-asc')
+            }}
+          />
 
           {loading ? (
             <div className="p-16 text-center text-[#916b61] bg-white rounded-2xl border border-[#ebd8d0]">

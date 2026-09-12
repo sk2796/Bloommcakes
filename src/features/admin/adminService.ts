@@ -7,7 +7,10 @@ import {
   AdminPincode, 
   AdminAnalytics,
   AdminUser,
-  AdminUserPayload
+  AdminUserPayload,
+  ShippingProvider,
+  DeliveryQuote,
+  DeliveryInfo,
 } from './types'
 
 export const adminService = {
@@ -160,5 +163,70 @@ export const adminService = {
       const err = await res.json().catch(() => ({}))
       throw new Error(err.detail || 'Failed to delete staff member')
     }
-  }
+  },
+
+  // ─── Delivery / Shipping ───────────────────────────────────────────
+
+  async getShippingProviders(): Promise<ShippingProvider[]> {
+    const res = await fetch(`${API_BASE_URL}/admin/shipping/providers`)
+    if (!res.ok) throw new Error('Failed to fetch shipping providers')
+    return res.json()
+  },
+
+  async getDeliveryQuote(orderId: string, provider: string): Promise<DeliveryQuote> {
+    const res = await fetch(`${API_BASE_URL}/admin/orders/${orderId}/delivery-quote`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider })
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err.detail || 'Failed to get delivery quote')
+    }
+    return res.json()
+  },
+
+  async dispatchDelivery(orderId: string, provider: string, packageDescription?: string): Promise<any> {
+    const res = await fetch(`${API_BASE_URL}/admin/orders/${orderId}/dispatch`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider, package_description: packageDescription })
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err.detail || 'Failed to dispatch delivery')
+    }
+    return res.json()
+  },
+
+  async getDeliveryInfo(orderId: string): Promise<{ has_delivery: boolean; delivery: DeliveryInfo | null }> {
+    const res = await fetch(`${API_BASE_URL}/admin/orders/${orderId}/delivery`)
+    if (!res.ok) throw new Error('Failed to fetch delivery info')
+    return res.json()
+  },
+
+  async cancelDelivery(orderId: string): Promise<any> {
+    const res = await fetch(`${API_BASE_URL}/admin/orders/${orderId}/cancel-delivery`, {
+      method: 'POST'
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err.detail || 'Failed to cancel delivery')
+    }
+    return res.json()
+  },
+
+  async updateDeliveryStatus(deliveryId: string, status: string): Promise<any> {
+    const res = await fetch(`${API_BASE_URL}/admin/deliveries/${deliveryId}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err.detail || 'Failed to update delivery status')
+    }
+    return res.json()
+  },
 }
+
