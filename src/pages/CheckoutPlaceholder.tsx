@@ -170,7 +170,7 @@ export default function CheckoutPlaceholder() {
 
       // 2. Configure Razorpay client checkout modal parameters
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TWKVpMlrWThBL5',
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: orderData.amount,
         currency: orderData.currency,
         name: 'BloomCakes',
