@@ -197,6 +197,11 @@ export default function AdminOrdersPage() {
                         <span className="font-mono text-sm font-bold text-[#2d0e17] bg-[#fdf2ee] px-2.5 py-1 rounded-lg border border-[#ebd8d0]">
                           {ord.order_id}
                         </span>
+                        {ord.order_id.startsWith('BC-CSTK-') && (
+                          <span className="text-[11px] font-bold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300 animate-pulse">
+                            🎨 Custom Cake Quote
+                          </span>
+                        )}
                         <span className="font-bold text-base text-[#2d0e17]">{ord.name}</span>
                         {ord.customer_id && (
                           <span className="font-mono text-[11px] text-[#916b61] bg-gray-100 px-2 py-0.5 rounded border">
@@ -204,6 +209,7 @@ export default function AdminOrdersPage() {
                           </span>
                         )}
                       </div>
+
 
                       <div className="flex flex-wrap items-center gap-3 text-xs text-[#735751] mt-2">
                         <span className="flex items-center gap-1 font-medium">

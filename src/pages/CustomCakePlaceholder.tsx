@@ -106,9 +106,36 @@ export default function CustomCakePlaceholder() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsSubmitted(true)
-    
+
+    // Save custom cake order to Database & send Email notification via Backend API
+    try {
+      const cleanPhone = formData.customerPhone.trim().replace(/[\s-]/g, '').replace(/^(?:\+91|0)/, '')
+      await fetch(`${API_BASE_URL}/api/custom-cakes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: formData.customerName.trim(),
+          customerPhone: cleanPhone,
+          customerEmail: formData.customerEmail?.trim() || null,
+          occasion: formData.occasion,
+          occasionNotes: formData.occasionNotes?.trim() || null,
+          flavor: formData.flavor,
+          size: formData.size,
+          shape: formData.shape,
+          customMessage: formData.customMessage?.trim() || null,
+          specialInstructions: formData.specialInstructions?.trim() || null,
+          deliveryDate: formData.deliveryDate || null,
+          deliveryTimeSlot: formData.deliveryTimeSlot,
+          pincode: pincode.trim(),
+          deliveryAddress: formData.deliveryAddress.trim()
+        })
+      })
+    } catch (err) {
+      console.error('Error saving custom cake request to backend:', err)
+    }
+
     // Construct the WhatsApp message parameters automatically
     const text = `*New Custom Cake Query (BloomCakes)*\n\n` +
       `*Customer Info:*\n` +
@@ -135,6 +162,7 @@ export default function CustomCakePlaceholder() {
     // Open the compiled WhatsApp chat redirect automatically
     window.open(whatsappUrl, '_blank')
   }
+
 
   // Name validation: Must contain at least a first and last name (alphabetical, min 2 chars each)
   const isNameValid = () => {
