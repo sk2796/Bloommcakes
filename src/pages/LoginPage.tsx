@@ -501,7 +501,7 @@ export default function LoginPage() {
               ? 'Log in to track orders, save favorites & speed up checkout'
               : activeTab === 'register'
               ? 'Sign up to enjoy custom cakes, orders & fast delivery'
-              : 'Enter your email or phone to receive a password reset link via chhotelalpeda@gmail.com'}
+              : 'Enter your email or phone to receive a password reset link from our official support email'}
           </p>
         </div>
 
@@ -855,7 +855,7 @@ export default function LoginPage() {
             {!forgotSuccess && (
               <>
                 <p className="text-xs text-on-surface-variant leading-relaxed mb-2">
-                  Enter your registered <strong>Email Address</strong> or <strong>Phone Number</strong>. We will locate your account and send a secure reset link to your email from <strong>chhotelalpeda@gmail.com</strong>.
+                  Enter your registered <strong>Email Address</strong> or <strong>Phone Number</strong>. We will locate your account and send a secure reset link to your email from our official support address.
                 </p>
 
                 <div>

@@ -38,3 +38,7 @@ test-results/
 playwright-report/
 blob-report/
 
+# Isolated file storage / uploads
+storage/
+
+
