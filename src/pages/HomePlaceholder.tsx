@@ -17,6 +17,22 @@ interface SlideData {
 
 const HERO_SLIDES: SlideData[] = [
   {
+    titleLine1: 'First Birthday Magic.',
+    titleLine2: 'Crafted For Samar.',
+    description: 'Celebrate special milestones with custom-designed fondant cakes, adorable hand-modeled toppers, and magical blue & gold balloon themes.',
+    btnText: 'DESIGN CUSTOM CAKE',
+    btnLink: '/custom-cake',
+    imageUrl: '/hero-samar-cake.jpg',
+    badgeNumber: '1st',
+    badgeText: 'Birthday Special',
+    tags: [
+      { icon: 'cake', text: 'Custom Fondant Art' },
+      { icon: 'star', text: 'Gold Accents' },
+      { icon: 'child_care', text: '1st Birthday Themes' },
+      { icon: 'eco', text: '100% Pure Veg' }
+    ]
+  },
+  {
     titleLine1: 'Beautifully Crafted.',
     titleLine2: 'Happily Celebrated.',
     description: "From everyday moments to life's biggest celebrations, we craft artisanal cakes and desserts that make every moment bloom with flavor and joy.",
