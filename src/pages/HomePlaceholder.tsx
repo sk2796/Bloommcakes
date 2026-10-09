@@ -156,31 +156,30 @@ export default function HomePlaceholder() {
               {/* Background Full Cover Image */}
               <div className="absolute inset-0 z-0">
                 <img 
-                  className="w-full h-full object-cover object-center lg:object-right" 
+                  className="w-full h-full object-cover object-right lg:object-right" 
                   alt={slide.titleLine2}
                   src={slide.imageUrl}
                 />
-                {/* Gradient Overlays for High Legibility & Premium Atmosphere */}
-                <div className="absolute inset-0 bg-gradient-to-r from-surface/95 via-surface/85 to-transparent lg:w-3/4"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-surface/90 via-transparent to-surface/30"></div>
+                {/* Subtle soft gradient fade on left for contrast without blocking the image */}
+                <div className="absolute inset-0 bg-gradient-to-r from-surface/90 via-surface/60 to-transparent w-full md:w-3/4 lg:w-3/5"></div>
               </div>
 
-              {/* Slide Text Content Container (Left Side Overlay) */}
+              {/* Slide Text Content Container (Clean Direct Overlay on Left) */}
               <div className="relative z-10 max-w-container-max mx-auto px-4 sm:px-6 lg:px-margin-desktop w-full py-12">
-                <div className="max-w-xl bg-surface/80 dark:bg-surface-dim/85 backdrop-blur-md p-6 sm:p-8 lg:p-10 rounded-3xl border border-outline-variant/30 shadow-2xl space-y-6">
+                <div className="max-w-xl space-y-6">
                   
                   {/* Badge Pill Header */}
-                  <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-3.5 py-1.5 rounded-full">
+                  <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-3.5 py-1.5 rounded-full backdrop-blur-sm">
                     <span className="text-primary font-bold text-xs uppercase tracking-wider">{slide.badgeNumber}</span>
                     <span className="text-on-surface-variant text-xs font-medium">• {slide.badgeText}</span>
                   </div>
 
-                  <h1 className="font-headline-xl text-headline-xl text-primary leading-tight">
+                  <h1 className="font-headline-xl text-headline-xl leading-tight">
                     <span className="block text-on-surface font-light italic text-2xl sm:text-3xl mb-1">{slide.titleLine1}</span>
                     <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-primary">{slide.titleLine2}</span>
                   </h1>
 
-                  <p className="font-body-lg text-body-lg text-on-surface-variant/90 leading-relaxed">
+                  <p className="font-body-lg text-body-lg text-on-surface-variant/90 leading-relaxed max-w-lg">
                     {slide.description}
                   </p>
                   
@@ -190,7 +189,7 @@ export default function HomePlaceholder() {
                       {slide.btnText}
                       <span className="material-symbols-outlined text-sm">arrow_forward</span>
                     </Link>
-                    <Link to="/shop" className="border-2 border-primary text-primary px-7 py-3.5 rounded-full font-label-md text-label-md hover:bg-primary/10 transition-colors flex items-center justify-center font-bold">
+                    <Link to="/shop" className="border-2 border-primary text-primary px-7 py-3.5 rounded-full font-label-md text-label-md hover:bg-primary/10 transition-colors flex items-center justify-center font-bold bg-surface/40 backdrop-blur-sm">
                       EXPLORE MENU
                     </Link>
                   </div>
@@ -207,6 +206,7 @@ export default function HomePlaceholder() {
 
                 </div>
               </div>
+
 
             </div>
           ))}
