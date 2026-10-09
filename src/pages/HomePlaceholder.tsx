@@ -142,69 +142,77 @@ export default function HomePlaceholder() {
         description="Best bakery for fresh birthday cakes, custom wedding cakes, and artisanal desserts. Order online for fast, safe doorstep delivery."
       />
       
-      {/* Hero Slider Section with a sliding track */}
-      <header className="relative pt-12 pb-24 lg:pt-24 lg:pb-32 bg-gradient-to-br from-surface to-surface-container-low min-h-[600px] flex items-center">
+      {/* Hero Slider Section with full background image slides */}
+      <header className="relative w-full overflow-hidden bg-surface-container-low min-h-[580px] lg:min-h-[640px] flex items-center">
         
         {/* Sliding Track container */}
         <div 
-          className="flex transition-transform duration-700 ease-in-out w-full"
+          className="flex transition-transform duration-700 ease-in-out w-full min-h-[580px] lg:min-h-[640px]"
           style={{ transform: `translateX(-${activeSlide * 100}%)` }}
         >
           {HERO_SLIDES.map((slide, index) => (
-            <div key={index} className="w-full flex-shrink-0">
-              <div className="max-w-container-max mx-auto px-margin-desktop w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                
-                {/* Slide Text Content Column */}
-                <div className="flex flex-col gap-6 text-center lg:text-left">
-                  <h1 className="font-headline-xl text-headline-xl text-primary max-w-2xl mx-auto lg:mx-0 leading-tight">
-                    <span className="block text-on-surface font-light italic mb-2">{slide.titleLine1}</span>
-                    {slide.titleLine2}
+            <div key={index} className="w-full flex-shrink-0 relative min-h-[580px] lg:min-h-[640px] flex items-center">
+              
+              {/* Background Full Cover Image */}
+              <div className="absolute inset-0 z-0">
+                <img 
+                  className="w-full h-full object-cover object-center lg:object-right" 
+                  alt={slide.titleLine2}
+                  src={slide.imageUrl}
+                />
+                {/* Gradient Overlays for High Legibility & Premium Atmosphere */}
+                <div className="absolute inset-0 bg-gradient-to-r from-surface/95 via-surface/85 to-transparent lg:w-3/4"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-surface/90 via-transparent to-surface/30"></div>
+              </div>
+
+              {/* Slide Text Content Container (Left Side Overlay) */}
+              <div className="relative z-10 max-w-container-max mx-auto px-4 sm:px-6 lg:px-margin-desktop w-full py-12">
+                <div className="max-w-xl bg-surface/80 dark:bg-surface-dim/85 backdrop-blur-md p-6 sm:p-8 lg:p-10 rounded-3xl border border-outline-variant/30 shadow-2xl space-y-6">
+                  
+                  {/* Badge Pill Header */}
+                  <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-3.5 py-1.5 rounded-full">
+                    <span className="text-primary font-bold text-xs uppercase tracking-wider">{slide.badgeNumber}</span>
+                    <span className="text-on-surface-variant text-xs font-medium">• {slide.badgeText}</span>
+                  </div>
+
+                  <h1 className="font-headline-xl text-headline-xl text-primary leading-tight">
+                    <span className="block text-on-surface font-light italic text-2xl sm:text-3xl mb-1">{slide.titleLine1}</span>
+                    <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-primary">{slide.titleLine2}</span>
                   </h1>
-                  <p className="font-body-lg text-body-lg text-on-surface-variant max-w-lg mx-auto lg:mx-0 min-h-[80px]">
+
+                  <p className="font-body-lg text-body-lg text-on-surface-variant/90 leading-relaxed">
                     {slide.description}
                   </p>
                   
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mt-4">
-                    <Link to={slide.btnLink} className="bg-primary text-on-primary px-8 py-3 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-lg flex items-center justify-center gap-2">
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                    <Link to={slide.btnLink} className="bg-primary text-on-primary px-8 py-3.5 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 font-bold tracking-wide">
                       {slide.btnText}
                       <span className="material-symbols-outlined text-sm">arrow_forward</span>
                     </Link>
-                    <Link to="/shop" className="border-2 border-primary text-primary px-8 py-3 rounded-full font-label-md text-label-md hover:bg-primary/5 transition-colors flex items-center justify-center">
+                    <Link to="/shop" className="border-2 border-primary text-primary px-7 py-3.5 rounded-full font-label-md text-label-md hover:bg-primary/10 transition-colors flex items-center justify-center font-bold">
                       EXPLORE MENU
                     </Link>
                   </div>
 
-                  <div className="flex flex-wrap justify-center lg:justify-start gap-6 mt-8 opacity-80">
+                  {/* Feature Tags */}
+                  <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-4 border-t border-outline-variant/30">
                     {slide.tags.map((tag, idx) => (
-                      <div key={idx} className="flex flex-col items-center gap-2">
-                        <span className={`material-symbols-outlined text-3xl ${tag.text.includes('Veg') ? 'text-green-600 font-bold' : 'text-primary'}`}>{tag.icon}</span>
-                        <span className="font-label-sm text-label-sm text-on-surface-variant text-center leading-tight whitespace-nowrap">{tag.text}</span>
+                      <div key={idx} className="flex items-center gap-1.5">
+                        <span className={`material-symbols-outlined text-xl ${tag.text.includes('Veg') ? 'text-green-600 font-bold' : 'text-primary'}`}>{tag.icon}</span>
+                        <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">{tag.text}</span>
                       </div>
                     ))}
                   </div>
-                </div>
 
-                {/* Slide Image Showcase Column */}
-                <div className="relative w-full aspect-square max-w-lg mx-auto">
-                  <div className="absolute inset-0 bg-primary-container/20 rounded-full blur-3xl scale-90"></div>
-                  <img 
-                    className="w-full h-full object-cover rounded-full soft-shadow relative z-10 border-8 border-surface" 
-                    alt={slide.titleLine2}
-                    src={slide.imageUrl}
-                  />
-                  {/* Floating Badge */}
-                  <div className="absolute -bottom-6 -right-6 glass-panel rounded-full p-4 flex flex-col items-center justify-center w-28 h-28 shadow-xl z-20 animate-bounce" style={{ animationDuration: '3s' }}>
-                    <span className="text-primary font-headline-md text-headline-md font-bold leading-none">{slide.badgeNumber}</span>
-                    <span className="text-on-surface-variant font-label-sm text-label-sm text-center leading-tight mt-1">{slide.badgeText}</span>
-                  </div>
                 </div>
-
               </div>
+
             </div>
           ))}
         </div>
 
-        {/* Carousel Navigation Indicators Dot indicators */}
+        {/* Carousel Navigation Indicators */}
         <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-3 z-20">
           {HERO_SLIDES.map((_, index) => (
             <button
@@ -212,16 +220,14 @@ export default function HomePlaceholder() {
               onClick={() => setActiveSlide(index)}
               className={`w-3.5 h-3.5 rounded-full border transition-all duration-300 ${
                 activeSlide === index 
-                  ? 'bg-primary border-primary scale-110' 
-                  : 'bg-surface-container-low border-outline hover:bg-outline-variant/30'
+                  ? 'bg-primary border-primary scale-125 shadow-md' 
+                  : 'bg-surface/80 border-outline hover:bg-primary/40'
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
         </div>
 
-        {/* Decorative Background Elements */}
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-primary-container/10 to-transparent pointer-events-none"></div>
       </header>
 
       {/* Trust Banner */}
