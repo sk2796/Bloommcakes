@@ -35,12 +35,16 @@ export function Layout() {
         }`} 
         id="main-nav"
       >
-        <div className="flex justify-between items-center w-full px-4 sm:px-6 lg:px-margin-desktop py-3.5 max-w-container-max mx-auto gap-2 lg:gap-6">
-          <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
+        <div className="flex justify-between items-center w-full px-4 sm:px-6 lg:px-8 py-3.5 max-w-full mx-auto gap-4">
+          
+          {/* Far Left Brand Logo */}
+          <Link to="/" className="flex items-center gap-2.5 flex-shrink-0 mr-auto lg:mr-0">
             <img src="/logo.jpg" alt="BloomCakes Logo" className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-primary/20" />
             <span className="text-xl lg:text-headline-md font-bold text-primary dark:text-primary-fixed tracking-tight">BloomCakes</span>
           </Link>
-          <div className="hidden xl:flex gap-6 lg:gap-8 items-center flex-shrink-0">
+
+          {/* Center Navigation Links */}
+          <div className="hidden xl:flex gap-6 lg:gap-8 items-center flex-shrink-0 mx-auto">
             <Link 
               className={`font-label-md text-label-md whitespace-nowrap transition-colors ${
                 location.pathname === '/' 
@@ -92,7 +96,9 @@ export function Layout() {
               Contact
             </Link>
           </div>
-          <div className="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
+
+          {/* Far Right Utilities (Pincode, User Login, Cart, Order Now) */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 ml-auto lg:ml-0">
             <LocationSelector />
             <UserNavButton />
             <Link to="/cart" className="relative p-2 text-primary hover:bg-surface-container rounded-full transition-colors flex-shrink-0" aria-label="Shopping Cart">
@@ -103,7 +109,9 @@ export function Layout() {
                 </span>
               )}
             </Link>
-            <Link to="/shop" className="bg-primary text-on-primary px-5 py-2 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-md hidden 2xl:block flex-shrink-0 whitespace-nowrap">ORDER NOW</Link>
+            <Link to="/shop" className="bg-primary text-on-primary px-5 py-2.5 rounded-full font-label-md text-label-md hover:bg-on-primary-fixed-variant transition-colors shadow-md flex-shrink-0 whitespace-nowrap hidden sm:inline-flex items-center font-bold">
+              ORDER NOW
+            </Link>
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="xl:hidden p-2 text-primary focus:outline-none flex-shrink-0"
@@ -112,6 +120,7 @@ export function Layout() {
               <span className="material-symbols-outlined" data-icon="menu">{isMenuOpen ? 'close' : 'menu'}</span>
             </button>
           </div>
+
         </div>
 
         {/* Navigation Drawer overlay panel for viewports below xl */}
